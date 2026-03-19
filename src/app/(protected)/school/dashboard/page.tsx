@@ -37,7 +37,7 @@ export default function SchoolDashboard() {
           </h1>
           <p className="text-gray-400 text-sm">Manage your institution's profile and guest faculty requirements.</p>
         </div>
-        <Button asChild className="bg-[#E50914] text-white hover:bg-[#b80710]">
+        <Button asChild className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
           <Link href="/school/requirements/new">
             <span className="text-lg mr-2 leading-none pb-0.5">+</span> Post Requirement
           </Link>
@@ -66,7 +66,7 @@ export default function SchoolDashboard() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Your Recent Requirements</h2>
-              <Link href="/school/requirements" className="text-sm text-[#E50914] hover:text-[#b80710] font-medium">
+              <Link href="/school/requirements" className="text-sm text-[#00A8E1] hover:text-[#0082B4] font-medium">
                 View all
               </Link>
             </div>
@@ -122,7 +122,7 @@ export default function SchoolDashboard() {
             <CardContent className="p-0">
               <div className="divide-y divide-white/5">
                 {recommendedFaculty.map((artist) => (
-                  <div key={artist.id} className="p-4 flex items-center gap-3 hover:bg-white/5 transition-colors group cursor-pointer border-l-2 border-l-transparent hover:border-l-[#E50914]">
+                  <div key={artist.id} className="p-4 flex items-center gap-3 hover:bg-white/5 transition-colors group cursor-pointer border-l-2 border-l-transparent hover:border-l-[#00A8E1]">
                     <img src={artist.profilePhoto} alt={artist.name} className="h-10 w-10 rounded-full object-cover" />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-white text-sm truncate">{artist.name}</h4>

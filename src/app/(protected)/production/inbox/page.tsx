@@ -54,7 +54,7 @@ export default function ProductionInboxPage() {
             <h2 className="text-xl font-bold text-white mb-4">Artist Conversations</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input placeholder="Search..." className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" />
+              <Input placeholder="Search..." className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" />
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -63,7 +63,7 @@ export default function ProductionInboxPage() {
               return (
                 <div
                   key={conv.partnerId}
-                  className={`p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 flex items-start gap-3 ${activeConv?.partnerId === conv.partnerId ? 'bg-white/5 border-l-2 border-l-[#E50914]' : 'border-l-2 border-l-transparent'}`}
+                  className={`p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 flex items-start gap-3 ${activeConv?.partnerId === conv.partnerId ? 'bg-white/5 border-l-2 border-l-[#00A8E1]' : 'border-l-2 border-l-transparent'}`}
                   onClick={() => setActiveConv(conv)}
                 >
                   <Avatar className="h-10 w-10 border border-white/10">
@@ -80,7 +80,7 @@ export default function ProductionInboxPage() {
                       {lastMsg.senderId === currentUserId ? 'You: ' : ''}{lastMsg.content}
                     </p>
                   </div>
-                  {conv.unread && <div className="h-2 w-2 rounded-full bg-[#E50914] mt-1.5 shrink-0" />}
+                  {conv.unread && <div className="h-2 w-2 rounded-full bg-[#00A8E1] mt-1.5 shrink-0" />}
                 </div>
               );
             })}
@@ -95,7 +95,7 @@ export default function ProductionInboxPage() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </Button>
                 <Avatar className="h-8 w-8 border border-white/10 shrink-0">
-                  <AvatarFallback className="bg-[#E50914]/20 text-[#E50914] text-xs font-bold">
+                  <AvatarFallback className="bg-[#00A8E1]/20 text-[#00A8E1] text-xs font-bold">
                     {activeConv.partnerName.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -114,7 +114,7 @@ export default function ProductionInboxPage() {
                   const isMe = msg.senderId === currentUserId;
                   return (
                     <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                      <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${isMe ? 'bg-[#E50914] text-white rounded-br-none' : 'bg-[#2a2a2a] text-gray-100 rounded-bl-none border border-white/5'}`}>
+                      <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${isMe ? 'bg-[#00A8E1] text-white rounded-br-none' : 'bg-[#2a2a2a] text-gray-100 rounded-bl-none border border-white/5'}`}>
                         {msg.content}
                       </div>
                       <span className="text-[10px] text-gray-500 mt-1 mx-1">
@@ -134,9 +134,9 @@ export default function ProductionInboxPage() {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type a message..."
-                  className="flex-1 bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                  className="flex-1 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                 />
-                <Button type="submit" disabled={!newMessage.trim()} className="bg-[#E50914] text-white hover:bg-[#b80710] shrink-0">
+                <Button type="submit" disabled={!newMessage.trim()} className="bg-[#00A8E1] text-white hover:bg-[#0082B4] shrink-0">
                   <Send className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Send</span>
                 </Button>

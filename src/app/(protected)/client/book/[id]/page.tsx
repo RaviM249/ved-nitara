@@ -30,6 +30,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof bookArtistSchema>>({
+    // @ts-ignore
     resolver: zodResolver(bookArtistSchema),
     defaultValues: {
       eventType: "",
@@ -40,6 +41,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
     },
   });
 
+  // @ts-ignore
   async function onSubmit(values: z.infer<typeof bookArtistSchema>) {
     try {
       setIsLoading(true);
@@ -91,7 +93,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                 ))}
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <Star className="h-4 w-4 fill-[#E50914] text-[#E50914]" />
+                <Star className="h-4 w-4 fill-[#00A8E1] text-[#00A8E1]" />
                 <span className="font-bold text-white">{artist.rating}</span>
                 <span className="text-gray-400">/ 5</span>
               </div>
@@ -103,12 +105,12 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
             </CardContent>
           </Card>
 
-          <Card className="bg-[#141414] border-[#E50914]/20">
+          <Card className="bg-[#141414] border-[#00A8E1]/20">
             <CardHeader><CardTitle className="text-white text-base">How Booking Works</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {["Send a booking request with event details", "Artist reviews and accepts/declines within 24 hrs", "Confirm payment through the platform", "Event day — enjoy the performance!"].map((step, i) => (
                 <div key={i} className="flex items-start gap-3 text-sm text-gray-300">
-                  <span className="h-5 w-5 rounded-full bg-[#E50914]/20 text-[#E50914] flex items-center justify-center shrink-0 text-xs font-bold">
+                  <span className="h-5 w-5 rounded-full bg-[#00A8E1]/20 text-[#00A8E1] flex items-center justify-center shrink-0 text-xs font-bold">
                     {i + 1}
                   </span>
                   {step}
@@ -127,6 +129,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
             </CardHeader>
             <CardContent className="p-6 md:p-8">
               <Form {...form}>
+                {/* @ts-ignore */}
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <FormField
@@ -137,7 +140,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                           <FormLabel className="text-gray-300">Event Type</FormLabel>
                           <FormControl>
                             <select
-                              className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#E50914]"
+                              className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#00A8E1]"
                               {...field}
                             >
                               <option value="">Select event type</option>
@@ -164,7 +167,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                           <FormControl>
                             <Input
                               type="date"
-                              className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                              className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                               {...field}
                             />
                           </FormControl>
@@ -184,7 +187,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                           <FormControl>
                             <Input
                               placeholder="Mumbai"
-                              className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                              className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                               {...field}
                             />
                           </FormControl>
@@ -204,7 +207,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                               type="number"
                               min={1}
                               max={12}
-                              className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                              className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                               {...field}
                             />
                           </FormControl>
@@ -223,7 +226,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                         <FormControl>
                           <Textarea
                             placeholder="Describe your event, stage setup, audience size, any special requirements..."
-                            className="bg-[#141414] border-white/10 text-white h-32 focus-visible:ring-[#E50914]"
+                            className="bg-[#141414] border-white/10 text-white h-32 focus-visible:ring-[#00A8E1]"
                             {...field}
                           />
                         </FormControl>
@@ -243,7 +246,7 @@ export default function BookArtistPage({ params }: { params: Promise<{ id: strin
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className="bg-[#E50914] hover:bg-[#b80710] text-white px-8 shadow-[0_0_15px_rgba(229,9,20,0.3)]"
+                      className="bg-[#00A8E1] hover:bg-[#0082B4] text-white px-8 shadow-[0_0_15px_rgba(0,168,225,0.3)]"
                     >
                       {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                       Send Request

@@ -41,7 +41,7 @@ export default function Navbar() {
     <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href={isLoggedIn ? `${basePath}/dashboard` : "/"} className="flex items-center gap-2">
-          <span className="font-display text-2xl tracking-wider text-[#E50914] hover-red-glow">
+          <span className="font-display text-2xl tracking-wider text-[#00A8E1] hover-blue-glow">
             VED NITARA
           </span>
         </Link>
@@ -96,7 +96,7 @@ export default function Navbar() {
 
             <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white hover:bg-white/5">
               <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#E50914] shadow-[0_0_8px_#E50914]"></span>
+              <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#00A8E1] shadow-[0_0_8px_#00A8E1]"></span>
             </Button>
 
             <DropdownMenu>
@@ -113,7 +113,7 @@ export default function Navbar() {
                       <p className="text-xs leading-none text-gray-400">
                         {user?.email}
                       </p>
-                      <div className="mt-1 w-fit rounded-full bg-[#E50914]/20 px-2 py-0.5 text-[10px] font-medium text-[#E50914] uppercase">
+                      <div className="mt-1 w-fit rounded-full bg-[#00A8E1]/20 px-2 py-0.5 text-[10px] font-medium text-[#00A8E1] uppercase">
                         {activeRole}
                       </div>
                     </div>
@@ -158,7 +158,7 @@ export default function Navbar() {
               Log in
             </Link>
             <Link href="/pricing" tabIndex={-1}>
-              <Button className="bg-[#E50914] hover:bg-[#b80710] text-white">
+              <Button className="bg-[#00A8E1] hover:bg-[#0082B4] text-white">
                 Subscribe
               </Button>
             </Link>

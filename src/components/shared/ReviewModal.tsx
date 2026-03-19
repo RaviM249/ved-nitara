@@ -59,7 +59,7 @@ export default function ReviewModal({ isOpen, onClose, onSubmit, artistName }: R
                 <Star 
                   className={`w-10 h-10 ${
                     (hoverRating || rating) >= star 
-                      ? "fill-[#E50914] text-[#E50914] drop-shadow-[0_0_8px_rgba(229,9,20,0.5)]" 
+                      ? "fill-[#00A8E1] text-[#00A8E1] drop-shadow-[0_0_8px_rgba(0,168,225,0.5)]" 
                       : "text-gray-600"
                   }`} 
                 />
@@ -72,7 +72,7 @@ export default function ReviewModal({ isOpen, onClose, onSubmit, artistName }: R
             <Textarea 
               id="comment"
               placeholder="Write about what you liked or how they could improve..."
-              className="bg-[#141414] border-white/10 text-white resize-none h-24 focus-visible:ring-[#E50914]"
+              className="bg-[#141414] border-white/10 text-white resize-none h-24 focus-visible:ring-[#00A8E1]"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
@@ -87,7 +87,7 @@ export default function ReviewModal({ isOpen, onClose, onSubmit, artistName }: R
             type="button" 
             onClick={handleSubmit} 
             disabled={rating === 0}
-            className="bg-[#E50914] text-white hover:bg-[#b80710] disabled:opacity-50"
+            className="bg-[#00A8E1] text-white hover:bg-[#0082B4] disabled:opacity-50"
           >
             Submit Review
           </Button>

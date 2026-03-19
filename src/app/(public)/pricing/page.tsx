@@ -111,14 +111,14 @@ export default function PricingPage() {
           </div>
           <Button 
             variant={!isAnnual ? "default" : "ghost"} 
-            className={`rounded-lg px-6 ${!isAnnual ? 'bg-[#E50914] text-white hover:bg-[#b80710]' : 'text-gray-400 hover:text-white'}`}
+            className={`rounded-lg px-6 ${!isAnnual ? 'bg-[#00A8E1] text-white hover:bg-[#0082B4]' : 'text-gray-400 hover:text-white'}`}
             onClick={() => setIsAnnual(false)}
           >
             Monthly
           </Button>
           <Button 
             variant={isAnnual ? "default" : "ghost"} 
-            className={`rounded-lg px-6 ${isAnnual ? 'bg-[#E50914] text-white hover:bg-[#b80710]' : 'text-gray-400 hover:text-white'}`}
+            className={`rounded-lg px-6 ${isAnnual ? 'bg-[#00A8E1] text-white hover:bg-[#0082B4]' : 'text-gray-400 hover:text-white'}`}
             onClick={() => setIsAnnual(true)}
           >
             Annual
@@ -134,9 +134,9 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-[#141414] border border-white/10 rounded-2xl p-6 relative group hover:border-[#E50914]/50 hover-red-glow transition-all duration-300 flex flex-col h-full"
+            className="bg-[#141414] border border-white/10 rounded-2xl p-6 relative group hover:border-[#00A8E1]/50 hover-blue-glow transition-all duration-300 flex flex-col h-full"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E50914] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00A8E1] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
             <div className="h-12 w-12 rounded-full bg-[#1f1f1f] flex items-center justify-center mb-6">
               <plan.icon className="h-6 w-6 text-white" />
@@ -156,7 +156,7 @@ export default function PricingPage() {
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start text-sm text-gray-300">
-                    <CheckCircle2 className="h-5 w-5 text-[#E50914] mr-3 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="h-5 w-5 text-[#00A8E1] mr-3 shrink-0 mt-0.5" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -164,7 +164,7 @@ export default function PricingPage() {
             </div>
 
             <Link href={`/register?role=${plan.role.split(" ")[0].toUpperCase()}`} tabIndex={-1} className="mt-auto">
-              <Button className="w-full bg-[#E50914] text-white hover:bg-[#b80710]">
+              <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                 Subscribe Now
               </Button>
             </Link>
@@ -178,7 +178,7 @@ export default function PricingPage() {
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, idx) => (
             <AccordionItem key={idx} value={`item-${idx}`} className="border-white/10">
-              <AccordionTrigger className="text-lg font-medium text-white hover:text-[#E50914] text-left">
+              <AccordionTrigger className="text-lg font-medium text-white hover:text-[#00A8E1] text-left">
                 {faq.q}
               </AccordionTrigger>
               <AccordionContent className="text-gray-400 leading-relaxed text-base">

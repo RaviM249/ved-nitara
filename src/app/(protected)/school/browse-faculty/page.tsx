@@ -37,7 +37,7 @@ export default function BrowseFacultyPage() {
               <div className="space-y-2">
                 {["Acting", "Direction", "Cinematography", "Screenwriting"].map((role) => (
                   <label key={role} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                     <span className="text-sm text-gray-300">{role}</span>
                   </label>
                 ))}
@@ -46,7 +46,7 @@ export default function BrowseFacultyPage() {
 
             <div>
               <h3 className="text-sm font-medium text-white mb-3">Location</h3>
-              <select className="w-full bg-[#141414] border border-white/10 rounded-md h-10 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#E50914]">
+              <select className="w-full bg-[#141414] border border-white/10 rounded-md h-10 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00A8E1]">
                 <option value="">All Cities</option>
                 <option value="Mumbai">Mumbai</option>
                 <option value="Delhi">Delhi</option>
@@ -58,7 +58,7 @@ export default function BrowseFacultyPage() {
             <div>
               <h3 className="text-sm font-medium text-white mb-3">Verified Status</h3>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                 <span className="text-sm text-gray-300">Verified Faculty Only</span>
               </label>
             </div>
@@ -78,7 +78,7 @@ export default function BrowseFacultyPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input 
                   placeholder="Search by name or discipline..." 
-                  className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#E50914] w-full"
+                  className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#00A8E1] w-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />

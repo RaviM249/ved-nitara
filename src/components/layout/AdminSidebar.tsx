@@ -24,7 +24,7 @@ export default function AdminSidebar() {
   return (
     <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col border-r border-white/10 bg-[#141414] md:flex">
       <div className="flex h-16 items-center px-6 border-b border-white/10">
-        <span className="font-display text-2xl tracking-wider text-[#E50914] red-glow">
+        <span className="font-display text-2xl tracking-wider text-[#00A8E1] blue-glow">
           VED NITARA <span className="text-sm text-gray-400">ADMIN</span>
         </span>
       </div>
@@ -39,12 +39,12 @@ export default function AdminSidebar() {
                 href={link.href}
                 className={`group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-[#E50914]/10 text-[#E50914]"
+                    ? "bg-[#00A8E1]/10 text-[#00A8E1]"
                     : "text-gray-400 hover:bg-white/5 hover:text-white"
                 }`}
               >
                 <div className="flex items-center">
-                  <link.icon className={`mr-3 h-5 w-5 flex-shrink-0 ${isActive ? "text-[#E50914]" : "text-gray-500 group-hover:text-gray-300"}`} />
+                  <link.icon className={`mr-3 h-5 w-5 flex-shrink-0 ${isActive ? "text-[#00A8E1]" : "text-gray-500 group-hover:text-gray-300"}`} />
                   {link.name}
                 </div>
                 {isActive && <ChevronRight className="h-4 w-4 opacity-50" />}

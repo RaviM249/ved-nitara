@@ -43,15 +43,15 @@ export default function ClientBookingsPage() {
                       </div>
                       <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400 mt-3">
                         <div className="flex items-center gap-1.5">
-                          <CalendarDays className="h-4 w-4 text-[#E50914] opacity-80" />
+                          <CalendarDays className="h-4 w-4 text-[#00A8E1] opacity-80" />
                           {booking.eventDate}
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <MapPin className="h-4 w-4 text-[#E50914] opacity-80" />
+                          <MapPin className="h-4 w-4 text-[#00A8E1] opacity-80" />
                           {booking.eventCity}
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Clock className="h-4 w-4 text-[#E50914] opacity-80" />
+                          <Clock className="h-4 w-4 text-[#00A8E1] opacity-80" />
                           {booking.durationHours} Hours
                         </div>
                       </div>
@@ -106,7 +106,7 @@ export default function ClientBookingsPage() {
                       {booking.status === 'COMPLETED' && (
                         <Button 
                           variant="outline" 
-                          className="border-[#E50914]/30 text-[#E50914] hover:bg-[#E50914]/10"
+                          className="border-[#00A8E1]/30 text-[#00A8E1] hover:bg-[#00A8E1]/10"
                           onClick={() => setReviewArtistId(booking.artistId)}
                         >
                           <Star className="h-4 w-4 mr-2" /> Leave Review

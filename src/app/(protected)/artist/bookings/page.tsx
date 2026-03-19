@@ -35,15 +35,15 @@ export default function ArtistBookingsPage() {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-300">
               <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-[#E50914]" />
+                <CalendarDays className="h-4 w-4 text-[#00A8E1]" />
                 {booking.eventDate}
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[#E50914]" />
+                <MapPin className="h-4 w-4 text-[#00A8E1]" />
                 {booking.eventCity}
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-[#E50914]" />
+                <Clock className="h-4 w-4 text-[#00A8E1]" />
                 {booking.durationHours} Hours
               </div>
               <div className="flex items-center gap-2 font-bold text-white">

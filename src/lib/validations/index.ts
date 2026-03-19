@@ -58,7 +58,7 @@ export const postRequirementSchema = z.object({
   budgetMax: z.coerce.number().min(1, "Maximum budget must be greater than 0"),
   city: z.string().min(2, "City is required"),
   startDate: z.date({
-    required_error: "Start date is required",
+    error: "Start date is required",
   }),
   description: z.string().min(20, "Please provide a detailed description"),
   requirements: z.array(z.string()).min(1, "Add at least one requirement"),
@@ -69,11 +69,8 @@ export const postRequirementSchema = z.object({
 
 export const bookArtistSchema = z.object({
   eventType: z.string().min(1, "Event type is required"),
-  eventDate: z.date({
-    required_error: "Event date is required",
-  }),
+  eventDate: z.string().min(1, "Event date is required"),
   eventCity: z.string().min(2, "City is required"),
   durationHours: z.coerce.number().min(1, "Duration must be at least 1 hour"),
-  budget: z.coerce.number().min(1, "Budget is required"),
-  specialRequirements: z.string().optional(),
+  additionalNotes: z.string(),
 });

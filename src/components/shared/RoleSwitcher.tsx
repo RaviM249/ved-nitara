@@ -43,7 +43,7 @@ export default function RoleSwitcher() {
                 onClick={() => switchRole(role)}
                 className={`rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
                   activeRole === role
-                    ? "bg-[#E50914] text-white"
+                    ? "bg-[#00A8E1] text-white"
                     : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                 }`}
               >
@@ -70,7 +70,7 @@ export default function RoleSwitcher() {
       
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="rounded-full bg-[#E50914] px-4 py-2 text-sm font-bold text-white shadow-[0_0_20px_rgba(229,9,20,0.3)] hover:bg-[#b80710]"
+        className="rounded-full bg-[#00A8E1] px-4 py-2 text-sm font-bold text-white shadow-[0_0_20px_rgba(0,168,225,0.3)] hover:bg-[#0082B4]"
       >
         🎭 Dev Tools
       </Button>

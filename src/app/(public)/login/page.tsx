@@ -69,11 +69,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] px-4 py-20 relative overflow-hidden">
       {/* Background glow effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#E50914]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#00A8E1]/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md bg-[#1f1f1f] border border-white/10 rounded-2xl p-8 relative z-10 shadow-2xl">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block font-display text-4xl tracking-wider text-[#E50914] mb-2 hover-red-glow">
+          <Link href="/" className="inline-block font-display text-4xl tracking-wider text-[#00A8E1] mb-2 hover-blue-glow">
             VED NITARA
           </Link>
           <h1 className="text-2xl font-bold text-white">Welcome back</h1>
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   <FormControl>
                     <Input 
                       placeholder="name@example.com" 
-                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914] h-12" 
+                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1] h-12" 
                       {...field} 
                     />
                   </FormControl>
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-gray-300">Password</FormLabel>
-                    <Link href="#" className="text-sm font-medium text-[#E50914] hover:text-[#b80710]">
+                    <Link href="#" className="text-sm font-medium text-[#00A8E1] hover:text-[#0082B4]">
                       Forgot password?
                     </Link>
                   </div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
                     <Input 
                       type="password" 
                       placeholder="••••••••" 
-                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914] h-12" 
+                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1] h-12" 
                       {...field} 
                     />
                   </FormControl>
@@ -126,7 +126,7 @@ export default function LoginPage() {
 
             <Button 
               type="submit" 
-              className="w-full bg-[#E50914] hover:bg-[#b80710] text-white h-12 text-base font-bold shadow-[0_0_20px_rgba(229,9,20,0.3)] mt-2"
+              className="w-full bg-[#00A8E1] hover:bg-[#0082B4] text-white h-12 text-base font-bold shadow-[0_0_20px_rgba(0,168,225,0.3)] mt-2"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -179,7 +179,7 @@ export default function LoginPage() {
 
         <p className="mt-8 text-center text-sm text-gray-400">
           Don't have an account?{" "}
-          <Link href="/register" className="font-semibold text-white hover:text-[#E50914] transition-colors">
+          <Link href="/register" className="font-semibold text-white hover:text-[#00A8E1] transition-colors">
             Sign up
           </Link>
         </p>

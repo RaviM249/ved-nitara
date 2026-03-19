@@ -25,7 +25,7 @@ export default function SchoolRequirementsPage() {
           <h1 className="text-3xl font-display text-white mb-2">Requirements Management</h1>
           <p className="text-gray-400 text-sm">Manage your open postings and review applicants.</p>
         </div>
-        <Button asChild className="bg-[#E50914] text-white hover:bg-[#b80710]">
+        <Button asChild className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
           <Link href="/school/requirements/new">
             <Plus className="h-4 w-4 mr-2" /> Post New
           </Link>
@@ -51,7 +51,7 @@ export default function SchoolRequirementsPage() {
                   
                   <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                     <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1.5 opacity-70 text-[#E50914]" />
+                      <Clock className="h-4 w-4 mr-1.5 opacity-70 text-[#00A8E1]" />
                       {req.duration}
                     </div>
                     <div className="flex items-center">
@@ -59,7 +59,7 @@ export default function SchoolRequirementsPage() {
                       {req.budgetMin.toLocaleString()} - {req.budgetMax.toLocaleString()}
                     </div>
                     <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1.5 opacity-70 text-[#E50914]" />
+                      <Users className="h-4 w-4 mr-1.5 opacity-70 text-[#00A8E1]" />
                       24 Applicants
                     </div>
                   </div>
@@ -67,7 +67,7 @@ export default function SchoolRequirementsPage() {
                 
                 <div className="flex items-center gap-3 md:pl-6 md:border-l border-white/10 pt-4 md:pt-0 border-t md:border-t-0">
                   <div className="flex-1 md:flex-none">
-                    <Button className="w-full bg-[#E50914] text-white hover:bg-[#b80710]">
+                    <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                       Review Applicants
                     </Button>
                   </div>
@@ -93,7 +93,7 @@ export default function SchoolRequirementsPage() {
           <div className="text-center py-20 bg-[#1f1f1f] rounded-xl border border-white/5">
             <h3 className="text-lg font-bold text-white mb-2">No Requirements Found</h3>
             <p className="text-gray-400 text-sm mb-6">You haven't posted any faculty requirements yet.</p>
-            <Button asChild className="bg-[#E50914] text-white hover:bg-[#b80710]">
+            <Button asChild className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
               <Link href="/school/requirements/new">Post your first requirement</Link>
             </Button>
           </div>

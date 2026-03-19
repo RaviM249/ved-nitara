@@ -46,7 +46,7 @@ export default function FilterPanel({ title, isOpen, onClose, children }: Filter
           </div>
           
           <div className="p-4 border-t border-white/10 lg:pt-4 lg:pb-0 lg:px-0">
-            <Button className="w-full bg-[#E50914] text-white hover:bg-[#b80710]">
+            <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
               Apply Filters
             </Button>
           </div>

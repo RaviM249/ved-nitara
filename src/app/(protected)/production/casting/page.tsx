@@ -80,7 +80,7 @@ export default function CastingCallsPage() {
           <p className="text-gray-400 text-sm">Manage your open casting requirements and review applicants.</p>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors bg-[#E50914] text-white hover:bg-[#b80710] h-9 px-4 py-2">
+          <DialogTrigger className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors bg-[#00A8E1] text-white hover:bg-[#0082B4] h-9 px-4 py-2">
               <Plus className="h-4 w-4 mr-2 pointer-events-none" /> Post Casting Call
           </DialogTrigger>
           <DialogContent className="bg-[#1f1f1f] border-white/10 text-white max-w-lg">
@@ -92,7 +92,7 @@ export default function CastingCallsPage() {
                 <Label className="text-gray-300">Title</Label>
                 <Input 
                   placeholder="e.g. Lead Actor - Feature Film 'Kavya'"
-                  className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                  className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   required
@@ -102,7 +102,7 @@ export default function CastingCallsPage() {
                 <div className="space-y-2">
                   <Label className="text-gray-300">Type</Label>
                   <select
-                    className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#E50914]"
+                    className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#00A8E1]"
                     value={form.type}
                     onChange={(e) => setForm({ ...form, type: e.target.value })}
                   >
@@ -117,7 +117,7 @@ export default function CastingCallsPage() {
                   <Label className="text-gray-300">Location</Label>
                   <Input 
                     placeholder="Mumbai"
-                    className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                    className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                     value={form.location}
                     onChange={(e) => setForm({ ...form, location: e.target.value })}
                     required
@@ -128,7 +128,7 @@ export default function CastingCallsPage() {
                 <Label className="text-gray-300">Last Date to Apply</Label>
                 <Input 
                   type="date"
-                  className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                  className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                   value={form.lastDate}
                   onChange={(e) => setForm({ ...form, lastDate: e.target.value })}
                   required
@@ -138,7 +138,7 @@ export default function CastingCallsPage() {
                 <Label className="text-gray-300">Description</Label>
                 <Textarea 
                   placeholder="Describe the roles and requirements..."
-                  className="bg-[#141414] border-white/10 text-white h-28 focus-visible:ring-[#E50914]"
+                  className="bg-[#141414] border-white/10 text-white h-28 focus-visible:ring-[#00A8E1]"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   required
@@ -148,7 +148,7 @@ export default function CastingCallsPage() {
                 <Button type="button" variant="outline" className="border-white/20 text-white" onClick={() => setIsOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading} className="bg-[#E50914] text-white hover:bg-[#b80710]">
+                <Button type="submit" disabled={isLoading} className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                   {isLoading ? "Posting..." : "Post Casting Call"}
                 </Button>
               </div>
@@ -182,22 +182,22 @@ export default function CastingCallsPage() {
 
                   <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                     <div className="flex items-center gap-1.5">
-                      <Film className="h-4 w-4 text-[#E50914] opacity-80" />
+                      <Film className="h-4 w-4 text-[#00A8E1] opacity-80" />
                       {call.roles.join(', ')}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Calendar className="h-4 w-4 text-[#E50914] opacity-80" />
+                      <Calendar className="h-4 w-4 text-[#00A8E1] opacity-80" />
                       Closes {new Date(call.lastDate).toLocaleDateString()}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Users className="h-4 w-4 text-[#E50914] opacity-80" />
+                      <Users className="h-4 w-4 text-[#00A8E1] opacity-80" />
                       {call.applicants} Applicants
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 border-t lg:border-t-0 lg:border-l border-white/10 pt-4 lg:pt-0 lg:pl-6">
-                  <Button className="bg-[#E50914] text-white hover:bg-[#b80710]">
+                  <Button className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                     Review Applicants
                   </Button>
                   <DropdownMenu>

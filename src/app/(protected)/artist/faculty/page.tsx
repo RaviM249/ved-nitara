@@ -39,7 +39,7 @@ export default function FacultyOpportunitiesPage() {
               <div className="space-y-2">
                 {["Short-term", "Long-term", "Project-based"].map((duration) => (
                   <label key={duration} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                     <span className="text-sm text-gray-300">{duration}</span>
                   </label>
                 ))}
@@ -48,7 +48,7 @@ export default function FacultyOpportunitiesPage() {
 
             <div>
               <h3 className="text-sm font-medium text-white mb-3">Location</h3>
-              <select className="w-full bg-[#141414] border border-white/10 rounded-md h-10 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#E50914]">
+              <select className="w-full bg-[#141414] border border-white/10 rounded-md h-10 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00A8E1]">
                 <option value="">All Cities</option>
                 <option value="Mumbai">Mumbai</option>
                 <option value="Delhi">Delhi</option>
@@ -81,7 +81,7 @@ export default function FacultyOpportunitiesPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input 
                   placeholder="Search roles or subjects..." 
-                  className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#E50914] w-full"
+                  className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#00A8E1] w-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -101,13 +101,13 @@ export default function FacultyOpportunitiesPage() {
             <div className="space-y-4">
               {filteredOpps.length > 0 ? filteredOpps.map((opp) => (
                 <Card key={opp.id} className="bg-[#1f1f1f] border-white/5 overflow-hidden hover:border-white/20 transition-all hover:-translate-y-1">
-                  <div className="p-1 w-full bg-gradient-to-r from-transparent via-[#E50914]/20 to-transparent"></div>
+                  <div className="p-1 w-full bg-gradient-to-r from-transparent via-[#00A8E1]/20 to-transparent"></div>
                   <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-2">
                           <h2 className="text-xl font-bold text-white">{opp.roleNeeded}</h2>
-                          <Badge variant="outline" className="border-[#E50914]/30 text-[#E50914] bg-[#E50914]/10">
+                          <Badge variant="outline" className="border-[#00A8E1]/30 text-[#00A8E1] bg-[#00A8E1]/10">
                             {opp.duration}
                           </Badge>
                           <span className="text-xs text-gray-500">Posted 2 days ago</span>
@@ -139,7 +139,7 @@ export default function FacultyOpportunitiesPage() {
                           <ul className="grid sm:grid-cols-2 gap-2">
                             {(opp.requirements || []).map((req, i) => (
                               <li key={i} className="flex items-start text-sm text-gray-400">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#E50914] mt-2 mr-2 shrink-0"></span>
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#00A8E1] mt-2 mr-2 shrink-0"></span>
                                 {req}
                               </li>
                             ))}
@@ -150,7 +150,7 @@ export default function FacultyOpportunitiesPage() {
                       </div>
                       
                       <div className="flex flex-col gap-3 min-w-[140px] border-t border-white/10 md:border-t-0 md:border-l md:border-white/10 pt-4 md:pt-0 md:pl-6 justify-center">
-                        <Button className="w-full bg-[#E50914] text-white hover:bg-[#b80710]">
+                        <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                           Apply Now
                         </Button>
                         <Button variant="outline" className="w-full border-white/20 text-gray-300 hover:text-white hover:bg-white/10">

@@ -48,7 +48,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               {artist.isVerified && (
                 <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md rounded-full px-3 py-1 flex items-center border border-white/10">
-                  <ShieldCheck className="h-4 w-4 text-[#E50914] mr-1.5" />
+                  <ShieldCheck className="h-4 w-4 text-[#00A8E1] mr-1.5" />
                   <span className="text-xs font-medium text-white">Verified</span>
                 </div>
               )}
@@ -62,7 +62,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
             
             <CardContent className="p-6">
               <div className="flex flex-col gap-3 mb-6">
-                <Button className="w-full bg-[#E50914] text-white hover:bg-[#b80710]">
+                <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                   <MessageSquare className="h-4 w-4 mr-2" /> Message Artist
                 </Button>
                 <div className="flex gap-2">
@@ -113,7 +113,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-400">Rating</span>
                     <div className="flex items-center text-white font-bold">
-                      <Star className="h-4 w-4 fill-[#E50914] text-[#E50914] mr-1" />
+                      <Star className="h-4 w-4 fill-[#00A8E1] text-[#00A8E1] mr-1" />
                       {artist.rating} ({artistReviews.length})
                     </div>
                   </div>
@@ -146,7 +146,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                 <div className="aspect-video bg-[#141414] border border-white/10 rounded-lg flex items-center justify-center relative overflow-hidden group cursor-pointer">
                   <img src={artist.profilePhoto} alt="Showreel Thumbnail" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity blur-sm scale-110" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="h-12 w-12 rounded-full bg-[#E50914]/90 text-white flex items-center justify-center shadow-[0_0_15px_rgba(229,9,20,0.5)] group-hover:scale-110 transition-transform">
+                    <div className="h-12 w-12 rounded-full bg-[#00A8E1]/90 text-white flex items-center justify-center shadow-[0_0_15px_rgba(0,168,225,0.5)] group-hover:scale-110 transition-transform">
                       <Play className="h-5 w-5 ml-1" fill="currentColor" />
                     </div>
                   </div>
@@ -158,7 +158,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                 <div className="aspect-video bg-[#141414] border border-white/10 rounded-lg flex items-center justify-center relative overflow-hidden group cursor-pointer">
                   <div className="absolute inset-0 bg-[#2a2a2a] opacity-50" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="h-12 w-12 rounded-full bg-white/10 text-white flex items-center justify-center backdrop-blur-sm group-hover:bg-[#E50914]/80 group-hover:scale-110 transition-all">
+                    <div className="h-12 w-12 rounded-full bg-white/10 text-white flex items-center justify-center backdrop-blur-sm group-hover:bg-[#00A8E1]/80 group-hover:scale-110 transition-all">
                       <Play className="h-5 w-5 ml-1" fill="currentColor" />
                     </div>
                   </div>
@@ -173,7 +173,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
               <div className="space-y-2">
                 {[1, 2].map(i => (
                   <div key={i} className="flex items-center gap-4 bg-[#141414] border border-white/5 rounded-lg p-3 hover:bg-white/5 transition-colors cursor-pointer">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/10 text-white shrink-0 hover:bg-[#E50914]">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/10 text-white shrink-0 hover:bg-[#00A8E1]">
                       <Play className="h-3 w-3 ml-0.5" fill="currentColor" />
                     </Button>
                     <div className="flex-1 min-w-0">
@@ -205,7 +205,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                           {[...Array(5)].map((_, i) => (
                             <Star 
                               key={i} 
-                              className={`h-3 w-3 ${i < review.rating ? "fill-[#E50914] text-[#E50914]" : "text-gray-600"}`} 
+                              className={`h-3 w-3 ${i < review.rating ? "fill-[#00A8E1] text-[#00A8E1]" : "text-gray-600"}`} 
                             />
                           ))}
                         </div>

@@ -14,7 +14,7 @@ interface ArtistCardProps {
 
 export default function ArtistCard({ artist, onShortlist, basePath = "/production" }: ArtistCardProps) {
   return (
-    <Card className="group overflow-hidden bg-[#1f1f1f] border-white/5 hover:border-white/20 transition-all duration-300 hover-red-glow">
+    <Card className="group overflow-hidden bg-[#1f1f1f] border-white/5 hover:border-white/20 transition-all duration-300 hover-blue-glow">
       <div className="relative aspect-[4/5] overflow-hidden">
         <img 
           src={artist.profilePhoto} 
@@ -33,7 +33,7 @@ export default function ArtistCard({ artist, onShortlist, basePath = "/productio
 
         <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
           {artist.isVerified && (
-            <div className="bg-[#E50914] text-white p-1 rounded-full shadow-[0_0_10px_rgba(229,9,20,0.5)]">
+            <div className="bg-[#00A8E1] text-white p-1 rounded-full shadow-[0_0_10px_rgba(0,168,225,0.5)]">
               <ShieldCheck className="w-4 h-4" />
             </div>
           )}
@@ -45,7 +45,7 @@ export default function ArtistCard({ artist, onShortlist, basePath = "/productio
               {artist.name}
             </h3>
             <div className="flex items-center gap-1 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg">
-              <Star className="w-3.5 h-3.5 fill-[#E50914] text-[#E50914]" />
+              <Star className="w-3.5 h-3.5 fill-[#00A8E1] text-[#00A8E1]" />
               <span className="text-sm font-medium text-white">{artist.rating.toFixed(1)}</span>
             </div>
           </div>

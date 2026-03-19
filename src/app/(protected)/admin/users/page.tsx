@@ -36,7 +36,7 @@ const DataTable = ({ data, showVerify = false }: { data: typeof allUsers, showVe
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Search users..."
-          className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+          className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -68,7 +68,7 @@ const DataTable = ({ data, showVerify = false }: { data: typeof allUsers, showVe
                 <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{user.email}</td>
                 <td className="px-4 py-3">
                   <Badge variant="outline" className={`text-[10px] h-5 border-none
-                    ${user.role === 'ARTIST' ? 'bg-[#E50914]/10 text-[#E50914]' : ''}
+                    ${user.role === 'ARTIST' ? 'bg-[#00A8E1]/10 text-[#00A8E1]' : ''}
                     ${user.role === 'SCHOOL' ? 'bg-blue-500/10 text-blue-400' : ''}
                     ${user.role === 'PRODUCTION' ? 'bg-purple-500/10 text-purple-400' : ''}
                     ${user.role === 'CLIENT' ? 'bg-green-500/10 text-green-400' : ''}
@@ -142,10 +142,10 @@ export default function AdminUsersPage() {
 
       <Tabs defaultValue="all" className="space-y-6">
         <TabsList className="bg-[#1f1f1f] border border-white/10">
-          <TabsTrigger value="all" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="all" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             All Users ({allUsers.length})
           </TabsTrigger>
-          <TabsTrigger value="pending" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="pending" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             Pending Verification ({pendingVerifications.length})
           </TabsTrigger>
         </TabsList>

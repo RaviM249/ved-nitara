@@ -19,7 +19,7 @@ const revenueData = [
 ];
 
 const roleData = [
-  { role: "Artists", count: mockArtists.length, color: "#E50914" },
+  { role: "Artists", count: mockArtists.length, color: "#00A8E1" },
   { role: "Schools", count: mockSchools.length, color: "#3b82f6" },
   { role: "Production", count: mockProductionHouses.length, color: "#8b5cf6" },
   { role: "Clients", count: 24, color: "#10b981" },
@@ -88,8 +88,8 @@ export default function AdminDashboard() {
             <AreaChart data={revenueData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#E50914" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#E50914" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#00A8E1" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#00A8E1" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
               <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}K`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ color: '#9ca3af', fontSize: 12 }} />
-              <Area type="monotone" dataKey="revenue" name="revenue" stroke="#E50914" strokeWidth={2} fill="url(#revGrad)" />
+              <Area type="monotone" dataKey="revenue" name="revenue" stroke="#00A8E1" strokeWidth={2} fill="url(#revGrad)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
               <XAxis type="number" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis dataKey="role" type="category" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" name="Users" fill="#E50914" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="count" name="Users" fill="#00A8E1" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -68,7 +68,7 @@ export default function ClientDashboard() {
       <section className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-white">Recent Bookings</h2>
-          <Link href="/client/bookings" className="text-sm text-[#E50914] hover:text-[#b80710]">View all</Link>
+          <Link href="/client/bookings" className="text-sm text-[#00A8E1] hover:text-[#0082B4]">View all</Link>
         </div>
         <div className="space-y-3">
           {recentBookings.map((booking) => (
@@ -102,7 +102,7 @@ export default function ClientDashboard() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Search by name or role..."
-                className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#E50914] w-full"
+                className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#00A8E1] w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -125,7 +125,7 @@ export default function ClientDashboard() {
               <div className="space-y-2">
                 {["Singer", "Dancer", "Actor", "Comedian", "DJ", "Anchor"].map((role) => (
                   <label key={role} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                     <span className="text-sm text-gray-300">{role}</span>
                   </label>
                 ))}

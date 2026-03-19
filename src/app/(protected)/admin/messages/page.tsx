@@ -42,10 +42,10 @@ export default function AdminMessagesPage() {
 
       <Tabs defaultValue="monitor" className="space-y-6">
         <TabsList className="bg-[#1f1f1f] border border-white/10">
-          <TabsTrigger value="monitor" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="monitor" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             Message Monitor
           </TabsTrigger>
-          <TabsTrigger value="announce" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="announce" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             Bulk Announcements
           </TabsTrigger>
         </TabsList>
@@ -56,7 +56,7 @@ export default function AdminMessagesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search messages by content or user ID..."
-              className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+              className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -120,7 +120,7 @@ export default function AdminMessagesPage() {
             <Card className="bg-[#1f1f1f] border-white/5">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Megaphone className="h-5 w-5 text-[#E50914]" />
+                  <Megaphone className="h-5 w-5 text-[#00A8E1]" />
                   Send Platform Announcement
                 </CardTitle>
               </CardHeader>
@@ -128,7 +128,7 @@ export default function AdminMessagesPage() {
                 <div className="space-y-2">
                   <Label className="text-gray-300">Target Audience</Label>
                   <select
-                    className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#E50914]"
+                    className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#00A8E1]"
                     value={announcement.target}
                     onChange={(e) => setAnnouncement({ ...announcement, target: e.target.value })}
                   >
@@ -143,7 +143,7 @@ export default function AdminMessagesPage() {
                   <Label className="text-gray-300">Subject</Label>
                   <Input
                     placeholder="e.g. Important Platform Update"
-                    className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+                    className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
                     value={announcement.title}
                     onChange={(e) => setAnnouncement({ ...announcement, title: e.target.value })}
                   />
@@ -152,7 +152,7 @@ export default function AdminMessagesPage() {
                   <Label className="text-gray-300">Message</Label>
                   <Textarea
                     placeholder="Write your announcement here..."
-                    className="bg-[#141414] border-white/10 text-white h-40 focus-visible:ring-[#E50914]"
+                    className="bg-[#141414] border-white/10 text-white h-40 focus-visible:ring-[#00A8E1]"
                     value={announcement.message}
                     onChange={(e) => setAnnouncement({ ...announcement, message: e.target.value })}
                   />
@@ -160,7 +160,7 @@ export default function AdminMessagesPage() {
                 <Button
                   onClick={handleSendAnnouncement}
                   disabled={isSending || !announcement.message.trim()}
-                  className="w-full bg-[#E50914] text-white hover:bg-[#b80710]"
+                  className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]"
                 >
                   <Send className="h-4 w-4 mr-2" />
                   {isSending ? "Sending..." : "Send Announcement"}

@@ -47,7 +47,7 @@ export default function ProductionDashboard() {
           <Button variant="outline" className="border-white/10 text-white hover:bg-white/5" asChild>
             <Link href="/production/inbox">Inbox</Link>
           </Button>
-          <Button asChild className="bg-[#E50914] text-white hover:bg-[#b80710]">
+          <Button asChild className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
             <Link href="/production/casting">
               <span className="mr-2 pb-0.5 text-lg leading-none">+</span> Post Casting Call
             </Link>
@@ -72,7 +72,7 @@ export default function ProductionDashboard() {
       </div>
 
       <div className="bg-[#141414] border border-white/5 rounded-xl p-6 mb-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-[#E50914]/10 to-transparent pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-[#00A8E1]/10 to-transparent pointer-events-none" />
         <h2 className="text-xl font-bold text-white mb-4">Artist Bank</h2>
         
         <div className="flex flex-col md:flex-row gap-8">
@@ -88,7 +88,7 @@ export default function ProductionDashboard() {
                 <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                   {["Actor", "Director", "Cinematographer", "Editor", "Writer", "Music Director", "VFX Artist"].map((role) => (
                     <label key={role} className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                      <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                       <span className="text-sm text-gray-300">{role}</span>
                     </label>
                   ))}
@@ -113,11 +113,11 @@ export default function ProductionDashboard() {
                 <h3 className="text-sm font-medium text-white mb-3">Attributes</h3>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                     <span className="text-sm text-gray-300">Verified Artists Only</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#E50914] focus:ring-[#E50914] focus:ring-offset-0" />
+                    <input type="checkbox" className="rounded border-white/20 bg-[#141414] text-[#00A8E1] focus:ring-[#00A8E1] focus:ring-offset-0" />
                     <span className="text-sm text-gray-300">Has Showreel</span>
                   </label>
                 </div>
@@ -132,7 +132,7 @@ export default function ProductionDashboard() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input 
                   placeholder="Search by name, role, or skills..." 
-                  className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#E50914] w-full"
+                  className="pl-9 bg-[#1f1f1f] border-white/10 text-white focus-visible:ring-[#00A8E1] w-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />

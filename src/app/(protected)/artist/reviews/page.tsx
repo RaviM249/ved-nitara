@@ -35,7 +35,7 @@ export default function ArtistReviewsSubscriptionPage() {
             <CardHeader className="border-b border-white/10 pb-4 flex flex-row justify-between items-center">
               <CardTitle className="text-white">Client Reviews</CardTitle>
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-[#E50914] text-[#E50914]" />
+                <Star className="h-5 w-5 fill-[#00A8E1] text-[#00A8E1]" />
                 <span className="text-xl font-bold text-white">{avgRating}</span>
                 <span className="text-gray-400 text-sm">({artistReviews.length} reviews)</span>
               </div>
@@ -62,7 +62,7 @@ export default function ArtistReviewsSubscriptionPage() {
                           {[...Array(5)].map((_, i) => (
                             <Star 
                               key={i} 
-                              className={`h-4 w-4 ${i < review.rating ? "fill-[#E50914] text-[#E50914]" : "text-gray-600"}`} 
+                              className={`h-4 w-4 ${i < review.rating ? "fill-[#00A8E1] text-[#00A8E1]" : "text-gray-600"}`} 
                             />
                           ))}
                         </div>
@@ -84,9 +84,9 @@ export default function ArtistReviewsSubscriptionPage() {
 
         {/* Right Column - Subscription & Billing */}
         <div className="space-y-6">
-          <Card className={`border ${isSubscribed ? 'bg-gradient-to-br from-[#1f1f1f] to-[#141414] border-[#E50914]/30' : 'bg-[#1f1f1f] border-white/5'} relative overflow-hidden`}>
+          <Card className={`border ${isSubscribed ? 'bg-gradient-to-br from-[#1f1f1f] to-[#141414] border-[#00A8E1]/30' : 'bg-[#1f1f1f] border-white/5'} relative overflow-hidden`}>
             {isSubscribed && (
-              <div className="absolute -top-10 -right-10 h-32 w-32 bg-[#E50914]/10 blur-2xl rounded-full pointer-events-none"></div>
+              <div className="absolute -top-10 -right-10 h-32 w-32 bg-[#00A8E1]/10 blur-2xl rounded-full pointer-events-none"></div>
             )}
             
             <CardHeader className="pb-4">
@@ -106,13 +106,13 @@ export default function ArtistReviewsSubscriptionPage() {
                   </div>
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center text-sm text-gray-300">
-                      <ShieldCheck className="h-4 w-4 text-[#E50914] mr-2" /> Verified Profile
+                      <ShieldCheck className="h-4 w-4 text-[#00A8E1] mr-2" /> Verified Profile
                     </div>
                     <div className="flex items-center text-sm text-gray-300">
-                      <Star className="h-4 w-4 text-[#E50914] mr-2" /> Priority in Search
+                      <Star className="h-4 w-4 text-[#00A8E1] mr-2" /> Priority in Search
                     </div>
                     <div className="flex items-center text-sm text-gray-300">
-                      <FileText className="h-4 w-4 text-[#E50914] mr-2" /> Unlimited Applications
+                      <FileText className="h-4 w-4 text-[#00A8E1] mr-2" /> Unlimited Applications
                     </div>
                   </div>
                   <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5">
@@ -128,7 +128,7 @@ export default function ArtistReviewsSubscriptionPage() {
                     <p className="text-gray-300 mb-4 text-sm">Upgrade to unlock messaging, applications, and verified status.</p>
                     <div className="text-3xl font-display text-white mb-1">₹99<span className="text-sm font-sans text-gray-500">/mo</span></div>
                   </div>
-                  <Button asChild className="w-full bg-[#E50914] text-white hover:bg-[#b80710] shadow-[0_0_15px_rgba(229,9,20,0.3)]">
+                  <Button asChild className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4] shadow-[0_0_15px_rgba(0,168,225,0.3)]">
                     <Link href="/pricing">Upgrade to Pro</Link>
                   </Button>
                 </>
@@ -147,7 +147,7 @@ export default function ArtistReviewsSubscriptionPage() {
                     <div key={payment.id} className="flex justify-between items-center text-sm">
                       <div>
                         <p className="text-white font-medium">{payment.plan} Plan</p>
-                        <p className="text-gray-500 text-xs">{new Date(payment.createdAt).toLocaleDateString()}</p>
+                        <p className="text-gray-500 text-xs">{new Date(payment.date).toLocaleDateString()}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-gray-300">₹{payment.amount}</span>

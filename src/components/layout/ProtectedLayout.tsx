@@ -32,7 +32,7 @@ export default function ProtectedLayout({
   if (isChecking) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#141414]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E50914]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#00A8E1]" />
       </div>
     );
   }

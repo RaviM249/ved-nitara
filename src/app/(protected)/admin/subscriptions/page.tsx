@@ -30,7 +30,7 @@ const SearchableTable = ({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search..."
-            className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]"
+            className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -127,7 +127,7 @@ export default function AdminSubscriptionsPage() {
     {
       key: "role", label: "Role", render: (v: string) => (
         <Badge variant="outline" className={`text-[10px] h-5 border-none
-          ${v === 'ARTIST' ? 'bg-[#E50914]/10 text-[#E50914]' : ''}
+          ${v === 'ARTIST' ? 'bg-[#00A8E1]/10 text-[#00A8E1]' : ''}
           ${v === 'SCHOOL' ? 'bg-blue-500/10 text-blue-400' : ''}
           ${v === 'PRODUCTION' ? 'bg-purple-500/10 text-purple-400' : ''}
           ${v === 'CLIENT' ? 'bg-green-500/10 text-green-400' : ''}
@@ -159,13 +159,13 @@ export default function AdminSubscriptionsPage() {
 
       <Tabs defaultValue="subscriptions" className="space-y-6">
         <TabsList className="bg-[#1f1f1f] border border-white/10 flex-wrap h-auto">
-          <TabsTrigger value="subscriptions" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="subscriptions" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             Subscriptions
           </TabsTrigger>
-          <TabsTrigger value="payments" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="payments" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             Payments
           </TabsTrigger>
-          <TabsTrigger value="bookings" className="data-[state=active]:bg-[#E50914] data-[state=active]:text-white text-gray-400">
+          <TabsTrigger value="bookings" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white text-gray-400">
             Bookings
           </TabsTrigger>
         </TabsList>

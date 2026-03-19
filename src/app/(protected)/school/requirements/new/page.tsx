@@ -113,7 +113,7 @@ export default function PostRequirementPage() {
                     <FormItem>
                       <FormLabel className="text-gray-300">Role Needed</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Guest Lecturer" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" {...field} />
+                        <Input placeholder="e.g. Guest Lecturer" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" {...field} />
                       </FormControl>
                       <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
@@ -127,7 +127,7 @@ export default function PostRequirementPage() {
                     <FormItem>
                       <FormLabel className="text-gray-300">Subject / Discipline</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Method Acting, Voice Mod" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" {...field} />
+                        <Input placeholder="e.g. Method Acting, Voice Mod" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" {...field} />
                       </FormControl>
                       <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
@@ -144,7 +144,7 @@ export default function PostRequirementPage() {
                       <FormLabel className="text-gray-300">Duration</FormLabel>
                       <FormControl>
                         <select 
-                          className="w-full h-10 px-3 py-2 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#E50914] focus:border-[#E50914]"
+                          className="w-full h-10 px-3 py-2 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#00A8E1] focus:border-[#00A8E1]"
                           {...field}
                         >
                           <option value="Short-term">Short-term (1-4 weeks)</option>
@@ -164,7 +164,7 @@ export default function PostRequirementPage() {
                     <FormItem>
                       <FormLabel className="text-gray-300">City</FormLabel>
                       <FormControl>
-                        <Input placeholder="Mumbai" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" {...field} />
+                        <Input placeholder="Mumbai" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" {...field} />
                       </FormControl>
                       <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
@@ -192,7 +192,7 @@ export default function PostRequirementPage() {
                               ) : (
                                 <span>Pick a date</span>
                               )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50 text-[#E50914]" />
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50 text-[#00A8E1]" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
@@ -223,7 +223,7 @@ export default function PostRequirementPage() {
                     <FormItem>
                       <FormLabel className="text-gray-300">Minimum Budget (₹)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="50000" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" {...field} />
+                        <Input type="number" placeholder="50000" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" {...field} />
                       </FormControl>
                       <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
@@ -237,7 +237,7 @@ export default function PostRequirementPage() {
                     <FormItem>
                       <FormLabel className="text-gray-300">Maximum Budget (₹)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="100000" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" {...field} />
+                        <Input type="number" placeholder="100000" className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" {...field} />
                       </FormControl>
                       <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
@@ -254,7 +254,7 @@ export default function PostRequirementPage() {
                     <FormControl>
                       <Textarea 
                         placeholder="Provide details about the role, expectations, and curriculum..." 
-                        className="bg-[#141414] border-white/10 text-white h-32 focus-visible:ring-[#E50914]" 
+                        className="bg-[#141414] border-white/10 text-white h-32 focus-visible:ring-[#00A8E1]" 
                         {...field} 
                       />
                     </FormControl>
@@ -270,10 +270,10 @@ export default function PostRequirementPage() {
                     value={newReq} 
                     onChange={(e) => setNewReq(e.target.value)} 
                     placeholder="e.g. 5+ years of industry experience" 
-                    className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" 
+                    className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addRequirement())}
                   />
-                  <Button type="button" onClick={addRequirement} className="bg-[#E50914] text-white hover:bg-[#b80710]">
+                  <Button type="button" onClick={addRequirement} className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
@@ -282,7 +282,7 @@ export default function PostRequirementPage() {
                   <ul className="grid sm:grid-cols-2 gap-2 mt-4">
                     {reqItems.map((req, i) => (
                       <li key={i} className="flex items-start text-sm text-gray-300 bg-[#141414] p-3 rounded-lg border border-white/5 group">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#E50914] mt-1.5 mr-2 shrink-0"></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8E1] mt-1.5 mr-2 shrink-0"></span>
                         <span className="flex-1">{req}</span>
                         <button type="button" onClick={() => removeRequirement(req)} className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                           <X className="h-4 w-4" />
@@ -303,7 +303,7 @@ export default function PostRequirementPage() {
                 <Button 
                   type="submit" 
                   disabled={isLoading}
-                  className="bg-[#E50914] hover:bg-[#b80710] text-white px-8"
+                  className="bg-[#00A8E1] hover:bg-[#0082B4] text-white px-8"
                 >
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Post Requirement

@@ -73,10 +73,10 @@ export default function MobileBottomNav() {
               key={tab.name}
               href={tab.href}
               className={`flex flex-col items-center justify-center pt-2 pb-1 ${
-                isActive ? "text-[#E50914]" : "text-gray-500 hover:text-gray-300"
+                isActive ? "text-[#00A8E1]" : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              <tab.icon className={`h-6 w-6 mb-1 ${isActive ? "drop-shadow-[0_0_8px_rgba(229,9,20,0.5)]" : ""}`} />
+              <tab.icon className={`h-6 w-6 mb-1 ${isActive ? "drop-shadow-[0_0_8px_rgba(0,168,225,0.5)]" : ""}`} />
               <span className="text-[10px] font-medium leading-none">{tab.name}</span>
             </Link>
           )

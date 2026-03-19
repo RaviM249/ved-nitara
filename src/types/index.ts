@@ -34,6 +34,7 @@ export interface Artist {
   joinedDate: string;
   experience: string;
   availability: boolean;
+  hourlyRate?: number;
 }
 
 // School types

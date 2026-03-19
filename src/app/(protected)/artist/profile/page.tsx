@@ -75,7 +75,7 @@ export default function ArtistProfilePage() {
             <Button variant="outline" onClick={() => setIsEditing(false)} className="border-white/10 text-white">
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={isLoading} className="bg-[#E50914] text-white hover:bg-[#b80710]">
+            <Button onClick={handleSave} disabled={isLoading} className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
               Save Changes
             </Button>
@@ -152,7 +152,7 @@ export default function ArtistProfilePage() {
                         id="name" 
                         value={formData.name} 
                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                        className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" 
+                        className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
                       />
                     </div>
                     <div className="space-y-2">
@@ -161,7 +161,7 @@ export default function ArtistProfilePage() {
                         id="city" 
                         value={formData.city} 
                         onChange={(e) => setFormData({...formData, city: e.target.value})} 
-                        className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" 
+                        className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
                       />
                     </div>
                   </div>
@@ -171,7 +171,7 @@ export default function ArtistProfilePage() {
                       id="bio" 
                       value={formData.bio} 
                       onChange={(e) => setFormData({...formData, bio: e.target.value})} 
-                      className="bg-[#141414] border-white/10 text-white h-32 focus-visible:ring-[#E50914]" 
+                      className="bg-[#141414] border-white/10 text-white h-32 focus-visible:ring-[#00A8E1]" 
                     />
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function ArtistProfilePage() {
                       value={newSkill} 
                       onChange={(e) => setNewSkill(e.target.value)} 
                       placeholder="Add a new skill (e.g. Method Acting)" 
-                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#E50914]" 
+                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                     />
                     <Button type="button" onClick={addSkill} className="bg-white/10 text-white hover:bg-white/20">
@@ -231,7 +231,7 @@ export default function ArtistProfilePage() {
               <CardTitle className="text-white text-lg flex justify-between items-center">
                 <span>Showreel & Portfolio</span>
                 {isEditing && (
-                  <Button variant="outline" size="sm" className="border-[#E50914]/50 text-[#E50914] hover:bg-[#E50914]/10">
+                  <Button variant="outline" size="sm" className="border-[#00A8E1]/50 text-[#00A8E1] hover:bg-[#00A8E1]/10">
                     <Plus className="h-4 w-4 mr-2" /> Add Link
                   </Button>
                 )}
@@ -241,7 +241,7 @@ export default function ArtistProfilePage() {
               <div className="aspect-video bg-[#141414] border border-white/10 rounded-lg flex items-center justify-center relative overflow-hidden group cursor-pointer mb-4">
                 <img src="https://images.unsplash.com/photo-1485001254625-f8db89b21a81?q=80&w=2674&auto=format&fit=crop" alt="Showreel Thumbnail" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-16 w-16 rounded-full bg-[#E50914]/80 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_20px_rgba(229,9,20,0.5)] group-hover:scale-110 transition-transform">
+                  <div className="h-16 w-16 rounded-full bg-[#00A8E1]/80 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_20px_rgba(0,168,225,0.5)] group-hover:scale-110 transition-transform">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   </div>
                 </div>

@@ -43,7 +43,7 @@ export default function ArtistDashboard() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 {stat.name}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-[#E50914]" />
+              <stat.icon className="h-4 w-4 text-[#00A8E1]" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
@@ -61,7 +61,7 @@ export default function ArtistDashboard() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Recommended Opportunities</h2>
-              <Link href="/artist/faculty" className="text-sm text-[#E50914] hover:text-[#b80710] font-medium">
+              <Link href="/artist/faculty" className="text-sm text-[#00A8E1] hover:text-[#0082B4] font-medium">
                 View all
               </Link>
             </div>
@@ -74,7 +74,7 @@ export default function ArtistDashboard() {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-bold text-lg text-white">{opp.roleNeeded}</h3>
-                          <Badge variant="outline" className="border-[#E50914]/30 text-[#E50914] bg-[#E50914]/10">
+                          <Badge variant="outline" className="border-[#00A8E1]/30 text-[#00A8E1] bg-[#00A8E1]/10">
                             {opp.duration}
                           </Badge>
                         </div>
@@ -96,7 +96,7 @@ export default function ArtistDashboard() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Recent Applications & Bookings</h2>
-              <Link href="/artist/bookings" className="text-sm text-[#E50914] hover:text-[#b80710] font-medium">
+              <Link href="/artist/bookings" className="text-sm text-[#00A8E1] hover:text-[#0082B4] font-medium">
                 View all
               </Link>
             </div>
@@ -127,9 +127,9 @@ export default function ArtistDashboard() {
 
         {/* Right Column - Profile Completion & Subs */}
         <div className="space-y-6">
-          <Card className="bg-[#141414] border-[#E50914]/20 relative overflow-hidden">
+          <Card className="bg-[#141414] border-[#00A8E1]/20 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Star className="h-24 w-24 text-[#E50914]" />
+              <Star className="h-24 w-24 text-[#00A8E1]" />
             </div>
             <CardHeader>
               <CardTitle className="text-white text-lg">Profile Status</CardTitle>
@@ -137,10 +137,10 @@ export default function ArtistDashboard() {
             <CardContent>
               <div className="mb-2 flex justify-between text-sm">
                 <span className="text-gray-300">Completion</span>
-                <span className="text-[#E50914] font-bold">85%</span>
+                <span className="text-[#00A8E1] font-bold">85%</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mb-6">
-                <div className="bg-[#E50914] h-2 rounded-full shadow-[0_0_10px_#E50914]" style={{ width: '85%' }}></div>
+                <div className="bg-[#00A8E1] h-2 rounded-full shadow-[0_0_10px_#00A8E1]" style={{ width: '85%' }}></div>
               </div>
               
               <ul className="space-y-3 text-sm mb-6">
@@ -165,11 +165,11 @@ export default function ArtistDashboard() {
           </Card>
 
           {!isSubscribed && (
-            <div className="bg-gradient-to-br from-[#1f1f1f] to-[#141414] border border-[#E50914]/30 rounded-xl p-6 relative overflow-hidden">
-              <div className="absolute -bottom-10 -right-10 h-32 w-32 bg-[#E50914]/20 blur-2xl rounded-full pointer-events-none"></div>
+            <div className="bg-gradient-to-br from-[#1f1f1f] to-[#141414] border border-[#00A8E1]/30 rounded-xl p-6 relative overflow-hidden">
+              <div className="absolute -bottom-10 -right-10 h-32 w-32 bg-[#00A8E1]/20 blur-2xl rounded-full pointer-events-none"></div>
               <h3 className="font-bold text-white text-lg mb-2">Upgrade to Pro</h3>
               <p className="text-gray-400 text-sm mb-4">Unlock faculty opportunities, unlimited applications, and direct messaging.</p>
-              <Button asChild className="w-full bg-[#E50914] text-white hover:bg-[#b80710] shadow-[0_0_15px_rgba(229,9,20,0.3)]">
+              <Button asChild className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4] shadow-[0_0_15px_rgba(0,168,225,0.3)]">
                 <Link href="/pricing">View Plans</Link>
               </Button>
             </div>
