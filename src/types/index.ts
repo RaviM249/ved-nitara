@@ -76,6 +76,8 @@ export interface FacultyRequirement {
   city: string;
   description: string;
   postedDate: string;
+  startDate?: string;
+  requirements?: string[];
   isActive: boolean;
 }
 
@@ -126,6 +128,7 @@ export interface Review {
   revieweeId: string;
   reviewerName: string;
   reviewerAvatar: string;
+  reviewerRole?: string;
   rating: number;
   comment: string;
   date: string;

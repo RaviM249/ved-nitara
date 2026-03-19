@@ -5,7 +5,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import { mockMessages } from "@/lib/mockData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, FileImage, Settings, Phone, Video } from "lucide-react";
+import { Search, Send, FileImage, Settings, Phone, Video, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ArtistInboxPage() {
@@ -28,13 +28,13 @@ export default function ArtistInboxPage() {
                     : partnerId.startsWith('c') ? `Client ${partnerId.replace('c','')}` 
                     : `User ${partnerId}`,
         messages: [],
-        unread: msg.receiverId === currentUserId && !msg.read
+        unread: msg.receiverId === currentUserId && !msg.isRead
       });
     }
     
     const conv = conversationsMap.get(partnerId);
     conv.messages.push(msg);
-    if (msg.receiverId === currentUserId && !msg.read) {
+    if (msg.receiverId === currentUserId && !msg.isRead) {
       conv.unread = true;
     }
   });

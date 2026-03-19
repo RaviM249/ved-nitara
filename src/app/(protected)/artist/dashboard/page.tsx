@@ -105,7 +105,7 @@ export default function ArtistDashboard() {
                 <div key={b.id} className="bg-[#1f1f1f] border border-white/5 rounded-lg p-4 flex justify-between items-center">
                   <div>
                     <h4 className="font-medium text-white">{b.eventType}</h4>
-                    <p className="text-sm text-gray-400">{b.eventDate} • {b.eventCity}</p>
+                    <p className="text-sm text-gray-400">{b.eventDate} • {b.city}</p>
                   </div>
                   <Badge className={`
                     ${b.status === 'CONFIRMED' ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20' : ''}

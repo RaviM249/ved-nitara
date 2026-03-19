@@ -14,7 +14,7 @@ export default function ArtistReviewsSubscriptionPage() {
   const { isSubscribed } = useAuthStore();
   
   // Mock data for demo artist 'a1'
-  const artistReviews = mockReviews.filter(r => r.artistId === 'a1');
+  const artistReviews = mockReviews.filter(r => r.revieweeId === 'a1');
   const artistPayments = mockPayments.filter(p => p.userId === 'a1');
 
   const avgRating = artistReviews.length > 0 
@@ -56,7 +56,7 @@ export default function ArtistReviewsSubscriptionPage() {
                               <Badge variant="outline" className="text-[10px] h-5 border-purple-500/30 text-purple-400">Production</Badge>
                             )}
                           </h4>
-                          <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
+                          <span className="text-xs text-gray-500">{new Date(review.date).toLocaleDateString()}</span>
                         </div>
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (

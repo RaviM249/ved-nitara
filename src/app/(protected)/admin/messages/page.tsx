@@ -90,8 +90,8 @@ export default function AdminMessagesPage() {
                       {new Date(msg.timestamp).toLocaleString()}
                     </td>
                     <td className="px-4 py-3">
-                      <Badge className={`text-[10px] ${msg.read ? 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/20' : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/20'}`}>
-                        {msg.read ? 'Read' : 'Unread'}
+                      <Badge className={`text-[10px] ${msg.isRead ? 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/20' : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/20'}`}>
+                        {msg.isRead ? 'Read' : 'Unread'}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-right">

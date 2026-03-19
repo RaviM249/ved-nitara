@@ -5,7 +5,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import { mockMessages } from "@/lib/mockData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, FileImage, Settings, Briefcase, FileText } from "lucide-react";
+import { Search, Send, FileImage, Settings, Briefcase, FileText, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function SchoolInboxPage() {
@@ -25,13 +25,13 @@ export default function SchoolInboxPage() {
         partnerName: partnerId.startsWith('a') ? `Artist ${partnerId.replace('a','')}` 
                     : `User ${partnerId}`,
         messages: [],
-        unread: msg.receiverId === currentUserId && !msg.read
+        unread: msg.receiverId === currentUserId && !msg.isRead
       });
     }
     
     const conv = conversationsMap.get(partnerId);
     conv.messages.push(msg);
-    if (msg.receiverId === currentUserId && !msg.read) {
+    if (msg.receiverId === currentUserId && !msg.isRead) {
       conv.unread = true;
     }
   });

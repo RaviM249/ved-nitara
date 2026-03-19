@@ -21,7 +21,7 @@ export default function FacultyOpportunitiesPage() {
       return false;
     }
     // Added simplified mock filtering
-    return opp.status === 'OPEN';
+    return opp.isActive;
   });
 
   return (
@@ -126,7 +126,7 @@ export default function FacultyOpportunitiesPage() {
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-2 opacity-70" />
-                            Starts {new Date(opp.startDate).toLocaleDateString()}
+                            Starts {new Date(opp.startDate || opp.postedDate).toLocaleDateString()}
                           </div>
                           <div className="flex items-center">
                             <Briefcase className="h-4 w-4 mr-2 opacity-70" />
@@ -137,7 +137,7 @@ export default function FacultyOpportunitiesPage() {
                         <div className="space-y-2 mb-6">
                           <h4 className="text-sm font-semibold text-white">Requirements:</h4>
                           <ul className="grid sm:grid-cols-2 gap-2">
-                            {opp.requirements.map((req, i) => (
+                            {(opp.requirements || []).map((req, i) => (
                               <li key={i} className="flex items-start text-sm text-gray-400">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#E50914] mt-2 mr-2 shrink-0"></span>
                                 {req}

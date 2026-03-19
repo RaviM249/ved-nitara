@@ -100,10 +100,8 @@ const DataTable = ({ data, showVerify = false }: { data: typeof allUsers, showVe
                       </Button>
                     )}
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
+                      <DropdownMenuTrigger className="inline-flex flex-shrink-0 items-center justify-center rounded-md hover:bg-white/10 h-8 w-8 text-gray-400 hover:text-white focus:outline-none">
+                        <MoreVertical className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-[#1f1f1f] border-white/10 text-white">
                         <DropdownMenuItem className="focus:bg-white/10 cursor-pointer" onClick={() => toast.info('View profile clicked')}>

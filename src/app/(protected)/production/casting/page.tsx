@@ -80,10 +80,8 @@ export default function CastingCallsPage() {
           <p className="text-gray-400 text-sm">Manage your open casting requirements and review applicants.</p>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#E50914] text-white hover:bg-[#b80710]">
-              <Plus className="h-4 w-4 mr-2" /> Post Casting Call
-            </Button>
+          <DialogTrigger className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors bg-[#E50914] text-white hover:bg-[#b80710] h-9 px-4 py-2">
+              <Plus className="h-4 w-4 mr-2 pointer-events-none" /> Post Casting Call
           </DialogTrigger>
           <DialogContent className="bg-[#1f1f1f] border-white/10 text-white max-w-lg">
             <DialogHeader>
@@ -203,10 +201,8 @@ export default function CastingCallsPage() {
                     Review Applicants
                   </Button>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5">
-                        <MoreVertical className="h-5 w-5" />
-                      </Button>
+                    <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md h-10 w-10 text-gray-400 hover:text-white hover:bg-white/5 focus:outline-none">
+                        <MoreVertical className="h-5 w-5 pointer-events-none" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 bg-[#1f1f1f] border-white/10 text-white">
                       <DropdownMenuItem className="focus:bg-white/10 cursor-pointer">

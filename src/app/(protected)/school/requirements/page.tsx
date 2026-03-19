@@ -41,10 +41,9 @@ export default function SchoolRequirementsPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-xl font-bold text-white">{req.roleNeeded}</h3>
                     <Badge variant="outline" className={`
-                      ${req.status === 'OPEN' ? 'border-green-500/30 text-green-500 bg-green-500/10' : ''}
-                      ${req.status === 'CLOSED' ? 'border-red-500/30 text-red-500 bg-red-500/10' : ''}
+                      ${req.isActive ? 'border-green-500/30 text-green-500 bg-green-500/10' : 'border-red-500/30 text-red-500 bg-red-500/10'}
                     `}>
-                      {req.status}
+                      {req.isActive ? 'OPEN' : 'CLOSED'}
                     </Badge>
                   </div>
                   
@@ -74,10 +73,8 @@ export default function SchoolRequirementsPage() {
                   </div>
                   
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5">
-                        <MoreVertical className="h-5 w-5" />
-                      </Button>
+                    <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md h-10 w-10 text-gray-400 hover:text-white hover:bg-white/5 focus:outline-none">
+                        <MoreVertical className="h-5 w-5 pointer-events-none" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 bg-[#1f1f1f] border-white/10 text-white">
                       <DropdownMenuItem className="focus:bg-white/10 cursor-pointer">

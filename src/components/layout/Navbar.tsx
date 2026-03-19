@@ -11,6 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
 
@@ -99,39 +100,41 @@ export default function Navbar() {
             </Button>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <DropdownMenuTrigger className="focus:outline-none relative h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+
                   <UserCircle className="h-8 w-8 text-gray-300" />
-                </Button>
+
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none text-white">{user?.name}</p>
-                    <p className="text-xs leading-none text-gray-400">
-                      {user?.email}
-                    </p>
-                    <div className="mt-1 w-fit rounded-full bg-[#E50914]/20 px-2 py-0.5 text-[10px] font-medium text-[#E50914] uppercase">
-                      {activeRole}
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none text-white">{user?.name}</p>
+                      <p className="text-xs leading-none text-gray-400">
+                        {user?.email}
+                      </p>
+                      <div className="mt-1 w-fit rounded-full bg-[#E50914]/20 px-2 py-0.5 text-[10px] font-medium text-[#E50914] uppercase">
+                        {activeRole}
+                      </div>
                     </div>
-                  </div>
-                </DropdownMenuLabel>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-white/10" />
-                <DropdownMenuItem asChild>
-                  <Link href={`${basePath}/profile`} className="cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
+                <DropdownMenuItem className="p-0">
+                  <Link href={`${basePath}/profile`} className="flex w-full items-center px-1.5 py-1 cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
                     <UserCircle className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={`${basePath}/dashboard`} className="cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
+                <DropdownMenuItem className="p-0">
+                  <Link href={`${basePath}/dashboard`} className="flex w-full items-center px-1.5 py-1 cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
                 {activeRole === 'ARTIST' && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/artist/reviews" className="cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
+                  <DropdownMenuItem className="p-0">
+                    <Link href="/artist/reviews" className="flex w-full items-center px-1.5 py-1 cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Reviews & Billing</span>
                     </Link>
