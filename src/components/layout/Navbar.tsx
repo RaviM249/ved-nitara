@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
-import { Bell, Menu, UserCircle, LogOut, LayoutDashboard, Settings } from "lucide-react";
+import { Bell, Menu, UserCircle, LogOut, LayoutDashboard, Settings, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,7 +26,7 @@ export default function Navbar() {
 
   // Get base path based on role
   const getBasePath = () => {
-    switch(activeRole) {
+    switch (activeRole) {
       case "ARTIST": return "/artist";
       case "SCHOOL": return "/school";
       case "PRODUCTION": return "/production";
@@ -41,53 +41,58 @@ export default function Navbar() {
     <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href={isLoggedIn ? `${basePath}/dashboard` : "/"} className="flex items-center gap-2">
-          <span className="font-display text-2xl tracking-wider text-[#00A8E1] hover-blue-glow">
+          <img
+            src="https://res.cloudinary.com/entermock/image/upload/v1773993626/Untitled_1_1_vzfdvr.png"
+            alt="Ved Nitara"
+            className="h-10 w-auto"
+          />
+          <span className="font-display text-xl md:text-2xl tracking-widest text-blue-50 font-bold ml-2 select-none">
             VED NITARA
           </span>
         </Link>
 
         {isLoggedIn ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-8">
             <div className="hidden items-center gap-4 md:flex">
-              <Link href={`${basePath}/dashboard`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+              <Link href={`${basePath}/dashboard`} className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                 Dashboard
               </Link>
               {activeRole === "PRODUCTION" && (
                 <>
-                  <Link href="/production/casting" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/production/casting" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Casting Calls
                   </Link>
-                  <Link href="/production/inbox" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/production/inbox" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Messages
                   </Link>
                 </>
               )}
               {activeRole === "ARTIST" && (
                 <>
-                  <Link href="/artist/faculty" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/artist/faculty" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Opportunities
                   </Link>
-                  <Link href="/artist/bookings" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/artist/bookings" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Bookings
                   </Link>
                 </>
               )}
               {activeRole === "SCHOOL" && (
                 <>
-                  <Link href="/school/requirements" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/school/requirements" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Requirements
                   </Link>
-                  <Link href="/school/browse-faculty" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/school/browse-faculty" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Browse Faculty
                   </Link>
                 </>
               )}
               {activeRole === "CLIENT" && (
                 <>
-                  <Link href="/client/bookings" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/client/bookings" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Bookings
                   </Link>
-                  <Link href="/client/inbox" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                  <Link href="/client/inbox" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Messages
                   </Link>
                 </>
@@ -102,7 +107,7 @@ export default function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none relative h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
 
-                  <UserCircle className="h-8 w-8 text-gray-300" />
+                <UserCircle className="h-8 w-8 text-gray-300" />
 
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
@@ -153,15 +158,32 @@ export default function Navbar() {
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium text-gray-300 hover:text-white">
-              Log in
-            </Link>
-            <Link href="/pricing" tabIndex={-1}>
-              <Button className="bg-[#00A8E1] hover:bg-[#0082B4] text-white">
-                Subscribe
-              </Button>
-            </Link>
+          <div className="flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-6">
+              <Link href="/artist-bank" className="group flex items-center gap-1 font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                Find Talent <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
+              </Link>
+              <Link href="/jobs" className="group flex items-center gap-1 font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                Find Jobs <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
+              </Link>
+              <Link href="/pricing" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                Pricing
+              </Link>
+              <Link href="/about" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                Resources
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-8">
+              <Link href="/login" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] px-3 py-2 rounded-md hover:bg-white/5 transition-all">
+                Log in
+              </Link>
+              <Link href="/register">
+                <Button className="bg-[#00A8E1] hover:bg-[#0082B4] text-white px-6 font-bold">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>
