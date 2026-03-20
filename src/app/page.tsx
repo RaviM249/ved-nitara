@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { PlayCircle, ShieldCheck, Stars, Users, Film, Camera, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
+  const { scrollYProgress } = useScroll();
+  
+  // Transform scroll progress (0 to 0.4 of page) to overlay opacity (1 to 0.15)
+  // As the user scrolls down, the image becomes significantly clearer/revealed.
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.15]);
 
   useEffect(() => {
     setMounted(true);
@@ -23,18 +28,25 @@ export default function LandingPage() {
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
           style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/v1774014712/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5.png')" }}
         />
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/30 to-black/20" />
-        <div className="absolute inset-0 z-0 bg-black/10" />
+        
+        {/* Dynamic Darkening Overlays - reveals background as user scrolls down */}
+        <motion.div 
+          style={{ opacity: overlayOpacity }}
+          className="absolute inset-0 z-0 pointer-events-none"
+        >
+          <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/70 to-[#0F171E]/40" />
+          <div className="absolute inset-0 z-0 bg-black/40" />
+        </motion.div>
 
         {/* HERO SECTION */}
-        <section className="relative h-[85vh] w-full flex items-center justify-center overflow-hidden">
+        <section className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden py-12 md:py-20 lg:py-0">
 
-          <div className="relative z-10 flex flex-col items-center justify-center px-4 text-center max-w-5xl mx-auto pt-35">
+          <div className="relative z-10 flex flex-col items-center justify-center px-4 text-center max-w-5xl mx-auto lg:pt-35">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="mb-10 rounded-full bg-white/20 px-7 py-1.5 backdrop-blur-md border border-white/20"
+              className="mb-6 lg:mb-10 rounded-full bg-white/20 px-7 py-1.5 backdrop-blur-md border border-white/20"
             >
               <span className="text-sm font-semibold text-white tracking-widest uppercase">The Future of Indian Entertainment</span>
             </motion.div>
@@ -43,17 +55,17 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="font-display text-5xl sm:text-7xl md:text-8xl tracking-wider text-white mb-6 leading-[0.9]"
+              className="font-display text-4xl sm:text-6xl lg:text-8xl tracking-wider text-white mb-4 lg:mb-6 leading-[0.9] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
             >
               ONE APP. ONE SUBSCRIPTION.<br />
-              <span className="text-[#00A8E1] drop-shadow-[0_0_20px_rgba(0,168,225,0.8)]">INFINITE OPPORTUNITIES.</span>
+              <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">INFINITE OPPORTUNITIES.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
-              className="text-lg md:text-xl text-gray-300 max-w-2xl mb-10 font-medium"
+              className="text-base md:text-lg lg:text-xl text-white max-w-2xl mb-6 lg:mb-10 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
             >
               Connect, collaborate, and create with the largest network of Artists, Entertainment Schools, Production Houses, and Event Organizers in India.
             </motion.p>
