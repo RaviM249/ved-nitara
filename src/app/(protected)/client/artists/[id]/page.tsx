@@ -14,7 +14,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
   const artistId = resolvedParams.id;
   
   const artist = mockArtists.find(a => a.id === artistId);
-  const artistReviews = mockReviews.filter(r => r.artistId === artistId);
+  const artistReviews = mockReviews.filter(r => r.revieweeId === artistId);
 
   if (!artist) {
     return (
@@ -199,7 +199,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h4 className="font-bold text-white text-sm">{review.reviewerName}</h4>
-                          <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
+                          <span className="text-xs text-gray-500">{new Date(review.date).toLocaleDateString()}</span>
                         </div>
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (

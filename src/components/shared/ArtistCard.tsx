@@ -10,9 +10,10 @@ interface ArtistCardProps {
   artist: Artist;
   onShortlist?: (artistId: string) => void;
   basePath?: string;
+  profileUrl?: string;
 }
 
-export default function ArtistCard({ artist, onShortlist, basePath = "/production" }: ArtistCardProps) {
+export default function ArtistCard({ artist, onShortlist, basePath = "/production", profileUrl }: ArtistCardProps) {
   return (
     <Card className="group overflow-hidden bg-[#1f1f1f] border-white/5 hover:border-white/20 transition-all duration-300 hover-blue-glow">
       <div className="relative aspect-[4/5] overflow-hidden">
@@ -56,7 +57,7 @@ export default function ArtistCard({ artist, onShortlist, basePath = "/productio
           </div>
 
           <div className="flex items-center justify-between gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-            <Link href={`${basePath}/artist/${artist.id}`} className="w-full">
+            <Link href={profileUrl || `${basePath}/artist/${artist.id}`} className="w-full">
               <Button size="sm" className="w-full bg-white text-black hover:bg-gray-200">
                 View Profile
               </Button>

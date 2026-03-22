@@ -1,0 +1,15 @@
+﻿.next/types/validator.ts(24,44): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
+  Type 'import("C:/Users/Banti Singh/.gemini/antigravity/scratch/ved-nitara/.next/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/Banti Singh/.gemini/antigravity/scratch/ved-nitara/.next/dev/types/routes").LayoutRoutes'.
+    Type '"/employer"' is not assignable to type 'LayoutRoutes'.
+.next/types/validator.ts(24,75): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
+  Type 'import("C:/Users/Banti Singh/.gemini/antigravity/scratch/ved-nitara/.next/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/Banti Singh/.gemini/antigravity/scratch/ved-nitara/.next/dev/types/routes").LayoutRoutes'.
+    Type '"/employer"' is not assignable to type 'LayoutRoutes'.
+.next/types/validator.ts(78,39): error TS2307: Cannot find module '../../src/app/(protected)/employer/artists/[id]/page.js' or its corresponding type declarations.
+.next/types/validator.ts(87,39): error TS2307: Cannot find module '../../src/app/(protected)/employer/casting/page.js' or its corresponding type declarations.
+.next/types/validator.ts(96,39): error TS2307: Cannot find module '../../src/app/(protected)/employer/dashboard/page.js' or its corresponding type declarations.
+.next/types/validator.ts(105,39): error TS2307: Cannot find module '../../src/app/(protected)/employer/inbox/page.js' or its corresponding type declarations.
+.next/types/validator.ts(114,39): error TS2307: Cannot find module '../../src/app/(protected)/employer/onboarding/page.js' or its corresponding type declarations.
+.next/types/validator.ts(246,39): error TS2307: Cannot find module '../../src/app/(protected)/employer/layout.js' or its corresponding type declarations.
+src/app/(protected)/client/artists/[id]/page.tsx(17,51): error TS2339: Property 'artistId' does not exist on type 'Review'.
+src/app/(protected)/client/artists/[id]/page.tsx(202,84): error TS2339: Property 'createdAt' does not exist on type 'Review'.
+src/components/ui/form.tsx(118,5): error TS2698: Spread types may only be created from object types.

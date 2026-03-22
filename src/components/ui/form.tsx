@@ -115,7 +115,7 @@ const FormControl = React.forwardRef<
       ? formDescriptionId
       : `${formDescriptionId} ${formMessageId}`,
     "aria-invalid": !!error,
-    ...child.props,
+    ...(child.props as object),
   })
 })
 FormControl.displayName = "FormControl"
