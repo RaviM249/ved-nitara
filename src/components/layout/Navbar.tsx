@@ -46,7 +46,7 @@ export default function Navbar() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <img
-              src="https://res.cloudinary.com/entermock/image/upload/v1773993626/Untitled_1_1_vzfdvr.png"
+              src="https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,h_80/v1773993626/Untitled_1_1_vzfdvr.png"
               alt="Ved Nitara"
               className="h-10 w-auto"
             />
@@ -69,7 +69,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href={isLoggedIn ? `${basePath}/dashboard` : "/"} className="flex items-center gap-2">
           <img
-            src="https://res.cloudinary.com/entermock/image/upload/v1773993626/Untitled_1_1_vzfdvr.png"
+            src="https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,h_80/v1773993626/Untitled_1_1_vzfdvr.png"
             alt="Ved Nitara"
             className="h-10 w-auto"
           />
