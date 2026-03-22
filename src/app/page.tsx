@@ -5,11 +5,52 @@ import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { PlayCircle, ShieldCheck, Stars, Users, Film, Camera, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuthStore } from "@/lib/store/authStore";
+
+const ROW1 = [
+  { name: "Actor", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Singer", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Dancer", image: "https://images.unsplash.com/photo-1508700915892-45ecd05ae2ad?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Musician", image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Cameraman", image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Director", image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "VFX Artist", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400&h=250&auto=format&fit=crop" },
+];
+
+const ROW2 = [
+  { name: "Production House", image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Schools", image: "https://images.unsplash.com/photo-1523050335456-c6bb739d0672?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Private Booking", image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Technicians", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Script Writer", image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Makeup Artist", image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Stylist", image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Voiceover", image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&h=250&auto=format&fit=crop" },
+];
+
+function ReelCard({ name, image }: { name: string; image: string }) {
+  return (
+    <div className="relative w-72 h-44 rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-[#00A8E1]/50 transition-colors duration-500">
+      <div
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+        style={{ backgroundImage: `url('${image}')` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+      <div className="absolute bottom-4 left-6">
+        <h3 className="text-2xl font-bold text-white uppercase tracking-wider font-display drop-shadow-md">
+          {name}
+        </h3>
+      </div>
+      <div className="absolute inset-0 bg-[#00A8E1]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const { scrollYProgress } = useScroll();
-  
+  const { isLoggedIn } = useAuthStore();
+
   // Transform scroll progress (0 to 0.4 of page) to overlay opacity (1 to 0.15)
   // As the user scrolls down, the image becomes significantly clearer/revealed.
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.15]);
@@ -28,9 +69,9 @@ export default function LandingPage() {
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
           style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/v1774014712/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5.png')" }}
         />
-        
+
         {/* Dynamic Darkening Overlays - reveals background as user scrolls down */}
-        <motion.div 
+        <motion.div
           style={{ opacity: overlayOpacity }}
           className="absolute inset-0 z-0 pointer-events-none"
         >
@@ -55,90 +96,61 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="font-display text-4xl sm:text-6xl lg:text-8xl tracking-wider text-white mb-4 lg:mb-6 leading-[0.9] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
+              className="font-display text-4xl sm:text-6xl lg:text-7xl tracking-wider text-white mb-4 lg:mb-6 leading-[1.1] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
             >
-              ONE APP. ONE SUBSCRIPTION.<br />
-              <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">INFINITE OPPORTUNITIES.</span>
+              Find the right <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">talent.</span><br />
+              Or become one.
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
-              className="text-base md:text-lg lg:text-xl text-white max-w-2xl mb-6 lg:mb-10 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+              className="text-base md:text-lg lg:text-xl text-white max-w-2xl mx-auto mb-10 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
             >
-              Connect, collaborate, and create with the largest network of Artists, Entertainment Schools, Production Houses, and Event Organizers in India.
+              Hire professionals for your project or showcase your skills and get hired.
             </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
-            >
-              <Link href="/register" tabIndex={-1}>
-                <Button size="lg" className="h-14 px-8 text-lg font-bold bg-[#00A8E1] text-white hover:bg-[#0082B4] w-full sm:w-auto shadow-[0_0_30px_rgba(0,168,225,0.4)]">
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/pricing" tabIndex={-1}>
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-bold border-white/30 text-white hover:bg-white/10 w-full sm:w-auto bg-black/40 backdrop-blur-md">
-                  View Plans
-                </Button>
-              </Link>
-            </motion.div>
           </div>
         </section>
 
-        <section className="pt-14 pb-24 max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl md:text-6xl text-white mb-4">Who is Ved Nitara for?</h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">An ecosystem built to empower every facet of the entertainment industry.</p>
+        {/* CAMERA REEL SECTIONS */}
+        <section className="py-24 overflow-hidden relative z-10">
+
+          <div className="space-y-8 relative z-10">
+            {/* ROW 1: Right to Left */}
+            <div className="flex overflow-hidden">
+              <motion.div
+                animate={{ x: [0, -2184] }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                className="flex gap-6 whitespace-nowrap"
+              >
+                {[...ROW1, ...ROW1].map((item, idx) => (
+                  <ReelCard key={idx} name={item.name} image={item.image} />
+                ))}
+              </motion.div>
+            </div>
+
+            {/* ROW 2: Left to Right */}
+            <div className="flex overflow-hidden">
+              <motion.div
+                animate={{ x: [-2496, 0] }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                className="flex gap-6 whitespace-nowrap"
+              >
+                {[...ROW2, ...ROW2].map((item, idx) => (
+                  <ReelCard key={idx} name={item.name} image={item.image} />
+                ))}
+              </motion.div>
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Artists & Talent",
-                icon: Stars,
-                items: ["Find casting calls & auditions", "Apply for faculty roles in top schools", "Get direct bookings from clients"]
-              },
-              {
-                title: "Schools & Institutes",
-                icon: Users,
-                items: ["Post requirements for guest faculty", "Discover verified industry experts", "Streamline your hiring process"]
-              },
-              {
-                title: "Production Houses",
-                icon: Film,
-                items: ["Access India's largest Artist Bank", "Advanced filtering & shortlisting", "Direct messaging and booking"]
-              }
-            ].map((role, idx) => (
-              <motion.div
-                key={idx}
-                whileHover={{ y: -10 }}
-                className="bg-[#1f1f1f] border border-white/5 rounded-2xl p-8 hover-blue-glow relative group overflow-hidden"
-              >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00A8E1] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="h-14 w-14 rounded-full bg-[#00A8E1]/10 flex items-center justify-center mb-6 border border-[#00A8E1]/20">
-                  <role.icon className="h-7 w-7 text-[#00A8E1]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-6 uppercase tracking-wide font-display">{role.title}</h3>
-                <ul className="space-y-4">
-                  {role.items.map((item, i) => (
-                    <li key={i} className="flex items-start text-gray-300">
-                      <CheckCircle2 className="h-5 w-5 text-[#00A8E1] mr-3 shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
+          {/* Subtle Film Grain/Fade effects for the edges */}
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0F171E] to-transparent z-20 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0F171E] to-transparent z-20 pointer-events-none" />
         </section>
 
         {/* STATS SECTION - Moved below cards and attached to next section */}
-        <section className="py-16 border-t border-white/10 bg-[#0F171E]/90 relative z-10">
+        <section className="py-16 bg-black/60 relative z-10">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center">
@@ -161,10 +173,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-      </div>
-
       {/* FEATURES SECTION - Unified with Stats above */}
-      <section className="py-24 bg-[#0F171E] border-b border-white/10">
+      <section className="py-24 bg-black/40 backdrop-blur-sm relative z-10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -188,45 +198,35 @@ export default function LandingPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-[#00A8E1]/20 blur-[100px] rounded-full z-0" />
               <div className="relative z-10 bg-[#0F171E] border border-white/10 rounded-2xl shadow-2xl p-2 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=2070&auto=format&fit=crop" alt="Artist Bank Preview" className="rounded-xl w-full opacity-80" />
+                <img src="https://res.cloudinary.com/entermock/image/upload/v1774065749/Gemini_Generated_Image_auzrvaauzrvaauzr_absldm.png" alt="Artist Bank Preview" className="rounded-xl w-full opacity-80" />
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* PRICING PREVIEW */}
-      <section className="py-24 max-w-7xl mx-auto px-4 text-center">
-        <h2 className="font-display text-4xl md:text-6xl text-white mb-4">Simple, Transparent Pricing</h2>
-        <p className="text-gray-400 text-lg mb-12">One subscription to unlock all features for your role.</p>
-
-        <div className="inline-flex bg-[#1f1f1f] p-1 rounded-xl mb-12 border border-white/10">
-          <Button className="bg-[#00A8E1] text-white rounded-lg hover:bg-[#0082B4]">Monthly (₹99)</Button>
-          <Button variant="ghost" className="text-gray-400 hover:text-white rounded-lg">Annual (₹999) <span className="ml-2 text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Save 16%</span></Button>
-        </div>
-
-        <div className="max-w-md mx-auto relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-[#00A8E1] to-red-900 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-          <div className="bg-[#1f1f1f] border border-white/10 rounded-2xl p-8 relative flex flex-col items-center">
-            <h3 className="text-2xl font-bold text-white mb-2">All-Access Pass</h3>
-            <div className="flex items-baseline gap-1 mr-4 mb-6">
-              <span className="text-5xl font-display text-white tracking-wide">₹99</span>
-              <span className="text-gray-400">/mo</span>
+          {!isLoggedIn && (
+            <div className="mt-16 flex flex-col sm:flex-row gap-6 w-full max-w-3xl mx-auto justify-center">
+              <Link href="/register?intent=hire" tabIndex={-1} className="flex-1 group">
+                <div className="bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#0082B4] rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,168,225,0.2)] h-full">
+                  <div className="text-3xl mb-4">🎬</div>
+                  <h3 className="text-white font-bold text-2xl mb-2 font-display tracking-wide group-hover:text-[#00A8E1] transition-colors">Hire Talent</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">Find actors, creators, and crew for your project</p>
+                </div>
+              </Link>
+              
+              <Link href="/register?intent=work" tabIndex={-1} className="flex-1 group">
+                <div className="bg-[#00A8E1]/10 backdrop-blur-md border border-[#00A8E1]/30 hover:bg-[#00A8E1]/20 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,168,225,0.4)] h-full">
+                  <div className="text-3xl mb-4">✨</div>
+                  <h3 className="text-white font-bold text-2xl mb-2 font-display tracking-wide">Get Hired</h3>
+                  <p className="text-blue-100/70 text-sm leading-relaxed">Create your profile and start getting opportunities</p>
+                </div>
+              </Link>
             </div>
-            <ul className="space-y-4 mb-8 text-left w-full text-sm">
-              <li className="flex"><CheckCircle2 className="h-4 w-4 text-[#00A8E1] mr-2 shrink-0 mt-0.5" /> Full profile & portfolio</li>
-              <li className="flex"><CheckCircle2 className="h-4 w-4 text-[#00A8E1] mr-2 shrink-0 mt-0.5" /> Apply to unlimited jobs</li>
-              <li className="flex"><CheckCircle2 className="h-4 w-4 text-[#00A8E1] mr-2 shrink-0 mt-0.5" /> Direct messaging</li>
-              <li className="flex"><CheckCircle2 className="h-4 w-4 text-[#00A8E1] mr-2 shrink-0 mt-0.5" /> Verified badge</li>
-            </ul>
-            <Link href="/pricing" className="w-full" tabIndex={-1}>
-              <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4] h-12 text-lg font-bold">
-                Subscribe Now
-              </Button>
-            </Link>
-          </div>
+          )}
         </div>
       </section>
+
+
+      </div>
 
       {/* FOOTER */}
       <footer className="bg-black border-t border-white/10 py-12 mt-auto">

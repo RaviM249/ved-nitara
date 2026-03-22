@@ -1,59 +1,73 @@
 "use client";
 
 import { useAuthStore } from "@/lib/store/authStore";
-import { Role } from "@/types";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-const ROLES: Role[] = ["ARTIST", "SCHOOL", "PRODUCTION", "CLIENT", "ADMIN"];
+const SCENARIOS = ["TALENT", "CLIENT", "ADMIN", "GUEST"];
 
 // Mock users for different roles
 const mockUser = {
   id: "u1",
   name: "Demo User",
   email: "demo@example.com",
-  roles: ROLES,
+  role: "TALENT",
+  isEmailVerified: true,
+  status: "ACTIVE",
+  roles: ["TALENT"],
 };
 
 export default function RoleSwitcher() {
-  const { activeRole, switchRole, isLoggedIn, login, isSubscribed, setSubscribed } = useAuthStore();
+  const { currentMode, activeRole, switchMode, isLoggedIn, login, logout, isSubscribed, setSubscribed } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
   
   // ensure component is only rendered on client
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
-    // Auto login for development
-    if (!isLoggedIn) {
-      login("ARTIST", mockUser, true);
-    }
-  }, [isLoggedIn, login]);
+  }, []);
 
   if (!mounted || process.env.NODE_ENV === "production") return null;
+
+  const handleScenarioChange = (scenario: string) => {
+    if (scenario === "GUEST") {
+      logout();
+      return;
+    }
+    
+    // Log in the user with the corresponding role
+    login(scenario as any, mockUser as any, true);
+  };
+
+  const getActiveScenario = () => {
+    if (!isLoggedIn) return "GUEST";
+    if (activeRole === "ADMIN") return "ADMIN";
+    return currentMode || activeRole;
+  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
       {isOpen && (
         <div className="mb-2 w-64 rounded-xl border border-white/10 bg-[#1f1f1f] p-4 shadow-2xl backdrop-blur-sm">
-          <div className="mb-3 text-sm font-semibold text-white">🎭 Switch Role</div>
+          <div className="mb-3 text-sm font-semibold text-white">🎭 Test Scenarios</div>
           <div className="flex flex-col gap-2">
-            {ROLES.map((role) => (
+            {SCENARIOS.map((scenario) => (
               <button
-                key={role}
-                onClick={() => switchRole(role)}
+                key={scenario}
+                onClick={() => handleScenarioChange(scenario)}
                 className={`rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
-                  activeRole === role
+                  getActiveScenario() === scenario
                     ? "bg-[#00A8E1] text-white"
                     : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                {role}
+                {scenario === "GUEST" ? "Non-Signed In (Guest)" : scenario}
               </button>
             ))}
           </div>
           
           <div className="mt-4 border-t border-white/10 pt-3">
-            <div className="mb-2 text-xs font-semibold text-gray-400">Status</div>
+            <div className="mb-2 text-xs font-semibold text-gray-400">Subscription Status</div>
             <button
               onClick={() => setSubscribed(!isSubscribed)}
               className={`w-full rounded-lg px-3 py-2 text-xs font-medium transition-colors ${

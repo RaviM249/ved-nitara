@@ -22,23 +22,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const roles = [
-  { id: "ARTIST", label: "Artist / Talent", icon: UserCircle, desc: "For actors, singers, writers, etc." },
-  { id: "SCHOOL", label: "Entertainment School", icon: Building2, desc: "For acting & music institutes" },
-  { id: "PRODUCTION", label: "Production House", icon: Film, desc: "For studios and casting directors" },
-  { id: "CLIENT", label: "Client / Event Organizer", icon: Users, desc: "For organizing and booking events" },
+const intents = [
+  { id: "hire", label: "I want to hire talent", desc: "Post projects and find the right people", icon: Film },
+  { id: "work", label: "I want to get hired", desc: "Showcase my skills and get work", icon: UserCircle },
 ] as const;
 
-type RoleType = "ARTIST" | "SCHOOL" | "PRODUCTION" | "CLIENT" | null;
+type IntentType = "hire" | "work" | null;
 
 function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialRole = searchParams?.get("role") as RoleType | null;
+  const initialIntent = searchParams?.get("intent") as IntentType | null;
   
   const { login } = useAuthStore();
-  const [step, setStep] = useState<number>(initialRole ? 2 : 1);
-  const [selectedRole, setSelectedRole] = useState<RoleType>(initialRole || null);
+  const [step, setStep] = useState<number>(initialIntent ? 2 : 1);
+  const [selectedIntent, setSelectedIntent] = useState<IntentType>(initialIntent || null);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof basicInfoSchema>>({
@@ -53,34 +51,39 @@ function RegisterContent() {
     },
   });
 
-  const handleRoleSelect = (role: RoleType) => {
-    setSelectedRole(role);
+  const handleIntentSelect = (intent: IntentType) => {
+    setSelectedIntent(intent);
     setStep(2);
   };
 
   async function onSubmit(values: z.infer<typeof basicInfoSchema>) {
-    if (!selectedRole) return;
+    if (!selectedIntent) return;
     
     try {
       setIsLoading(true);
-      const res = await api.register({ ...values, role: selectedRole });
+      
+      const intentRoleMapping: Record<string, "TALENT" | "CLIENT"> = {
+        "work": "TALENT",
+        "hire": "CLIENT"
+      };
+      const assignedRole = intentRoleMapping[selectedIntent];
+      
+      const res = await api.register({ ...values, role: assignedRole as any });
 
-      if (res.success) {
+      if (res.success && res.user) {
         toast.success(res.message);
         
-        // Use Zustand to log the user in
-        const mockUser = {
-          id: `new_${Date.now()}`,
-          name: values.name,
-          email: values.email,
-          roles: [selectedRole] as any,
-        };
+        // Log them in using the returned user
+        login(assignedRole, res.user, true);
         
-        // Log them in
-        login(selectedRole, mockUser, true);
-        
-        // Redirect to their dashboard
-        router.push(`/${selectedRole.toLowerCase()}/dashboard`);
+        // Redirect to their smart onboarding step
+        if (assignedRole === "CLIENT") {
+          router.push("/client/onboarding");
+        } else if (assignedRole === "TALENT") {
+          router.push("/talent/onboarding");
+        } else {
+          router.push("/onboarding");
+        }
       } else {
         toast.error(res.message || "Registration failed");
       }
@@ -98,27 +101,29 @@ function RegisterContent() {
           VED NITARA
         </Link>
         <h1 className="text-2xl font-bold text-white">
-          {step === 1 ? "Choose your account type" : "Create your account"}
+          {step === 1 ? "What brings you here?" : "Welcome! Let's get started"}
         </h1>
         <p className="text-gray-400 text-sm mt-2">
-          Join the largest entertainment network in India.
+          {step === 1 ? "Select your primary goal to begin." : "Join the largest entertainment network in India."}
         </p>
       </div>
 
       {step === 1 && (
-        <div className="grid sm:grid-cols-2 gap-4">
-          {roles.map((role) => (
+        <div className="grid gap-4">
+          {intents.map((intent) => (
             <button
-              key={role.id}
+              key={intent.id}
               type="button"
-              onClick={() => handleRoleSelect(role.id as RoleType)}
-              className="flex flex-col items-center justify-center p-6 bg-[#141414] border border-white/10 rounded-xl hover:border-[#00A8E1] hover:bg-white/5 transition-all text-center group"
+              onClick={() => handleIntentSelect(intent.id as IntentType)}
+              className="flex items-center p-6 bg-[#141414] border border-white/10 rounded-xl hover:border-[#00A8E1] hover:bg-white/5 transition-all text-left group"
             >
-              <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#00A8E1]/20 transition-colors">
-                <role.icon className="h-6 w-6 text-gray-400 group-hover:text-[#00A8E1] transition-colors" />
+              <div className="h-14 w-14 rounded-full bg-white/5 flex items-center justify-center mr-6 group-hover:bg-[#00A8E1]/20 transition-colors shrink-0">
+                <intent.icon className="h-7 w-7 text-gray-400 group-hover:text-[#00A8E1] transition-colors" />
               </div>
-              <h3 className="font-bold text-white mb-1 group-hover:text-[#00A8E1] transition-colors">{role.label}</h3>
-              <p className="text-xs text-gray-500">{role.desc}</p>
+              <div>
+                <h3 className="font-bold text-lg text-white mb-1 group-hover:text-[#00A8E1] transition-colors">{intent.label}</h3>
+                <p className="text-sm text-gray-500">{intent.desc}</p>
+              </div>
             </button>
           ))}
         </div>
@@ -128,8 +133,8 @@ function RegisterContent() {
         <>
           <div className="mb-6 flex items-center justify-between text-sm bg-white/5 border border-white/10 rounded-lg p-3">
             <div className="flex items-center text-gray-300">
-              <span className="text-gray-500 mr-2">Creating acccount as:</span>
-              <span className="font-bold text-white">{roles.find(r => r.id === selectedRole)?.label}</span>
+              <span className="text-gray-500 mr-2">Creating account to:</span>
+              <span className="font-bold text-white">{intents.find(i => i.id === selectedIntent)?.label}</span>
             </div>
             <button 
               type="button" 
@@ -139,6 +144,7 @@ function RegisterContent() {
               Change
             </button>
           </div>
+
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

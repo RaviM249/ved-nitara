@@ -1,0 +1,32 @@
+[
+  {
+    "id": "u_talent_123",
+    "name": "Rahul Talent",
+    "email": "talent@example.com",
+    "password": "password",
+    "role": "TALENT",
+    "isEmailVerified": true,
+    "status": "ACTIVE",
+    "roles": ["TALENT"]
+  },
+  {
+    "id": "u_client_456",
+    "name": "XYZ Client",
+    "email": "client@example.com",
+    "password": "password",
+    "role": "CLIENT",
+    "isEmailVerified": true,
+    "status": "ACTIVE",
+    "roles": ["CLIENT"]
+  },
+  {
+    "id": "u_admin_789",
+    "name": "System Admin",
+    "email": "admin@example.com",
+    "password": "password",
+    "role": "ADMIN",
+    "isEmailVerified": true,
+    "status": "ACTIVE",
+    "roles": ["ADMIN"]
+  }
+]

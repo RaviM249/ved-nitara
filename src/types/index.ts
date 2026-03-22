@@ -1,11 +1,65 @@
-export type Role = "ARTIST" | "SCHOOL" | "PRODUCTION" | "CLIENT" | "ADMIN";
+export type Role = "TALENT" | "CLIENT" | "ADMIN";
+
+export type UserStatus = "ACTIVE" | "BLOCKED" | "DELETED";
+
+export interface UserProfile {
+  profilePicture?: string;
+  phone?: string;
+  location?: {
+    city: string;
+    state: string;
+    country: string;
+  };
+  bio?: string;
+}
+
+export interface TalentProfile {
+  category: string;
+  skills: string[];
+  experienceYears: number;
+  portfolio: {
+    title: string;
+    mediaUrl: string;
+    type: "video" | "image" | "audio" | "document";
+  }[];
+  pricing?: {
+    type: "per_project" | "per_hour" | "per_day";
+    amount: number;
+    currency: string;
+  };
+  availability: boolean;
+}
+
+export interface ClientProfile {
+  companyName?: string;
+}
 
 export interface User {
-  id: string;
+  id: string; // Using frontend-friendly 'id' instead of '_id'
   name: string;
   email: string;
+  password?: string;
+  role: Role;
+  isEmailVerified: boolean;
+  status: UserStatus;
+  
+  profile?: UserProfile;
+  talentProfile?: TalentProfile;
+  clientProfile?: ClientProfile;
+  
+  auth?: {
+    lastLogin: string;
+    loginProvider: "email" | "google";
+  };
+  
+  timestamps?: {
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  // Keep these for backward compatibility during refactoring
   avatar?: string;
-  roles: Role[];
+  roles?: Role[]; // Some old code may still expect an array
 }
 
 export interface Subscription {

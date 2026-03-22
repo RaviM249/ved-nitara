@@ -137,4 +137,16 @@
   .hover-blue-glow:hover {
     box-shadow: 0 0 20px rgba(0, 168, 225, 0.2);
   }
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }

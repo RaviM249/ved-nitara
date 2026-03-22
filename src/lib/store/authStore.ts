@@ -5,29 +5,37 @@ interface AuthState {
   isLoggedIn: boolean;
   user: User | null;
   activeRole: Role;
+  currentMode: "TALENT" | "CLIENT" | null;
   isSubscribed: boolean;
   login: (role: Role, user: User, isSubscribed?: boolean) => void;
   logout: () => void;
-  switchRole: (role: Role) => void;
+  switchMode: (mode: "TALENT" | "CLIENT") => void;
   setSubscribed: (status: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   user: null,
-  activeRole: "ARTIST", // default role
+  activeRole: "TALENT", // default role
+  currentMode: null, // set during login or intent selection
   isSubscribed: false,
-  login: (role, user, isSubscribed = true) => set({ 
-    isLoggedIn: true, 
-    user, 
-    activeRole: role,
-    isSubscribed
-  }),
+  login: (role, user, isSubscribed = true) => {
+    // Determine initial UI mode based on role
+    const defaultMode = role === "CLIENT" ? "CLIENT" : "TALENT";
+    set({ 
+      isLoggedIn: true, 
+      user, 
+      activeRole: role,
+      currentMode: defaultMode,
+      isSubscribed
+    });
+  },
   logout: () => set({ 
     isLoggedIn: false, 
     user: null,
+    currentMode: null,
     isSubscribed: false
   }),
-  switchRole: (role) => set({ activeRole: role }),
+  switchMode: (mode) => set({ currentMode: mode }),
   setSubscribed: (status) => set({ isSubscribed: status }),
 }));

@@ -100,17 +100,30 @@ export const api = {
 
   // TODO: Replace with API call - POST /api/v1/auth/register
   register: async (data: any) => {
-    await delay(1200);
-    return { success: true, message: "Registration successful. Welcome to Ved Nitara!" };
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
   },
 
   // TODO: Replace with API call - POST /api/v1/auth/login
   login: async (data: any) => {
-    await delay(1000);
-    if(data.email && data.password) {
-      return { success: true, token: "mock_jwt_token", message: "Login successful." };
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
     }
-    return { success: false, error: "INVALID_CREDENTIALS", message: "Invalid credentials." };
   },
 
   // TODO: Replace with API call - POST /api/v1/payment/create-subscription

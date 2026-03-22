@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, ShieldCheck, Stars, Users, Film } from "lucide-react";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -11,69 +11,19 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function PricingPage() {
-  const [isAnnual, setIsAnnual] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const { scrollYProgress } = useScroll();
 
-  const plans = [
-    {
-      role: "Artist / Talent",
-      icon: Stars,
-      monthly: 99,
-      annual: 999,
-      features: [
-        "Verified Profile Badge",
-        "Unlimited Showreel Uploads",
-        "Apply to Faculty Roles",
-        "Direct Messaging with Clients",
-        "Profile Analytics & Views",
-        "Priority in Artist Bank Search"
-      ]
-    },
-    {
-      role: "Entertainment School",
-      icon: Users,
-      monthly: 99,
-      annual: 999,
-      features: [
-        "Verified Institution Badge",
-        "Post Unlimited Requirements",
-        "Access to Verified Faculty",
-        "Direct Messaging with Artists",
-        "Unlimited Shortlists",
-        "School Branded Page"
-      ]
-    },
-    {
-      role: "Production House",
-      icon: Film,
-      monthly: 99,
-      annual: 999,
-      features: [
-        "Verified Production Badge",
-        "Full Access to Artist Bank",
-        "Advanced Search Filters",
-        "Post Casting Calls",
-        "Direct Messaging with Talent",
-        "Unlimited Shortlists per Project"
-      ]
-    },
-    {
-      role: "Client / Organizer",
-      icon: ShieldCheck,
-      monthly: 99,
-      annual: 999,
-      features: [
-        "Verified Client Badge",
-        "Send Direct Booking Requests",
-        "Access to Artist Bank",
-        "Direct Messaging",
-        "Leave Verified Reviews",
-        "Secure Payment Escrow Access"
-      ]
-    }
-  ];
+  // Consistent reveal effect from home page
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.15]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const faqs = [
     {
@@ -99,95 +49,157 @@ export default function PricingPage() {
   ];
 
   return (
-    <PageWrapper className="pt-24 pb-16">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h1 className="font-display text-5xl md:text-6xl text-white mb-6">Simple, Transparent Pricing</h1>
-        <p className="text-gray-400 text-lg mb-10">One subscription unlocks infinite opportunities tailored for your role.</p>
-        
-        {/* Toggle */}
-        <div className="inline-flex bg-[#1f1f1f] p-1.5 rounded-xl border border-white/10 relative">
-          <div className="absolute -top-3 -right-6 rotate-12">
-            <span className="bg-green-500 text-black font-bold text-xs px-2 py-1 rounded-full shadow-lg">Save 16%</span>
-          </div>
-          <Button 
-            variant={!isAnnual ? "default" : "ghost"} 
-            className={`rounded-lg px-6 ${!isAnnual ? 'bg-[#00A8E1] text-white hover:bg-[#0082B4]' : 'text-gray-400 hover:text-white'}`}
-            onClick={() => setIsAnnual(false)}
-          >
-            Monthly
-          </Button>
-          <Button 
-            variant={isAnnual ? "default" : "ghost"} 
-            className={`rounded-lg px-6 ${isAnnual ? 'bg-[#00A8E1] text-white hover:bg-[#0082B4]' : 'text-gray-400 hover:text-white'}`}
-            onClick={() => setIsAnnual(true)}
-          >
-            Annual
-          </Button>
-        </div>
-      </div>
+    <div className="relative min-h-screen">
+      {/* Background - Fixed behind content */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/v1774014712/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5.png')" }}
+      />
 
-      {/* Plans */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
-        {plans.map((plan, idx) => (
-          <motion.div 
-            key={plan.role}
+      {/* Dynamic Reveal Overlays */}
+      <motion.div
+        style={{ opacity: overlayOpacity }}
+        className="fixed inset-0 z-0 pointer-events-none"
+      >
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/70 to-[#0F171E]/40" />
+        <div className="absolute inset-0 z-0 bg-black/40" />
+      </motion.div>
+
+      <PageWrapper className="relative z-10 pt-28 pb-20">
+        {/* Simplified Header for laptop view */}
+        <div className="text-center max-w-3xl mx-auto mb-12 text-white">
+          <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="bg-[#141414] border border-white/10 rounded-2xl p-6 relative group hover:border-[#00A8E1]/50 hover-blue-glow transition-all duration-300 flex flex-col h-full"
+            className="font-display text-4xl sm:text-5xl md:text-7xl mb-4 tracking-wide drop-shadow-md uppercase"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00A8E1] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            <div className="h-12 w-12 rounded-full bg-[#1f1f1f] flex items-center justify-center mb-6">
-              <plan.icon className="h-6 w-6 text-white" />
-            </div>
+            CHOOSE YOUR <span className="text-[#00A8E1]">PASS</span>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-gray-200 text-base md:text-lg font-medium max-w-2xl mx-auto leading-relaxed"
+          >
+            One simple subscription to unlock every feature, every role, and infinite opportunities across India.
+          </motion.p>
+        </div>
 
-            <h3 className="text-xl font-bold text-white mb-2">{plan.role}</h3>
-            
-            <div className="flex items-baseline gap-1 mb-6">
-              <span className="text-sm text-gray-400">₹</span>
-              <span className="text-4xl font-display text-white tracking-wide">
-                {isAnnual ? plan.annual : plan.monthly}
-              </span>
-              <span className="text-gray-400 text-sm">/{isAnnual ? 'yr' : 'mo'}</span>
-            </div>
+        {/* Pricing Layout */}
+        <div className="flex flex-col items-center gap-10 mb-28">
+          {/* Sliding Toggle Pill */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative bg-[#1f1f1f]/70 backdrop-blur-xl p-1.5 rounded-2xl border border-white/5 flex items-center w-80 h-16 overflow-hidden shadow-2xl"
+          >
+             <motion.div 
+               initial={false}
+               animate={{ x: billingCycle === "monthly" ? 0 : 144 }}
+               transition={{ type: "spring", stiffness: 300, damping: 30 }}
+               className="absolute top-1.5 left-1.5 w-[140px] h-13 bg-[#00A8E1] rounded-xl shadow-[0_0_25px_rgba(0,168,225,0.4)] z-0"
+             />
+             <button 
+               onClick={() => setBillingCycle("monthly")}
+               className={`relative z-10 flex-1 h-full font-bold text-sm tracking-widest uppercase transition-colors duration-300 ${billingCycle === "monthly" ? "text-white" : "text-gray-400 hover:text-white"}`}
+             >
+               Monthly
+             </button>
+             <button 
+               onClick={() => setBillingCycle("annual")}
+               className={`relative z-10 flex-1 h-full font-bold text-sm tracking-widest uppercase transition-colors duration-300 ${billingCycle === "annual" ? "text-white" : "text-gray-400 hover:text-white"}`}
+             >
+               Annual
+             </button>
+          </motion.div>
 
-            <div className="flex-1">
-              <ul className="space-y-4 mb-8">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start text-sm text-gray-300">
-                    <CheckCircle2 className="h-5 w-5 text-[#00A8E1] mr-3 shrink-0 mt-0.5" />
-                    <span>{feature}</span>
+          {/* All-Access Card */}
+          <motion.div 
+             initial={{ opacity: 0, scale: 0.9 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ type: "spring", bounce: 0.4 }}
+             whileHover={{ y: -8, scale: 1.01 }}
+             className="max-w-md w-full relative group"
+          >
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#00A8E1] via-blue-600 to-indigo-500 rounded-3xl blur-2xl opacity-20 group-hover:opacity-40 transition duration-700"></div>
+            <div className="bg-black/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-10 relative flex flex-col items-center overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#00A8E1]/10 blur-[60px] rounded-full" />
+              
+              <h3 className="text-2xl font-bold text-white mb-8 tracking-[0.2em] uppercase font-display border-b border-white/10 pb-6 w-full text-center">
+                All-Access Pass
+              </h3>
+              
+              <div className="flex items-baseline gap-3 mb-10">
+                <span className="text-[#00A8E1] text-3xl font-display">₹</span>
+                <span className="text-8xl font-display text-white tracking-wider">
+                  {billingCycle === "monthly" ? "99" : "999"}
+                </span>
+                <span className="text-gray-400 font-bold text-lg tracking-widest">
+                  {billingCycle === "monthly" ? "/MO" : "/YR"}
+                </span>
+              </div>
+              
+              <ul className="space-y-5 mb-12 text-left w-full">
+                {[
+                  "Full Profile & Searchable Portfolio",
+                  "Apply to Unlimited Casting Calls",
+                  "Direct In-app Messaging & Bookings",
+                  "Priority in Recruitment Search",
+                  "Verified Digital Identity Badge",
+                  "Exclusive Member Resources"
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-center text-gray-200 text-sm font-semibold">
+                    <div className="h-5 w-5 rounded-full bg-[#00A8E1]/20 flex items-center justify-center mr-4 border border-[#00A8E1]/40">
+                       <CheckCircle2 className="h-3 w-3 text-[#00A8E1]" />
+                    </div>
+                    {feature}
                   </li>
                 ))}
               </ul>
+              
+              <Link href="/register?pass=all-access" className="w-full" tabIndex={-1}>
+                <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4] h-14 text-lg font-bold rounded-2xl relative overflow-hidden group/btn">
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    ACTIVATE PASS <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
+                </Button>
+              </Link>
+
+              {billingCycle === "annual" && (
+                <div className="mt-4 text-[#00A8E1] font-bold text-xs tracking-widest uppercase animate-pulse">
+                  Save 16% With Annual Pass
+                </div>
+              )}
             </div>
-
-            <Link href={`/register?role=${plan.role.split(" ")[0].toUpperCase()}`} tabIndex={-1} className="mt-auto">
-              <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
-                Subscribe Now
-              </Button>
-            </Link>
           </motion.div>
-        ))}
-      </div>
+        </div>
 
-      {/* FAQ */}
-      <div className="max-w-3xl mx-auto">
-        <h2 className="font-display text-4xl text-white mb-8 text-center">Frequently Asked Questions</h2>
-        <Accordion type="single" collapsible className="w-full">
-          {faqs.map((faq, idx) => (
-            <AccordionItem key={idx} value={`item-${idx}`} className="border-white/10">
-              <AccordionTrigger className="text-lg font-medium text-white hover:text-[#00A8E1] text-left">
-                {faq.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-gray-400 leading-relaxed text-base">
-                {faq.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    </PageWrapper>
+        {/* FAQ with cleaner styling */}
+        <div className="max-w-4xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="font-display text-4xl text-white mb-10 text-center tracking-wide"
+          >
+            FAQS
+          </motion.h2>
+          <div className="bg-black/30 backdrop-blur-md border border-white/5 rounded-2xl p-4">
+            <Accordion className="w-full space-y-2">
+              {faqs.map((faq, idx) => (
+                <AccordionItem key={idx} value={`item-${idx}`} className="border-none px-4 rounded-xl hover:bg-white/5 transition-colors">
+                  <AccordionTrigger className="text-lg font-bold text-gray-200 hover:text-white text-left py-5 hover:no-underline group-data-[state=open]:text-[#00A8E1]">
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-400 leading-relaxed text-base pb-5">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      </PageWrapper>
+    </div>
   );
 }

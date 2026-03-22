@@ -40,22 +40,20 @@ export default function LoginPage() {
       setIsLoading(true);
       const res = await api.login(values);
 
-      if (res.success) {
+      if (res.success && res.user) {
         toast.success(res.message);
         
-        // Mock user details based on email or default
-        const mockUser = {
-          id: "u123",
-          name: "Test User",
-          email: values.email,
-          roles: ["ARTIST"] as any,
-        };
+        // Use Zustand to log the user in using the server response!
+        login(res.user.role || "TALENT", res.user, true);
         
-        // Use Zustand to log the user in (Defaulting to ARTIST for demo)
-        login("ARTIST", mockUser, true);
-        
-        // Redirect to their dashboard
-        router.push("/artist/dashboard");
+        // Redirect to their dashboard based on role
+        if (res.user.role === "CLIENT") {
+          router.push("/client/dashboard");
+        } else if (res.user.role === "ADMIN") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/talent/dashboard");
+        }
       } else {
         toast.error(res.message || "Login failed");
       }
@@ -76,8 +74,8 @@ export default function LoginPage() {
           <Link href="/" className="inline-block font-display text-4xl tracking-wider text-[#00A8E1] mb-2 hover-blue-glow">
             VED NITARA
           </Link>
-          <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-          <p className="text-gray-400 text-sm mt-2">Log in to continue to your dashboard.</p>
+          <h1 className="text-2xl font-bold text-white">Welcome! Let&apos;s get started</h1>
+          <p className="text-gray-400 text-sm mt-2">Log in to continue your journey.</p>
         </div>
 
         <Form {...form}>

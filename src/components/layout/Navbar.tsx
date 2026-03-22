@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
-import { Bell, Menu, UserCircle, LogOut, LayoutDashboard, Settings, ChevronDown } from "lucide-react";
+import { Bell, Menu, UserCircle, LogOut, LayoutDashboard, Settings, ChevronDown, Repeat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,29 +14,55 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const { isLoggedIn, activeRole, user, logout } = useAuthStore();
+  const { isLoggedIn, currentMode, activeRole, user, logout, switchMode } = useAuthStore();
   const pathname = usePathname();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Hide navbar on admin routes (they use sidebar instead)
   if (pathname?.startsWith("/admin")) {
     return null;
   }
 
-  // Get base path based on role
-  const getBasePath = () => {
-    switch (activeRole) {
-      case "ARTIST": return "/artist";
-      case "SCHOOL": return "/school";
-      case "PRODUCTION": return "/production";
-      case "CLIENT": return "/client";
-      default: return "";
-    }
+  // Get base path based on mode
+  const basePath = currentMode === "CLIENT" ? "/client" : "/talent";
+
+  const handleModeSwitch = () => {
+    const newMode = currentMode === "TALENT" ? "CLIENT" : "TALENT";
+    switchMode(newMode);
+    router.push(`/${newMode.toLowerCase()}/dashboard`);
   };
 
-  const basePath = getBasePath();
+  if (!mounted) {
+    return (
+      <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="https://res.cloudinary.com/entermock/image/upload/v1773993626/Untitled_1_1_vzfdvr.png"
+              alt="Ved Nitara"
+              className="h-10 w-auto"
+            />
+            <span className="font-display text-xl md:text-2xl tracking-widest text-blue-50 font-bold ml-2 select-none">
+              VED NITARA
+            </span>
+          </Link>
+          <div className="flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-6">
+              <span className="font-display text-xl tracking-wider text-white">Pricing</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
@@ -57,43 +84,23 @@ export default function Navbar() {
               <Link href={`${basePath}/dashboard`} className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                 Dashboard
               </Link>
-              {activeRole === "PRODUCTION" && (
+              {currentMode === "CLIENT" && (
                 <>
-                  <Link href="/production/casting" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                  <Link href="/client/casting" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Casting Calls
-                  </Link>
-                  <Link href="/production/inbox" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                    Messages
-                  </Link>
-                </>
-              )}
-              {activeRole === "ARTIST" && (
-                <>
-                  <Link href="/artist/faculty" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                    Opportunities
-                  </Link>
-                  <Link href="/artist/bookings" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                    Bookings
-                  </Link>
-                </>
-              )}
-              {activeRole === "SCHOOL" && (
-                <>
-                  <Link href="/school/requirements" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                    Requirements
-                  </Link>
-                  <Link href="/school/browse-faculty" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                    Browse Faculty
-                  </Link>
-                </>
-              )}
-              {activeRole === "CLIENT" && (
-                <>
-                  <Link href="/client/bookings" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                    Bookings
                   </Link>
                   <Link href="/client/inbox" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                     Messages
+                  </Link>
+                </>
+              )}
+              {currentMode === "TALENT" && (
+                <>
+                  <Link href="/talent/jobs" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                    Opportunities
+                  </Link>
+                  <Link href="/talent/bookings" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                    Bookings
                   </Link>
                 </>
               )}
@@ -106,9 +113,7 @@ export default function Navbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none relative h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
-
                 <UserCircle className="h-8 w-8 text-gray-300" />
-
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
                 <DropdownMenuGroup>
@@ -119,7 +124,7 @@ export default function Navbar() {
                         {user?.email}
                       </p>
                       <div className="mt-1 w-fit rounded-full bg-[#00A8E1]/20 px-2 py-0.5 text-[10px] font-medium text-[#00A8E1] uppercase">
-                        {activeRole}
+                        {currentMode} MODE
                       </div>
                     </div>
                   </DropdownMenuLabel>
@@ -137,14 +142,27 @@ export default function Navbar() {
                     <span>Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
-                {activeRole === 'ARTIST' && (
+                {currentMode === 'TALENT' && (
                   <DropdownMenuItem className="p-0">
-                    <Link href="/artist/reviews" className="flex w-full items-center px-1.5 py-1 cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
+                    <Link href="/talent/reviews" className="flex w-full items-center px-1.5 py-1 cursor-pointer text-gray-300 focus:text-white focus:bg-white/10">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Reviews & Billing</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
+                
+                {/* Global Mode Toggle */}
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem className="p-0">
+                  <button 
+                    onClick={handleModeSwitch}
+                    className="flex w-full items-center px-1.5 py-1.5 cursor-pointer font-bold text-[#00A8E1] hover:text-[#0082B4] focus:text-[#0082B4] focus:bg-white/10 transition-colors"
+                  >
+                    <Repeat className="mr-2 h-4 w-4" />
+                    <span>Switch to {currentMode === "TALENT" ? "Hiring" : "Talent"} Mode</span>
+                  </button>
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-400 focus:bg-red-500/10">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -160,7 +178,7 @@ export default function Navbar() {
         ) : (
           <div className="flex items-center gap-8">
             <div className="hidden lg:flex items-center gap-6">
-              <Link href="/artist-bank" className="group flex items-center gap-1 font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+              <Link href="/talent-bank" className="group flex items-center gap-1 font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                 Find Talent <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
               </Link>
               <Link href="/jobs" className="group flex items-center gap-1 font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">

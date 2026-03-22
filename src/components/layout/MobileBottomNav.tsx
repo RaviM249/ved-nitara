@@ -7,57 +7,30 @@ import { LayoutDashboard, Mail, Search, CalendarHeart, User2, Settings } from "l
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const { isLoggedIn, activeRole } = useAuthStore();
+  const { isLoggedIn, currentMode } = useAuthStore();
 
   // Hide bottom nav on admin routes, desktop, or public routes (if not logged in)
   if (pathname?.startsWith("/admin") || !isLoggedIn || pathname === "/" || pathname === "/login" || pathname === "/pricing" || pathname === "/register") {
     return null;
   }
 
-  // Get base path based on role
-  const getBasePath = () => {
-    switch(activeRole) {
-      case "ARTIST": return "/artist";
-      case "SCHOOL": return "/school";
-      case "PRODUCTION": return "/production";
-      case "CLIENT": return "/client";
-      default: return "";
-    }
-  };
-
-  const basePath = getBasePath();
+  const basePath = currentMode === "CLIENT" ? "/client" : "/talent";
 
   // Define tab navigation based on role. (Max 5 tabs)
   let tabs: { name: string; href: string; icon: any }[] = [];
-  if (activeRole === "ARTIST") {
+  if (currentMode === "TALENT") {
     tabs = [
       { name: "Home", href: `${basePath}/dashboard`, icon: LayoutDashboard },
-      { name: "Faculty", href: `${basePath}/faculty`, icon: Search },
+      { name: "Jobs", href: `${basePath}/jobs`, icon: Search },
       { name: "Bookings", href: `${basePath}/bookings`, icon: CalendarHeart },
       { name: "Inbox", href: `${basePath}/inbox`, icon: Mail },
       { name: "Profile", href: `${basePath}/profile`, icon: User2 }
     ];
-  } else if (activeRole === "SCHOOL") {
+  } else {
     tabs = [
       { name: "Home", href: `${basePath}/dashboard`, icon: LayoutDashboard },
-      { name: "Browse", href: `${basePath}/browse-faculty`, icon: Search },
-      { name: "Reqs", href: `${basePath}/requirements`, icon: Settings },
-      { name: "Inbox", href: `${basePath}/inbox`, icon: Mail },
-      { name: "Profile", href: `${basePath}/profile`, icon: User2 }
-    ];
-  } else if (activeRole === "PRODUCTION") {
-    tabs = [
-      { name: "Home", href: `${basePath}/dashboard`, icon: LayoutDashboard },
-      { name: "Bank", href: `${basePath}/artist-bank`, icon: Search },
-      { name: "Shortlist", href: `${basePath}/shortlist`, icon: CalendarHeart },
-      { name: "Inbox", href: `${basePath}/inbox`, icon: Mail },
-      { name: "Profile", href: `${basePath}/profile`, icon: User2 }
-    ];
-  } else if (activeRole === "CLIENT") {
-    tabs = [
-      { name: "Home", href: `${basePath}/dashboard`, icon: LayoutDashboard },
-      { name: "Find", href: `${basePath}/find-artists`, icon: Search },
-      { name: "Bookings", href: `${basePath}/bookings`, icon: CalendarHeart },
+      { name: "Bank", href: `/talent-bank`, icon: Search },
+      { name: "Casting", href: `${basePath}/casting`, icon: CalendarHeart },
       { name: "Inbox", href: `${basePath}/inbox`, icon: Mail },
       { name: "Profile", href: `${basePath}/profile`, icon: User2 }
     ];
