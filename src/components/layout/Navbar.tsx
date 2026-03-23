@@ -67,7 +67,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href={isLoggedIn ? `${basePath}/dashboard` : "/"} className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <img
             src="https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,h_80/v1773993626/Untitled_1_1_vzfdvr.png"
             alt="Ved Nitara"
@@ -187,19 +187,11 @@ export default function Navbar() {
               <Link href="/pricing" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                 Pricing
               </Link>
-              <Link href="/about" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
-                Resources
-              </Link>
             </div>
 
             <div className="flex items-center gap-8">
               <Link href="/login" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] px-3 py-2 rounded-md hover:bg-white/5 transition-all">
-                Log in
-              </Link>
-              <Link href="/register">
-                <Button className="bg-[#00A8E1] hover:bg-[#0082B4] text-white px-6 font-bold">
-                  Get Started
-                </Button>
+                Log in / Signup
               </Link>
             </div>
           </div>

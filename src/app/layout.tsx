@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import RoleSwitcher from "@/components/shared/RoleSwitcher";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 const inter = Inter({
@@ -36,6 +37,7 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <Footer />
         <MobileBottomNav />
         <RoleSwitcher />
         <Toaster theme="dark" position="bottom-right" />

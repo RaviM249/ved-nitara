@@ -38,7 +38,7 @@ export default function ArtistDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat, i) => (
-          <Card key={i} className="bg-[#1f1f1f] border-white/5">
+          <Card key={i} className="bg-black/60 backdrop-blur-xl border-white/10 hover:border-[#00A8E1]/20 transition-all">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-gray-400">
                 {stat.name}
@@ -69,7 +69,7 @@ export default function ArtistDashboard() {
             <SubscriptionGate fallbackMessage="Subscribe to view Faculty Opportunities">
               <div className="space-y-4">
                 {recentOpps.map((opp) => (
-                  <Card key={opp.id} className="bg-[#1f1f1f] border-white/5 hover:border-white/20 transition-colors">
+                  <Card key={opp.id} className="bg-black/60 backdrop-blur-xl border-white/10 hover:border-[#00A8E1]/30 transition-all hover:shadow-[0_0_20px_rgba(0,168,225,0.1)]">
                     <div className="p-4 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -102,7 +102,7 @@ export default function ArtistDashboard() {
             </div>
             <div className="space-y-4">
               {recentBookings.length > 0 ? recentBookings.map((b) => (
-                <div key={b.id} className="bg-[#1f1f1f] border border-white/5 rounded-lg p-4 flex justify-between items-center">
+                <div key={b.id} className="bg-black/40 border border-white/10 rounded-lg p-4 flex justify-between items-center">
                   <div>
                     <h4 className="font-medium text-white">{b.eventType}</h4>
                     <p className="text-sm text-gray-400">{b.eventDate} • {b.city}</p>
@@ -117,7 +117,7 @@ export default function ArtistDashboard() {
                   </Badge>
                 </div>
               )) : (
-                <div className="text-center py-8 bg-[#1f1f1f] border border-white/5 rounded-lg text-gray-400 text-sm">
+                <div className="text-center py-8 bg-black/40 border border-white/10 rounded-lg text-gray-400 text-sm">
                   You have no recent bookings. Keep applying!
                 </div>
               )}
@@ -127,8 +127,8 @@ export default function ArtistDashboard() {
 
         {/* Right Column - Profile Completion & Subs */}
         <div className="space-y-6">
-          <Card className="bg-[#141414] border-[#00A8E1]/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
+          <Card className="bg-black/80 backdrop-blur-xl border border-[#00A8E1]/30 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
               <Star className="h-24 w-24 text-[#00A8E1]" />
             </div>
             <CardHeader>
@@ -165,8 +165,8 @@ export default function ArtistDashboard() {
           </Card>
 
           {!isSubscribed && (
-            <div className="bg-gradient-to-br from-[#1f1f1f] to-[#141414] border border-[#00A8E1]/30 rounded-xl p-6 relative overflow-hidden">
-              <div className="absolute -bottom-10 -right-10 h-32 w-32 bg-[#00A8E1]/20 blur-2xl rounded-full pointer-events-none"></div>
+            <div className="bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-xl border border-[#00A8E1]/30 rounded-xl p-6 relative overflow-hidden group">
+              <div className="absolute -bottom-10 -right-10 h-32 w-32 bg-[#00A8E1]/20 blur-[60px] rounded-full pointer-events-none group-hover:bg-[#00A8E1]/30 transition-colors"></div>
               <h3 className="font-bold text-white text-lg mb-2">Upgrade to Pro</h3>
               <p className="text-gray-400 text-sm mb-4">Unlock faculty opportunities, unlimited applications, and direct messaging.</p>
               <Button asChild className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4] shadow-[0_0_15px_rgba(0,168,225,0.3)]">

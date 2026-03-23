@@ -19,8 +19,10 @@ export default function SubscriptionGate({
 }: SubscriptionGateProps) {
   const { isSubscribed } = useAuthStore();
 
+  // TEMPORARY BYPASS: Showing the full list until premium features are introduced later
+  return <>{children}</>;
+
   if (isSubscribed) {
-    return <>{children}</>;
   }
 
   if (hideContent) {

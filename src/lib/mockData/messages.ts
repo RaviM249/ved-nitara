@@ -7,7 +7,7 @@ export const messages: Message[] = [
     senderId: "c1", // Client
     receiverId: "a1", // Aarav
     senderName: "Rahul Sharma",
-    senderAvatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    senderAvatar: "https://i.pravatar.cc/800?img=33",
     content: "Hi Aarav, looking to cast you for an upcoming digital ad. Are you available next week?",
     timestamp: "2024-03-18T10:00:00Z",
     isRead: true
@@ -18,7 +18,7 @@ export const messages: Message[] = [
     senderId: "a1",
     receiverId: "c1",
     senderName: "Aarav Sharma",
-    senderAvatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    senderAvatar: "https://i.pravatar.cc/800?img=2",
     content: "Hi Rahul! Yes, my calendar is open next week on Thursday and Friday. Can we discuss the script?",
     timestamp: "2024-03-18T10:15:00Z",
     isRead: true
@@ -29,7 +29,7 @@ export const messages: Message[] = [
     senderId: "c1",
     receiverId: "a1",
     senderName: "Rahul Sharma",
-    senderAvatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    senderAvatar: "https://i.pravatar.cc/800?img=33",
     content: "Perfect, I'll send over the details to your email. Let's lock Thursday.",
     timestamp: "2024-03-18T10:30:00Z",
     isRead: false
@@ -51,7 +51,7 @@ export const messages: Message[] = [
     senderId: "a16",
     receiverId: "s1",
     senderName: "Ravi Shankar",
-    senderAvatar: "https://randomuser.me/api/portraits/men/16.jpg",
+    senderAvatar: "https://i.pravatar.cc/800?img=17",
     content: "Thank you. Yes, I would love to contribute. I have attached my teaching resume in the previous application.",
     timestamp: "2024-03-17T15:20:00Z",
     isRead: false

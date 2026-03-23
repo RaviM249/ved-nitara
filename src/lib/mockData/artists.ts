@@ -4,7 +4,7 @@ export const artists: Artist[] = [
   {
     id: "a1",
     name: "Aarav Sharma",
-    profilePhoto: "https://randomuser.me/api/portraits/men/1.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=2",
     coverPhoto: "https://picsum.photos/seed/aarav/800/400",
     roles: ["Actor", "Model"],
     city: "Mumbai",
@@ -30,7 +30,7 @@ export const artists: Artist[] = [
   {
     id: "a2",
     name: "Priya Patel",
-    profilePhoto: "https://randomuser.me/api/portraits/women/2.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=3",
     coverPhoto: "https://picsum.photos/seed/priya/800/400",
     roles: ["Singer", "Musician"],
     city: "Delhi",
@@ -55,7 +55,7 @@ export const artists: Artist[] = [
   {
     id: "a3",
     name: "Vikram Singh",
-    profilePhoto: "https://randomuser.me/api/portraits/men/3.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=4",
     coverPhoto: "https://picsum.photos/seed/vikram/800/400",
     roles: ["Director", "Writer"],
     city: "Bangalore",
@@ -76,7 +76,7 @@ export const artists: Artist[] = [
   {
     id: "a4",
     name: "Neha Gupta",
-    profilePhoto: "https://randomuser.me/api/portraits/women/4.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=5",
     coverPhoto: "https://picsum.photos/seed/neha/800/400",
     roles: ["Dancer", "Choreographer"],
     city: "Hyderabad",
@@ -103,7 +103,7 @@ export const artists: Artist[] = [
   {
     id: "a5",
     name: "Rahul Desai",
-    profilePhoto: "https://randomuser.me/api/portraits/men/5.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=6",
     coverPhoto: "https://picsum.photos/seed/rahul/800/400",
     roles: ["Cameraman", "DOP"],
     city: "Chennai",
@@ -127,7 +127,7 @@ export const artists: Artist[] = [
   {
     id: "a6",
     name: "Ananya Kapoor",
-    profilePhoto: "https://randomuser.me/api/portraits/women/6.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=7",
     coverPhoto: "https://picsum.photos/seed/ananya/800/400",
     roles: ["VFX Artist", "Colorist"],
     city: "Kolkata",
@@ -149,7 +149,7 @@ export const artists: Artist[] = [
   {
     id: "a7",
     name: "Kabir Khan",
-    profilePhoto: "https://randomuser.me/api/portraits/men/7.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=8",
     coverPhoto: "https://picsum.photos/seed/kabir/800/400",
     roles: ["Editor", "Sound Designer"],
     city: "Patna",
@@ -170,7 +170,7 @@ export const artists: Artist[] = [
   {
     id: "a8",
     name: "Meera Reddy",
-    profilePhoto: "https://randomuser.me/api/portraits/women/8.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=9",
     coverPhoto: "https://picsum.photos/seed/meera/800/400",
     roles: ["Casting Director"],
     city: "Lucknow",
@@ -191,7 +191,7 @@ export const artists: Artist[] = [
   {
     id: "a9",
     name: "Rohan Joshi",
-    profilePhoto: "https://randomuser.me/api/portraits/men/9.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=10",
     coverPhoto: "https://picsum.photos/seed/rohan/800/400",
     roles: ["Stand-up Comedian", "Writer"],
     city: "Jaipur",
@@ -215,7 +215,7 @@ export const artists: Artist[] = [
   {
     id: "a10",
     name: "Isha Jain",
-    profilePhoto: "https://randomuser.me/api/portraits/women/10.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=11",
     coverPhoto: "https://picsum.photos/seed/isha/800/400",
     roles: ["Actor", "Voice Over Artist"],
     city: "Mumbai",
@@ -240,7 +240,7 @@ export const artists: Artist[] = [
   {
       id: "a11",
       name: "Siddharth Verma",
-      profilePhoto: "https://randomuser.me/api/portraits/men/11.jpg",
+      profilePhoto: "https://i.pravatar.cc/800?img=12",
       coverPhoto: "https://picsum.photos/seed/siddharth/800/400",
       roles: ["Music Producer", "Composer"],
       city: "Delhi",
@@ -261,7 +261,7 @@ export const artists: Artist[] = [
   {
       id: "a12",
       name: "Tara Menon",
-      profilePhoto: "https://randomuser.me/api/portraits/women/12.jpg",
+      profilePhoto: "https://i.pravatar.cc/800?img=13",
       coverPhoto: "https://picsum.photos/seed/tara/800/400",
       roles: ["Director", "Producer"],
       city: "Bangalore",
@@ -282,7 +282,7 @@ export const artists: Artist[] = [
   {
       id: "a13",
       name: "Arjun Das",
-      profilePhoto: "https://randomuser.me/api/portraits/men/13.jpg",
+      profilePhoto: "https://i.pravatar.cc/800?img=14",
       coverPhoto: "https://picsum.photos/seed/arjun/800/400",
       roles: ["Dancer", "Actor"],
       city: "Hyderabad",
@@ -306,7 +306,7 @@ export const artists: Artist[] = [
   {
       id: "a14",
       name: "Kavya Singh",
-      profilePhoto: "https://randomuser.me/api/portraits/women/14.jpg",
+      profilePhoto: "https://i.pravatar.cc/800?img=15",
       coverPhoto: "https://picsum.photos/seed/kavya/800/400",
       roles: ["Makeup Artist", "Hair Stylist"],
       city: "Mumbai",
@@ -331,7 +331,7 @@ export const artists: Artist[] = [
   {
       id: "a15",
       name: "Manoj Kumar",
-      profilePhoto: "https://randomuser.me/api/portraits/men/15.jpg",
+      profilePhoto: "https://i.pravatar.cc/800?img=16",
       coverPhoto: "https://picsum.photos/seed/manoj/800/400",
       roles: ["Art Director", "Set Designer"],
       city: "Chennai",
@@ -354,7 +354,7 @@ export const artists: Artist[] = [
   {
     id: "a16",
     name: "Ravi Shankar",
-    profilePhoto: "https://randomuser.me/api/portraits/men/16.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=17",
     coverPhoto: "https://picsum.photos/seed/ravi/800/400",
     roles: ["Actor", "Writer"],
     city: "Kolkata",
@@ -375,7 +375,7 @@ export const artists: Artist[] = [
   {
     id: "a17",
     name: "Smriti Irani",
-    profilePhoto: "https://randomuser.me/api/portraits/women/17.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=18",
     coverPhoto: "https://picsum.photos/seed/smriti/800/400",
     roles: ["Singer"],
     city: "Patna",
@@ -397,7 +397,7 @@ export const artists: Artist[] = [
   {
     id: "a18",
     name: "Aditya Roy",
-    profilePhoto: "https://randomuser.me/api/portraits/men/18.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=19",
     coverPhoto: "https://picsum.photos/seed/aditya/800/400",
     roles: ["DOP", "Cameraman"],
     city: "Lucknow",
@@ -420,7 +420,7 @@ export const artists: Artist[] = [
   {
     id: "a19",
     name: "Naina Chopra",
-    profilePhoto: "https://randomuser.me/api/portraits/women/19.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=20",
     coverPhoto: "https://picsum.photos/seed/naina/800/400",
     roles: ["Editor", "VFX Artist"],
     city: "Jaipur",
@@ -441,7 +441,7 @@ export const artists: Artist[] = [
   {
     id: "a20",
     name: "Karan Johar",
-    profilePhoto: "https://randomuser.me/api/portraits/men/20.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=21",
     coverPhoto: "https://picsum.photos/seed/karan/800/400",
     roles: ["Director", "Producer"],
     city: "Mumbai",
@@ -462,7 +462,7 @@ export const artists: Artist[] = [
   {
     id: "a21",
     name: "Sanya Malhotra",
-    profilePhoto: "https://randomuser.me/api/portraits/women/21.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=22",
     coverPhoto: "https://picsum.photos/seed/sanya/800/400",
     roles: ["Actor", "Dancer"],
     city: "Delhi",
@@ -487,7 +487,7 @@ export const artists: Artist[] = [
   {
     id: "a22",
     name: "Ranveer Singh",
-    profilePhoto: "https://randomuser.me/api/portraits/men/22.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=23",
     coverPhoto: "https://picsum.photos/seed/ranveer/800/400",
     roles: ["Actor", "Model"],
     city: "Mumbai",
@@ -512,7 +512,7 @@ export const artists: Artist[] = [
   {
     id: "a23",
     name: "Alia Bhatt",
-    profilePhoto: "https://randomuser.me/api/portraits/women/23.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=24",
     coverPhoto: "https://picsum.photos/seed/alia/800/400",
     roles: ["Actor", "Singer"],
     city: "Mumbai",
@@ -536,7 +536,7 @@ export const artists: Artist[] = [
   {
     id: "a24",
     name: "Ayushmann Khurrana",
-    profilePhoto: "https://randomuser.me/api/portraits/men/24.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=25",
     coverPhoto: "https://picsum.photos/seed/ayushmann/800/400",
     roles: ["Actor", "Singer", "Writer"],
     city: "Mumbai",
@@ -560,7 +560,7 @@ export const artists: Artist[] = [
   {
     id: "a25",
     name: "A. R. Rahman",
-    profilePhoto: "https://randomuser.me/api/portraits/men/25.jpg",
+    profilePhoto: "https://i.pravatar.cc/800?img=26",
     coverPhoto: "https://picsum.photos/seed/arrahman/800/400",
     roles: ["Musician", "Composer", "Singer"],
     city: "Chennai",

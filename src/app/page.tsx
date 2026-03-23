@@ -173,83 +173,62 @@ export default function LandingPage() {
           </div>
         </section>
 
-      {/* FEATURES SECTION - Unified with Stats above */}
-      <section className="py-24 bg-black/40 backdrop-blur-sm relative z-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="font-display text-4xl md:text-6xl text-white mb-6 leading-tight">
-                THE ULTIMATE <span className="text-[#00A8E1]">ARTIST BANK</span>
-              </h2>
-              <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-                Production houses and casting directors can search through thousands of verified profiles using advanced filters like age, gender, skills, languages, and availability. Finding your perfect cast has never been this seamless.
-              </p>
-              <ul className="space-y-4 mb-10">
-                <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><ShieldCheck className="h-5 w-5 text-[#00A8E1] mr-3" /> Verified Profiles Only</li>
-                <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><Camera className="h-5 w-5 text-[#00A8E1] mr-3" /> Rich Portfolios & Showreels</li>
-                <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><PlayCircle className="h-5 w-5 text-[#00A8E1] mr-3" /> Direct In-app Messaging</li>
-              </ul>
-              <Link href="/pricing" tabIndex={-1}>
-                <Button className="bg-white text-black hover:bg-gray-200 font-bold px-8 h-12">
-                  Explore Features
-                </Button>
-              </Link>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-[#00A8E1]/20 blur-[100px] rounded-full z-0" />
-              <div className="relative z-10 bg-[#0F171E] border border-white/10 rounded-2xl shadow-2xl p-2 overflow-hidden">
-                <img src="https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_800/v1774065749/Gemini_Generated_Image_auzrvaauzrvaauzr_absldm.png" alt="Artist Bank Preview" className="rounded-xl w-full opacity-80" />
+        {/* FEATURES SECTION - Unified with Stats above */}
+        <section className="py-24 bg-black/40 backdrop-blur-sm relative z-10">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div>
+                <h2 className="font-display text-4xl md:text-6xl text-white mb-6 leading-tight">
+                  THE ULTIMATE <span className="text-[#00A8E1]">ARTIST BANK</span>
+                </h2>
+                <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+                  Production houses and casting directors can search through thousands of verified profiles using advanced filters like age, gender, skills, languages, and availability. Finding your perfect cast has never been this seamless.
+                </p>
+                <ul className="space-y-4 mb-10">
+                  <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><ShieldCheck className="h-5 w-5 text-[#00A8E1] mr-3" /> Verified Profiles</li>
+                  <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><Camera className="h-5 w-5 text-[#00A8E1] mr-3" /> Rich Portfolios & Showreels</li>
+                  <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><PlayCircle className="h-5 w-5 text-[#00A8E1] mr-3" /> Direct In-app Messaging</li>
+                </ul>
+                <Link href="/pricing" tabIndex={-1}>
+                  <Button className="bg-white text-black hover:bg-gray-200 font-bold px-8 h-12">
+                    Explore Features
+                  </Button>
+                </Link>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-[#00A8E1]/20 blur-[100px] rounded-full z-0" />
+                <div className="relative z-10 bg-[#0F171E] border border-white/10 rounded-2xl shadow-2xl p-2 overflow-hidden">
+                  <img src="https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_800/v1774065749/Gemini_Generated_Image_auzrvaauzrvaauzr_absldm.png" alt="Artist Bank Preview" className="rounded-xl w-full opacity-80" />
+                </div>
               </div>
             </div>
-          </div>
 
-          {!isLoggedIn && (
-            <div className="mt-16 flex flex-col sm:flex-row gap-6 w-full max-w-3xl mx-auto justify-center">
-              <Link href="/register?intent=hire" tabIndex={-1} className="flex-1 group">
-                <div className="bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#0082B4] rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,168,225,0.2)] h-full">
-                  <div className="text-3xl mb-4">🎬</div>
-                  <h3 className="text-white font-bold text-2xl mb-2 font-display tracking-wide group-hover:text-[#00A8E1] transition-colors">Hire Talent</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">Find actors, creators, and crew for your project</p>
-                </div>
-              </Link>
-              
-              <Link href="/register?intent=work" tabIndex={-1} className="flex-1 group">
-                <div className="bg-[#00A8E1]/10 backdrop-blur-md border border-[#00A8E1]/30 hover:bg-[#00A8E1]/20 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,168,225,0.4)] h-full">
-                  <div className="text-3xl mb-4">✨</div>
-                  <h3 className="text-white font-bold text-2xl mb-2 font-display tracking-wide">Get Hired</h3>
-                  <p className="text-blue-100/70 text-sm leading-relaxed">Create your profile and start getting opportunities</p>
-                </div>
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
+            {!isLoggedIn && (
+              <div className="mt-16 flex flex-col sm:flex-row gap-6 w-full max-w-3xl mx-auto justify-center">
+                <Link href="/register?intent=hire" tabIndex={-1} className="flex-1 group">
+                  <div className="bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#0082B4] rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,168,225,0.2)] h-full">
+                    <div className="text-3xl mb-4">🎬</div>
+                    <h3 className="text-white font-bold text-2xl mb-2 font-display tracking-wide group-hover:text-[#00A8E1] transition-colors">Hire Talent</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">Find actors, creators, and crew for your project</p>
+                  </div>
+                </Link>
+
+                <Link href="/register?intent=work" tabIndex={-1} className="flex-1 group">
+                  <div className="bg-[#00A8E1]/10 backdrop-blur-md border border-[#00A8E1]/30 hover:bg-[#00A8E1]/20 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,168,225,0.4)] h-full">
+                    <div className="text-3xl mb-4">✨</div>
+                    <h3 className="text-white font-bold text-2xl mb-2 font-display tracking-wide">Get Hired</h3>
+                    <p className="text-blue-100/70 text-sm leading-relaxed">Create your profile and start getting opportunities</p>
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
 
 
       </div>
 
-      {/* FOOTER */}
-      <footer className="bg-black border-t border-white/10 py-12 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
-            <div className="font-display text-2xl tracking-wider text-[#00A8E1] mb-2">VED NITARA</div>
-            <p className="text-gray-500 text-sm">Connecting the Indian Entertainment Industry.</p>
-          </div>
 
-          <div className="flex gap-6 text-sm text-gray-400">
-            <Link href="/login" className="hover:text-white transition-colors">Login</Link>
-            <Link href="/register" className="hover:text-white transition-colors">Register</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-          </div>
-
-          <div className="text-center md:text-right text-gray-500 text-xs">
-            <p>Mr. Amrendra Kumar</p>
-            <p>+91 9122567345</p>
-            <p>amrendrakumar8102@gmail.com</p>
-            <p className="mt-4">© 2026 Ved Nitara. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
