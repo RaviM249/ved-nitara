@@ -71,17 +71,17 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative">
+      <div className="relative z-10">
         {/* Shared Background image & gradient overlay for Hero + Stats */}
         <div
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_1920/v1774266196/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5_xf4bya.jpg')" }}
         />
 
         {/* Dynamic Darkening Overlays - reveals background as user scrolls down */}
         <motion.div
           style={{ opacity: overlayOpacity }}
-          className="absolute inset-0 z-0 pointer-events-none"
+          className="fixed inset-0 -z-10 pointer-events-none"
         >
           <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/70 to-[#0F171E]/40" />
           <div className="absolute inset-0 z-0 bg-black/40" />
