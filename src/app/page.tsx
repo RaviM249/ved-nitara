@@ -49,7 +49,15 @@ function ReelCard({ name, image }: { name: string; image: string }) {
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const { scrollYProgress } = useScroll();
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, user } = useAuthStore();
+
+  // Dynamic link for "Explore Features"
+  const getFeaturesHref = () => {
+    if (!isLoggedIn) return "/pricing";
+    if (user?.role === "CLIENT") return "/client/dashboard";
+    if (user?.role === "TALENT") return "/talent/dashboard";
+    return "/pricing";
+  };
 
   // Transform scroll progress (0 to 0.4 of page) to overlay opacity (1 to 0.15)
   // As the user scrolls down, the image becomes significantly clearer/revealed.
@@ -189,7 +197,7 @@ export default function LandingPage() {
                   <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><Camera className="h-5 w-5 text-[#00A8E1] mr-3" /> Rich Portfolios & Showreels</li>
                   <li className="flex items-center text-gray-200 bg-white/5 p-3 rounded-lg border border-white/10"><PlayCircle className="h-5 w-5 text-[#00A8E1] mr-3" /> Direct In-app Messaging</li>
                 </ul>
-                <Link href="/pricing" tabIndex={-1}>
+                <Link href={getFeaturesHref()} tabIndex={-1}>
                   <Button className="bg-white text-black hover:bg-gray-200 font-bold px-8 h-12">
                     Explore Features
                   </Button>

@@ -65,7 +65,7 @@ export default function CastingCallsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Replace with API call - POST /api/v1/production/casting-calls
+    // TODO: Replace with API call - POST /api/v1/client/casting-calls
     await new Promise(r => setTimeout(r, 1000));
     setIsLoading(false);
     setIsOpen(false);

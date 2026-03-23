@@ -57,7 +57,7 @@ export default function ArtistCard({ artist, onShortlist, basePath = "/productio
           </div>
 
           <div className="flex items-center justify-between gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-            <Link href={profileUrl || `${basePath}/artist/${artist.id}`} className="w-full">
+            <Link href={profileUrl || `${basePath}/artists/${artist.id}`} className="w-full">
               <Button size="sm" className="w-full bg-white text-black hover:bg-gray-200">
                 View Profile
               </Button>

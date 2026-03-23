@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
-import { Bell, Menu, UserCircle, LogOut, LayoutDashboard, Settings, ChevronDown, Repeat } from "lucide-react";
+import { Bell, Menu, UserCircle, LogOut, LayoutDashboard, Settings, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const { isLoggedIn, currentMode, activeRole, user, logout, switchMode } = useAuthStore();
+  const { isLoggedIn, currentMode, activeRole, user, logout } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -33,13 +33,6 @@ export default function Navbar() {
 
   // Get base path based on mode
   const basePath = currentMode === "CLIENT" ? "/client" : "/talent";
-
-  const handleModeSwitch = () => {
-    const newMode = currentMode === "TALENT" ? "CLIENT" : "TALENT";
-    switchMode(newMode);
-    router.push(`/${newMode.toLowerCase()}/dashboard`);
-  };
-
   if (!mounted) {
     return (
       <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
@@ -151,17 +144,6 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 )}
                 
-                {/* Global Mode Toggle */}
-                <DropdownMenuSeparator className="bg-white/10" />
-                <DropdownMenuItem className="p-0">
-                  <button 
-                    onClick={handleModeSwitch}
-                    className="flex w-full items-center px-1.5 py-1.5 cursor-pointer font-bold text-[#00A8E1] hover:text-[#0082B4] focus:text-[#0082B4] focus:bg-white/10 transition-colors"
-                  >
-                    <Repeat className="mr-2 h-4 w-4" />
-                    <span>Switch to {currentMode === "TALENT" ? "Hiring" : "Talent"} Mode</span>
-                  </button>
-                </DropdownMenuItem>
 
                 <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-400 focus:bg-red-500/10">

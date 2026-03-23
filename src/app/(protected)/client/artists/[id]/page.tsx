@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Star, MapPin, Play, MessageSquare, BookmarkPlus, ArrowLeft, ShieldCheck, FileText, FileAudio } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ArtistProfileDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const artistId = resolvedParams.id;
+  const router = useRouter();
   
   const artist = mockArtists.find(a => a.id === artistId);
   const artistReviews = mockReviews.filter(r => r.revieweeId === artistId);
@@ -22,7 +24,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
         <div className="text-center py-20">
           <h2 className="text-2xl font-bold text-white mb-2">Artist Not Found</h2>
           <Button asChild variant="outline" className="text-white border-white/20">
-            <Link href="/production/dashboard">Back to Artist Bank</Link>
+            <Link href="/client/talent-bank">Back to Artist Bank</Link>
           </Button>
         </div>
       </PageWrapper>
@@ -32,10 +34,8 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
   return (
     <PageWrapper>
       <div className="mb-6">
-        <Button variant="ghost" size="sm" asChild className="text-gray-400 hover:text-white -ml-3 mb-4">
-          <Link href="/production/dashboard">
+        <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-gray-400 hover:text-white -ml-3 mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Search
-          </Link>
         </Button>
       </div>
 

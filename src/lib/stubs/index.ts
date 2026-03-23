@@ -31,7 +31,7 @@ export const api = {
     return schools;
   },
 
-  // TODO: Replace with API call - GET /api/v1/production
+  // TODO: Replace with API call - GET /api/v1/client
   getProductionHouses: async () => {
     await delay(800);
     return productionHouses;
@@ -132,7 +132,7 @@ export const api = {
     return { success: true, subscription_id: "razorpay_sub_mock", message: "Subscription activated." };
   },
 
-  // TODO: Replace with API call - POST /api/v1/production/shortlist
+  // TODO: Replace with API call - POST /api/v1/client/shortlist
   addToShortlist: async (artistId: string, projectName?: string) => {
     await delay(600);
     return { success: true, message: "Added to shortlist." };
