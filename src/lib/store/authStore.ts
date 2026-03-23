@@ -19,7 +19,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   activeRole: "TALENT", // default role
   currentMode: null, // set during login or intent selection
   isSubscribed: false,
-  login: (role, user, isSubscribed = true) => {
+  login: (role, user, isSubscribed = false) => {
     // Determine initial UI mode based on role
     const defaultMode = role === "CLIENT" ? "CLIENT" : "TALENT";
     set({ 

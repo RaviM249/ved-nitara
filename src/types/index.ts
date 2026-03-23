@@ -41,6 +41,7 @@ export interface User {
   password?: string;
   role: Role;
   isEmailVerified: boolean;
+  isSubscribed: boolean;
   status: UserStatus;
   
   profile?: UserProfile;

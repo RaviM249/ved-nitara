@@ -6,6 +6,7 @@
     "password": "password",
     "role": "TALENT",
     "isEmailVerified": true,
+    "isSubscribed": false,
     "status": "ACTIVE",
     "roles": ["TALENT"]
   },
@@ -16,6 +17,7 @@
     "password": "password",
     "role": "CLIENT",
     "isEmailVerified": true,
+    "isSubscribed": false,
     "status": "ACTIVE",
     "roles": ["CLIENT"]
   },
@@ -26,6 +28,7 @@
     "password": "password",
     "role": "ADMIN",
     "isEmailVerified": true,
+    "isSubscribed": false,
     "status": "ACTIVE",
     "roles": ["ADMIN"]
   }

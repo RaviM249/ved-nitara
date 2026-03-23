@@ -44,7 +44,7 @@ export default function LoginPage() {
         toast.success(res.message);
         
         // Use Zustand to log the user in using the server response!
-        login(res.user.role || "TALENT", res.user, true);
+        login(res.user.role || "TALENT", res.user, res.user.isSubscribed);
         
         // Redirect to their dashboard based on role
         if (res.user.role === "CLIENT") {

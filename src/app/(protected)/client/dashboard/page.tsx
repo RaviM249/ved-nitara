@@ -75,16 +75,7 @@ export default function ClientDashboard() {
           </h1>
           <p className="text-gray-400 text-sm">Welcome back, {user?.name || "Client Admin"}. Discover top talent for your next project.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="border-white/10 text-white hover:bg-white/5" asChild>
-            <Link href="/client/inbox">Inbox</Link>
-          </Button>
-          <Button asChild className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
-            <Link href="/client/casting">
-              <span className="mr-2 pb-0.5 text-lg leading-none">+</span> Post Casting Call
-            </Link>
-          </Button>
-        </div>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
