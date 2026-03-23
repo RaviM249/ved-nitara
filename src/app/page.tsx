@@ -10,7 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 const ROW1 = [
   { name: "Actor", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&h=250&auto=format&fit=crop" },
   { name: "Singer", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&h=250&auto=format&fit=crop" },
-  { name: "Dancer", image: "https://images.unsplash.com/photo-1508700915892-45ecd05ae2ad?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Dancer", image: "https://images.unsplash.com/photo-1719435546599-19d223fbabc9?q=80&w=400&h=250&auto=format&fit=crop" },
   { name: "Musician", image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=400&h=250&auto=format&fit=crop" },
   { name: "Cameraman", image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&h=250&auto=format&fit=crop" },
   { name: "Director", image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=400&h=250&auto=format&fit=crop" },
@@ -18,8 +18,8 @@ const ROW1 = [
 ];
 
 const ROW2 = [
-  { name: "Production House", image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=400&h=250&auto=format&fit=crop" },
-  { name: "Schools", image: "https://images.unsplash.com/photo-1523050335456-c6bb739d0672?q=80&w=400&h=250&auto=format&fit=crop" },
+  { name: "Production House", image: "https://images.unsplash.com/photo-1758906819465-b2fde39d715d?auto=format&fit=crop&q=80&w=400&h=250" },
+  { name: "Schools", image: "https://images.unsplash.com/photo-1730106443463-0fb1512c5e60?auto=format&fit=crop&q=80&w=400&h=250" },
   { name: "Private Booking", image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=400&h=250&auto=format&fit=crop" },
   { name: "Technicians", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=400&h=250&auto=format&fit=crop" },
   { name: "Script Writer", image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&h=250&auto=format&fit=crop" },
@@ -75,7 +75,7 @@ export default function LandingPage() {
         {/* Shared Background image & gradient overlay for Hero + Stats */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
-          style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_1920/v1774014712/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5.png')" }}
+          style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_1920/v1774266196/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5_xf4bya.jpg')" }}
         />
 
         {/* Dynamic Darkening Overlays - reveals background as user scrolls down */}
