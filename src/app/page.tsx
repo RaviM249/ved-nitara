@@ -74,7 +74,7 @@ export default function LandingPage() {
       <div className="relative">
         {/* Shared Background image & gradient overlay for Hero + Stats */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_1920/v1774266196/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5_xf4bya.jpg')" }}
         />
 
