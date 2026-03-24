@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  TALENT
+  CLIENT
+  ADMIN
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String         @unique
+  password      String?
+  role          UserRole       @default(TALENT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  talentProfile ArtistProfile?
+  clientProfile ClientProfile?
+}
+
+model ArtistProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio          String?
+  category     String?  // Actor, Singer, etc.
+  subCategory  String?
+  location     String?
+  experience   String?
+  skills       String[]
+  images       String[] // URLs
+  socialLinks  Json?    // { instagram: '', youtube: '' }
+  updatedAt    DateTime @updatedAt
+  applications Application[]
+}
+
+model ClientProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName   String?
+  contactPerson String?
+  location      String?
+  website       String?
+  bio           String?
+  updatedAt     DateTime @updatedAt
+  castingCalls  CastingCall[]
+}
+
+model CastingCall {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  location    String?
+  budget      String?
+  role        String?
+  status      String   @default("OPEN") // OPEN, CLOSED, COMPLETED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id            String      @id @default(cuid())
+  castingCallId String
+  castingCall   CastingCall @relation(fields: [castingCallId], references: [id], onDelete: Cascade)
+  talentId      String
+  talent        ArtistProfile @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  status        String      @default("PENDING") // PENDING, SHORTLISTED, REJECTED
+  createdAt     DateTime    @default(now())
+}
