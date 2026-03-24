@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 // This is a placeholder for a real session check (e.g. from cookies/JWT)
 // For now, we'll simulate an authenticated session using a query param or header for testing
 export async function GET(request: Request) {
