@@ -1,59 +1,65 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export async function POST(request: Request) {
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, password, name, role } = body;
+    const body = await req.json();
+    const { name, email, password, role } = body;
 
-    if (!email || !password || !name || !role) {
-      return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
+    if (!name || !email || !password || !role) {
+      return NextResponse.json(
+        { error: "All fields are required." },
+        { status: 400 }
+      );
     }
 
-    const dataPath = path.join(process.cwd(), 'src', 'lib', 'mockData', 'users.json');
-    
-    // Read existing users
-    let users = [];
-    try {
-      const fileContent = await fs.readFile(dataPath, 'utf-8');
-      users = JSON.parse(fileContent);
-    } catch (error) {
-      // If file doesn't exist, we'll just start with an empty array or handle error
-      console.error("Could not read users.json", error);
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return NextResponse.json(
+        { error: "An account with this email already exists." },
+        { status: 409 }
+      );
     }
 
-    // Check if user already exists
-    if (users.some((u: any) => u.email === email)) {
-      return NextResponse.json({ success: false, message: 'Email already exists' }, { status: 409 });
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user mapping to our schema
-    const newUser = {
-      id: `u_${role.toLowerCase()}_${Date.now()}`,
-      name,
-      email,
-      password, // In a real app, this would be hashed
-      role,
-      isEmailVerified: false,
-      status: "ACTIVE",
-      roles: [role] // Backwards compatibility
-    };
-
-    // Add to array and save back to file
-    users.push(newUser);
-    await fs.writeFile(dataPath, JSON.stringify(users, null, 2), 'utf-8');
-
-    // Don't send password back to frontend
-    const { password: _, ...userWithoutPassword } = newUser;
-
-    return NextResponse.json({
-      success: true,
-      message: 'Registration successful!',
-      user: userWithoutPassword
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: role as "TALENT" | "CLIENT" | "ADMIN",
+      },
     });
+
+    // Automatically create an empty profile on registration
+    if (user.role === "TALENT") {
+      await prisma.talentProfile.create({ data: { userId: user.id } });
+    } else if (user.role === "CLIENT") {
+      await prisma.clientProfile.create({ data: { userId: user.id } });
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    return NextResponse.json(
+      { message: "Account created successfully.", user: userWithoutPassword, token },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Registration API Error:", error);
-    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+    console.error("[REGISTER ERROR]", error);
+    return NextResponse.json(
+      { error: "Internal server error." },
+      { status: 500 }
+    );
   }
 }

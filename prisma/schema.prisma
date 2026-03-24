@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(TALENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  talentProfile TalentProfile?
+  clientProfile ClientProfile?
+  applications  Application[]
+  castingCalls  CastingCall[]
+}
+
+model TalentProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio         String?
+  location    String?
+  skills      String[] // e.g. ["Acting", "Dancing"]
+  languages   String[] // e.g. ["Hindi", "English"]
+  experience  String?  // e.g. "5 years"
+  age         Int?
+  gender      String?
+  imageUrl    String?
+  updatedAt   DateTime @updatedAt
+}
+
+model ClientProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName    String?
+  contactPerson  String?
+  location       String?
+  website        String?
+  bio            String?
+  imageUrl       String?
+  updatedAt      DateTime @updatedAt
+}
+
+model CastingCall {
+  id           String        @id @default(cuid())
+  clientId     String
+  client       User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  location     String?
+  budget       String?
+  deadline     DateTime?
+  status       String        @default("OPEN") // OPEN, CLOSED
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id            String      @id @default(cuid())
+  talentId      String
+  talent        User        @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  castingCallId String
+  castingCall   CastingCall @relation(fields: [castingCallId], references: [id], onDelete: Cascade)
+  status        String      @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  message       String?
+  createdAt     DateTime    @default(now())
+}
+
+enum Role {
+  TALENT
+  CLIENT
+  ADMIN
+}
