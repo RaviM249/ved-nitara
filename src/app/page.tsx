@@ -106,8 +106,7 @@ export default function LandingPage() {
               transition={{ duration: 1, delay: 0.2 }}
               className="font-display text-4xl sm:text-6xl lg:text-7xl tracking-wider text-white mb-4 lg:mb-6 leading-[1.1] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
             >
-              Find the right <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">talent.</span><br />
-              Or become one.
+              Build your career in <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">entertainment.</span>
             </motion.h1>
 
             <motion.p
