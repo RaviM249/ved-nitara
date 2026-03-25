@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { Card, CardContent } from "@/components/ui/card";
