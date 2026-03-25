@@ -79,21 +79,27 @@ function RegisterContent() {
       
       // Combine country code with phone
       const fullPhone = `${countryCode} ${values.phone}`;
-      const res = await api.register({ ...values, phone: fullPhone, role: assignedRole as any });
+      const res = await api.register({ ...values, phone: fullPhone, role: assignedRole }) as any;
 
-      if (res.success && res.user) {
-        toast.success(res.message);
-        login(assignedRole, res.user, res.user.isSubscribed);
+      if (res.user) {
+        toast.success(res.message || "Account created successfully!");
         
+        // Store user in Zustand (it's persisted now!)
+        login(assignedRole, res.user, false); // New users start unsubscribed
+        
+        // Save token to localStorage for subsequent API calls
+        if (res.token) {
+          localStorage.setItem("auth-token", res.token);
+        }
+        
+        // Redirect to onboarding
         if (assignedRole === "CLIENT") {
           router.push("/client/onboarding");
-        } else if (assignedRole === "TALENT") {
-          router.push("/talent/onboarding");
         } else {
-          router.push("/onboarding");
+          router.push("/talent/onboarding");
         }
       } else {
-        toast.error(res.message || "Registration failed");
+        toast.error(res.error || "Registration failed. Please try again.");
       }
     } catch (error) {
       toast.error("An unexpected error occurred.");
@@ -108,14 +114,14 @@ function RegisterContent() {
       animate={{ opacity: 1, scale: 1 }}
       className="w-full max-w-2xl bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 md:p-12 relative z-10 shadow-2xl overflow-hidden"
     >
-      {/* Decorative background glow */}
-      <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#00A8E1]/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#10B981]/5 blur-[100px] rounded-full pointer-events-none" />
-      
       <div className="text-center mb-10 relative z-10">
         <Link href="/" className="inline-block font-display text-4xl tracking-wider text-[#00A8E1] mb-6 hover-blue-glow transition-all">
           VED NITARA
         </Link>
+        {/* Decorative background glow moved here or into fragments if needed, but keeping logic clean */}
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#00A8E1]/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#10B981]/5 blur-[100px] rounded-full pointer-events-none" />
+        
         <div className="flex items-center justify-center gap-2 mb-2">
            <div className={`h-1.5 w-8 rounded-full transition-all duration-500 ${step === 1 ? 'bg-[#00A8E1] shadow-[0_0_10px_rgba(0,168,225,0.5)]' : 'bg-white/20'}`} />
            <div className={`h-1.5 w-8 rounded-full transition-all duration-500 ${step === 2 ? 'bg-[#00A8E1] shadow-[0_0_10px_rgba(0,168,225,0.5)]' : 'bg-white/20'}`} />
@@ -200,8 +206,11 @@ function RegisterContent() {
                               className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
                               placeholder={getPlaceholder("name", "e.g. Rahul Sharma")}
                               onFocus={() => setFocusedField("name")}
-                              onBlur={() => setFocusedField(null)}
-                              {...field} 
+                              {...field}
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setFocusedField(null);
+                              }}
                             />
                           </div>
                         </FormControl>
@@ -223,8 +232,11 @@ function RegisterContent() {
                               className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
                               placeholder={getPlaceholder("email", "rahul@example.com")}
                               onFocus={() => setFocusedField("email")}
-                              onBlur={() => setFocusedField(null)}
-                              {...field} 
+                              {...field}
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setFocusedField(null);
+                              }}
                             />
                           </div>
                         </FormControl>
@@ -266,8 +278,11 @@ function RegisterContent() {
                                   className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all w-full" 
                                   placeholder={getPlaceholder("phone", "98765 43210")}
                                   onFocus={() => setFocusedField("phone")}
-                                  onBlur={() => setFocusedField(null)}
-                                  {...field} 
+                                  {...field}
+                                  onBlur={(e) => {
+                                    field.onBlur();
+                                    setFocusedField(null);
+                                  }}
                                 />
                              </div>
                           </div>
@@ -289,8 +304,11 @@ function RegisterContent() {
                               className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
                               placeholder={getPlaceholder("city", "Mumbai, MH")}
                               onFocus={() => setFocusedField("city")}
-                              onBlur={() => setFocusedField(null)}
-                              {...field} 
+                              {...field}
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setFocusedField(null);
+                              }}
                             />
                           </div>
                         </FormControl>
@@ -315,8 +333,11 @@ function RegisterContent() {
                               className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
                               placeholder={getPlaceholder("password", "••••••••")}
                               onFocus={() => setFocusedField("password")}
-                              onBlur={() => setFocusedField(null)}
-                              {...field} 
+                              {...field}
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setFocusedField(null);
+                              }}
                             />
                           </div>
                         </FormControl>
@@ -338,8 +359,11 @@ function RegisterContent() {
                               className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
                               placeholder={getPlaceholder("confirmPassword", "••••••••")}
                               onFocus={() => setFocusedField("confirmPassword")}
-                              onBlur={() => setFocusedField(null)}
-                              {...field} 
+                              {...field}
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setFocusedField(null);
+                              }}
                             />
                           </div>
                         </FormControl>

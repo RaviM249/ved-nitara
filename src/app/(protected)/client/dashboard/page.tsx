@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { useAuthStore } from "@/lib/store/authStore";
-import { mockArtists } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Film, Users, CheckSquare, Eye, Search, SlidersHorizontal, MapPin, Star, Bookmark, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,11 +11,14 @@ import FilterPanel from "@/components/shared/FilterPanel";
 import ArtistCard from "@/components/shared/ArtistCard";
 import Link from "next/link";
 import SubscriptionGate from "@/components/shared/SubscriptionGate";
+import { api } from "@/lib/stubs";
 
 export default function ClientDashboard() {
   const { user } = useAuthStore();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [artists, setArtists] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Advanced Filters State
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -25,7 +27,25 @@ export default function ClientDashboard() {
   const [locationStr, setLocationStr] = useState<string>("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [hasShowreel, setHasShowreel] = useState(false);
-  
+
+  useEffect(() => {
+    async function fetchArtists() {
+      try {
+        setIsLoading(true);
+        const data = await api.getArtists({
+          role: selectedRoles.join(","),
+          city: locationStr || searchQuery,
+        });
+        setArtists(data);
+      } catch (err) {
+        console.error("Failed to fetch artists:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchArtists();
+  }, [selectedRoles, locationStr, searchQuery]);
+
   const stats = [
     { name: "Active Projects / Casting", value: "3", icon: Film },
     { name: "Total Profile Views", value: "24", icon: Eye },
@@ -33,38 +53,7 @@ export default function ClientDashboard() {
     { name: "Confirmed Bookings", value: "5", icon: CheckSquare },
   ];
 
-  const filteredArtists = mockArtists.filter(artist => {
-    // Keyword search
-    if (searchQuery && !artist.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !artist.roles.some(r => r.toLowerCase().includes(searchQuery.toLowerCase())) &&
-        !artist.skills?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))) {
-      return false;
-    }
-
-    // Role filtering
-    if (selectedRoles.length > 0 && !artist.roles.some(r => selectedRoles.includes(r))) {
-      return false;
-    }
-
-    // Location filtering
-    if (locationStr && !artist.city.toLowerCase().includes(locationStr.toLowerCase()) && !artist.state.toLowerCase().includes(locationStr.toLowerCase())) {
-      return false;
-    }
-
-    // Attributes filtering
-    if (verifiedOnly && !artist.isVerified) {
-      return false;
-    }
-    if (hasShowreel && !artist.showreelUrl) {
-      return false;
-    }
-
-    // Note: Age filtering is prepared in state (minAge, maxAge) 
-    // but the mock Artist type doesn't have an age field yet.
-    // When moved to the backend, these fields can be passed as query parameters.
-
-    return true;
-  });
+  const filteredArtists = artists; // Already filtered by API or keeping simple for now
 
   return (
     <PageWrapper>

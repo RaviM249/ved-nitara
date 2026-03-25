@@ -40,13 +40,18 @@ export default function LoginPage() {
       setIsLoading(true);
       const res = await api.login(values);
 
-      if (res.success && res.user) {
-        toast.success(res.message);
+      if (res.user) {
+        toast.success(res.message || "Logged in successfully!");
         
-        // Use Zustand to log the user in using the server response!
-        login(res.user.role || "TALENT", res.user, res.user.isSubscribed);
+        // Store user in Zustand (it's persisted now!)
+        login(res.user.role, res.user, res.user.isSubscribed);
         
-        // Redirect to their dashboard based on role
+        // Save token to localStorage for subsequent API calls if needed
+        if (res.token) {
+          localStorage.setItem("auth-token", res.token);
+        }
+
+        // Redirect based on role
         if (res.user.role === "CLIENT") {
           router.push("/client/dashboard");
         } else if (res.user.role === "ADMIN") {
@@ -55,10 +60,10 @@ export default function LoginPage() {
           router.push("/talent/dashboard");
         }
       } else {
-        toast.error(res.message || "Login failed");
+        toast.error(res.error || "Login failed. Check your credentials.");
       }
     } catch (error) {
-      toast.error("An unexpected error occurred.");
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -11,12 +11,30 @@ import { payments } from "../mockData/payments";
 // Utility to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const getAuthHeaders = () => {
+  if (typeof window === "undefined") return { "Content-Type": "application/json" };
+  const token = localStorage.getItem("auth-token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+  };
+};
+
 export const api = {
-  // TODO: Replace with API call - GET /api/v1/artists
+  // GET /api/talent
   getArtists: async (filters?: any) => {
-    await delay(800);
-    // In a real app we would apply filters here
-    return artists;
+    try {
+      const query = new URLSearchParams(filters).toString();
+      const res = await fetch(`/api/talent${query ? `?${query}` : ""}`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.talents || [];
+    } catch(err) {
+      console.error("Fetch artists failed:", err);
+      return [];
+    }
   },
 
   // TODO: Replace with API call - GET /api/v1/artists/:id
@@ -98,12 +116,12 @@ export const api = {
     return payments;
   },
 
-  // TODO: Replace with API call - POST /api/v1/auth/register
+  // POST /api/auth/register
   register: async (data: any) => {
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data),
       });
       return await res.json();
@@ -112,17 +130,71 @@ export const api = {
     }
   },
 
-  // TODO: Replace with API call - POST /api/v1/auth/login
+  // POST /api/auth/login
   login: async (data: any) => {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data),
       });
       return await res.json();
     } catch(err) {
       return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/auth/me
+  getMe: async () => {
+    try {
+      const res = await fetch("/api/auth/me", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/talent/profile
+  getTalentProfile: async () => {
+    try {
+      const res = await fetch("/api/talent/profile", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/client/profile
+  getClientProfile: async () => {
+    try {
+      const res = await fetch("/api/client/profile", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/casting-calls
+  getCastingCalls: async () => {
+    try {
+      const res = await fetch("/api/casting-calls", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.jobs || [];
+    } catch(err) {
+      console.error("Fetch casting calls failed:", err);
+      return [];
     }
   },
 

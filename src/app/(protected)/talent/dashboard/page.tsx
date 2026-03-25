@@ -10,6 +10,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
+import { useEffect, useState } from "react";
+
 const statusConfig: Record<string, { color: string; bg: string }> = {
   CONFIRMED: { color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
   PENDING:   { color: "text-amber-400",   bg: "bg-amber-500/15 border-amber-500/30" },
@@ -19,6 +21,24 @@ const statusConfig: Record<string, { color: string; bg: string }> = {
 
 export default function ArtistDashboard() {
   const { user, isSubscribed } = useAuthStore();
+  const [profile, setProfile] = useState<any>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await api.getTalentProfile();
+        if (res.profile) {
+          setProfile(res.profile);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    }
+    fetchProfile();
+  }, []);
 
   const stats = [
     { name: "Profile Views", value: "2,405", change: "+14%", icon: Eye, positive: true },
@@ -31,10 +51,10 @@ export default function ArtistDashboard() {
   const recentBookings = mockBookings.filter(b => b.artistId === 'a1').slice(0, 3);
 
   const profileChecklist = [
-    { label: "Basic Information",    done: true },
-    { label: "Showreel Upload",      done: true },
-    { label: "Portfolio Photos",     done: true },
-    { label: "Connect Instagram",    done: false },
+    { label: "Basic Information",    done: !!user },
+    { label: "Bio & Experience",     done: !!profile?.bio },
+    { label: "Skills added",         done: !!profile?.skills?.length },
+    { label: "Profile Picture",      done: !!profile?.imageUrl },
   ];
 
   const completionPercent = Math.round((profileChecklist.filter(i => i.done).length / profileChecklist.length) * 100);
