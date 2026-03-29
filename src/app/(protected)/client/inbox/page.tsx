@@ -1,36 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockMessages } from "@/lib/mockData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, FileImage, Settings, MessageSquare } from "lucide-react";
+import { Search, Send, FileImage, Settings, MessageSquare, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuthStore } from "@/lib/store/authStore";
+import { api } from "@/lib/stubs";
 
 export default function ProductionInboxPage() {
-  const currentUserId = "p1";
+  const { user } = useAuthStore();
+  const currentUserId = user?.id || "";
 
-  const conversationsMap = new Map();
-  mockMessages.forEach(msg => {
-    if (msg.senderId !== currentUserId && msg.receiverId !== currentUserId) return;
-    const partnerId = msg.senderId === currentUserId ? msg.receiverId : msg.senderId;
-    if (!conversationsMap.has(partnerId)) {
-      conversationsMap.set(partnerId, {
-        partnerId,
-        partnerName: partnerId.startsWith('a') ? `Artist ${partnerId.replace('a', '')}` : `User ${partnerId}`,
-        messages: [],
-        unread: msg.receiverId === currentUserId && !msg.isRead
-      });
-    }
-    const conv = conversationsMap.get(partnerId);
-    conv.messages.push(msg);
-    if (msg.receiverId === currentUserId && !msg.isRead) conv.unread = true;
-  });
-
-  const conversations = Array.from(conversationsMap.values());
-  const [activeConv, setActiveConv] = useState(conversations.length > 0 ? conversations[0] : null);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [activeConv, setActiveConv] = useState<any>(null);
   const [newMessage, setNewMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchConversations() {
+      try {
+        const data = await api.getConversations();
+        setConversations(data);
+        if (data.length > 0) setActiveConv(data[0]);
+      } catch (err) {
+        console.error("Failed to fetch conversations:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchConversations();
+  }, []);
 
   const handleSend = () => {
     if (!newMessage.trim() || !activeConv) return;
@@ -42,9 +43,19 @@ export default function ProductionInboxPage() {
       timestamp: new Date().toISOString(),
       read: false
     };
-    setActiveConv({ ...activeConv, messages: [...activeConv.messages, newMsgObj] });
+    setActiveConv({ ...activeConv, messages: [...(activeConv.messages || []), newMsgObj] });
     setNewMessage("");
   };
+
+  if (isLoading) {
+    return (
+      <PageWrapper className="h-[calc(100vh-64px)] overflow-hidden p-0 md:p-4" noPadding>
+        <div className="flex items-center justify-center h-full">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper className="h-[calc(100vh-64px)] overflow-hidden p-0 md:p-4" noPadding>

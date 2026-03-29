@@ -27,6 +27,8 @@ export interface TalentProfile {
     amount: number;
     currency: string;
   };
+  youtubeUrl?: string;
+  vimeoUrl?: string;
   availability: boolean;
 }
 
@@ -41,7 +43,8 @@ export interface User {
   password?: string;
   role: Role;
   isEmailVerified: boolean;
-  isSubscribed: boolean;
+  isPremium: boolean;
+  isSubscribed: boolean; // Alias for isPremium in frontend
   status: UserStatus;
   
   profile?: UserProfile;
@@ -88,7 +91,7 @@ export interface Artist {
   reviewCount: number;
   joinedDate: string;
   experience: string;
-  availability: boolean;
+  gender: string;
   hourlyRate?: number;
 }
 

@@ -8,14 +8,17 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, password, role } = body;
+    const { firstName, lastName, email, password, role, city, state, phone, otp } = body;
 
-    if (!name || !email || !password || !role) {
+    if (!firstName || !lastName || !email || !password || !role || !otp) {
       return NextResponse.json(
-        { error: "All fields are required." },
+        { error: "All fields including OTP are required." },
         { status: 400 }
       );
     }
+
+    const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
+    const name = `${capitalize(firstName)} ${capitalize(lastName)}`;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -25,22 +28,79 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (phone) {
+      const existingPhone = await prisma.user.findFirst({ where: { phone } });
+      if (existingPhone) {
+        return NextResponse.json(
+          { error: "An account with this phone number already exists." },
+          { status: 409 }
+        );
+      }
+    }
+
+    // Verify OTP
+    const otpRecord = await prisma.otpVerification.findUnique({ where: { email } });
+    if (!otpRecord) {
+      return NextResponse.json({ error: "No verification code requested for this email." }, { status: 400 });
+    }
+    
+    if (otpRecord.otp !== otp) {
+      return NextResponse.json({ error: "Invalid verification code." }, { status: 400 });
+    }
+
+    if (otpRecord.expiresAt < new Date()) {
+      return NextResponse.json({ error: "Verification code has expired. Please request a new one." }, { status: 400 });
+    }
+
+    // OTP is valid, clear it
+    await prisma.otpVerification.delete({ where: { email } });
+
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Capitalize city name
+    const capitalizedCity = city ? capitalize(city) : null;
+    const fullLocation = capitalizedCity && state ? `${capitalizedCity}, ${state}` : capitalizedCity || null;
 
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        phone,
         role: role as "TALENT" | "CLIENT" | "ADMIN",
+        isVerified: true,
       },
     });
 
-    // Automatically create an empty profile on registration
+    // Automatically create an empty profile on registration with location
     if (user.role === "TALENT") {
-      await prisma.talentProfile.create({ data: { userId: user.id } });
+      await (prisma.talentProfile as any).create({ 
+        data: { userId: user.id, city: capitalizedCity, state: state || null, location: fullLocation } 
+      });
     } else if (user.role === "CLIENT") {
-      await prisma.clientProfile.create({ data: { userId: user.id } });
+      await (prisma.clientProfile as any).create({ 
+        data: { userId: user.id, city: capitalizedCity, state: state || null, location: fullLocation } 
+      });
+    }
+
+    // Notify Admins about new signup for verification
+    try {
+      if (user.role !== "ADMIN") {
+        const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+        if (admins.length > 0) {
+          await prisma.notification.createMany({
+            data: admins.map(admin => ({
+              userId: admin.id,
+              type: "USER_SIGNUP",
+              message: `New ${user.role} signup: ${user.name}. Needs verification.`,
+              link: "/admin/users"
+            }))
+          });
+        }
+      }
+    } catch (notifyErr) {
+      console.error("Failed to notify admins:", notifyErr);
+      // Don't fail the registration if notification fails
     }
 
     const token = jwt.sign(

@@ -1,0 +1,127 @@
+{
+  "users": [
+    {
+      "id": "cmn4aezhb0005ur94g7mmoxtx",
+      "email": "talent1@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af06e0007ur94xxsfays2",
+      "email": "talent2@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af0vj0009ur94uw0eokdn",
+      "email": "talent3@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af1ki000bur94bb8693zf",
+      "email": "talent4@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af29m000dur94kfefejtj",
+      "email": "talent5@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af2yq000fur94len8vya9",
+      "email": "talent6@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af3nu000hur94znc16dv4",
+      "email": "talent7@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4af4d3000jur9480zmelz4",
+      "email": "talent8@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn4aeyo00003ur94gfymmsai",
+      "email": "talent@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn5yeh3i0002ureontrqc9y0",
+      "email": "hiretest1@gmail.com",
+      "phone": null,
+      "isVerified": true
+    },
+    {
+      "id": "cmn4aewp60000ur94kiwaljda",
+      "email": "admin@vednitara.com",
+      "phone": null,
+      "isVerified": true
+    },
+    {
+      "id": "cmnalnw2d0018urxk007g180d",
+      "email": "vibh@gmail.com",
+      "phone": "+91 5647855264",
+      "isVerified": false
+    },
+    {
+      "id": "cmnb8cs610000urcsuduto8qy",
+      "email": "hiretest2@example.com",
+      "phone": "+91 9140739195",
+      "isVerified": false
+    },
+    {
+      "id": "cmnbna2ys0002urzs7hbgjs63",
+      "email": "sdf@sfdsdf.com",
+      "phone": "+91 9140739193",
+      "isVerified": false
+    },
+    {
+      "id": "cmn4aexrc0001ur94zkflk09l",
+      "email": "client@example.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn5wcshh0000urykxtmrp943",
+      "email": "test@example.com",
+      "phone": null,
+      "isVerified": true
+    },
+    {
+      "id": "cmn7jht3r0000ur9w5tvwxhj9",
+      "email": "ramesh@gmail.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn7kk4lo0006ur9wrvpfxzbm",
+      "email": "sonytv@gmail.com",
+      "phone": null,
+      "isVerified": false
+    },
+    {
+      "id": "cmn8d8t5o0000urtsih8fi5wt",
+      "email": "showdown7090@gmail.com",
+      "phone": null,
+      "isVerified": false
+    }
+  ],
+  "otp": [
+    {
+      "id": "cmnbo2kyn0000ur3w98sdwejw",
+      "email": "hiretest3@gmail.com",
+      "otp": "879529",
+      "expiresAt": "2026-03-29T11:29:23.032Z",
+      "createdAt": "2026-03-29T11:19:23.038Z"
+    }
+  ]
+}

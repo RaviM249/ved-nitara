@@ -12,6 +12,7 @@ interface AuthState {
   logout: () => void;
   switchMode: (mode: "TALENT" | "CLIENT") => void;
   setSubscribed: (status: boolean) => void;
+  updateUser: (data: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -40,6 +41,9 @@ export const useAuthStore = create<AuthState>()(
       }),
       switchMode: (mode) => set({ currentMode: mode }),
       setSubscribed: (status) => set({ isSubscribed: status }),
+      updateUser: (data) => set((state) => ({
+        user: state.user ? { ...state.user, ...data } : null
+      })),
     }),
     {
       name: 'auth-storage', // name of the item in localStorage

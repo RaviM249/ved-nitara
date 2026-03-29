@@ -67,7 +67,7 @@ export default function RootLayout({
           <Footer />
           <MobileBottomNav />
           <RoleSwitcher />
-          <Toaster theme="dark" position="bottom-right" />
+          <Toaster theme="dark" position="top-center" />
         </AuthProvider>
       </body>
     </html>

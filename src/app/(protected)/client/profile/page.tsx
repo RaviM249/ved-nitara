@@ -8,10 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, Mail, User, PenSquare, Save, X, Loader2, Globe } from "lucide-react";
-import { useState } from "react";
+import { Building2, MapPin, Mail, User, PenSquare, Save, X, Loader2, Globe, ShieldAlert } from "lucide-react";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/stubs";
 import { toast } from "sonner";
+import { LocationSelector } from "@/components/shared/LocationSelector";
 
 export default function ClientProfilePage() {
   const { user } = useAuthStore();
@@ -19,24 +20,57 @@ export default function ClientProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Mock client data since its not fully in the user object
   const [formData, setFormData] = useState({
-    companyName: user?.name || "Ved Nitara Client",
-    email: user?.email || "client@example.com",
-    city: "Mumbai",
-    state: "Maharashtra",
-    website: "https://vednitara.com",
-    bio: "We are a leading production house looking for fresh talent for our upcoming projects. Specializing in high-end commercials and feature films.",
-    contactPerson: user?.name || "Client Representative",
+    companyName: "",
+    email: "",
+    city: "",
+    state: "",
+    website: "",
+    bio: "",
+    contactPerson: "",
   });
+  
+  const [isFetched, setIsFetched] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.getClientProfile();
+        if (res.profile) {
+          setFormData({
+            companyName: res.profile.companyName || user?.name || "",
+            email: res.profile.user?.email || user?.email || "",
+            city: res.profile.city || "",
+            state: res.profile.state || "",
+            website: res.profile.website || "",
+            bio: res.profile.bio || "",
+            contactPerson: res.profile.contactPerson || user?.name || "",
+          });
+          setIsFetched(true);
+        }
+      } catch (err) {
+        toast.error("Failed to load profile details.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      toast.success("Profile updated successfully");
-      setIsEditing(false);
+      const res = await api.updateClientProfile(formData);
+      if (res.profile) {
+        toast.success("Profile updated successfully");
+        setIsEditing(false);
+      } else {
+        toast.error(res.error || "Update failed");
+      }
     } catch (e) {
       toast.error("Failed to update profile");
     } finally {
@@ -134,25 +168,21 @@ export default function ClientProfilePage() {
                     </div>
                   </div>
                   
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="city" className="text-gray-300">City</Label>
-                      <Input 
-                        id="city" 
-                        value={formData.city} 
-                        onChange={(e) => setFormData({...formData, city: e.target.value})} 
-                        className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="website" className="text-gray-300">Website URL</Label>
-                      <Input 
-                        id="website" 
-                        value={formData.website} 
-                        onChange={(e) => setFormData({...formData, website: e.target.value})} 
-                        className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
-                      />
-                    </div>
+                  <div className="md:col-span-2">
+                    <LocationSelector 
+                      manualValue={{ state: formData.state, city: formData.city }}
+                      onManualChange={(vals) => setFormData(prev => ({ ...prev, city: vals.city, state: vals.state }))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="website" className="text-gray-300">Website URL</Label>
+                    <Input 
+                      id="website" 
+                      value={formData.website} 
+                      onChange={(e) => setFormData({...formData, website: e.target.value})} 
+                      className="bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]" 
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -210,6 +240,47 @@ export default function ClientProfilePage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="mt-12 pt-8 border-t border-red-500/20">
+        <h3 className="text-xl font-display text-red-500 mb-2 flex items-center gap-2">
+          <ShieldAlert className="h-5 w-5" /> Danger Zone
+        </h3>
+        <p className="text-gray-400 text-sm mb-6">
+          Disabling your account will hide your company profile and stop all notifications. 
+          You can re-enable your account at any time by simply logging back in.
+        </p>
+        
+        <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h4 className="text-white font-medium mb-1">Disable Account</h4>
+              <p className="text-xs text-gray-500">Temporarily deactivate your company profile.</p>
+            </div>
+            <Button 
+              variant="outline" 
+              className="border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+              onClick={() => {
+                if(confirm("Are you sure you want to disable your company account?\n\n- Your company details will be hidden.\n- You will stop receiving alerts.\n- You can re-enable by logging in again.")) {
+                  api.disableAccount(true).then(res => {
+                    if(res.success) {
+                      toast.success("Account disabled. Logging out...");
+                      setTimeout(() => {
+                        localStorage.removeItem("auth-token");
+                        window.location.href = "/login";
+                      }, 2000);
+                    } else {
+                      toast.error("Failed to disable account");
+                    }
+                  });
+                }
+              }}
+            >
+              Disable Company Account
+            </Button>
+          </div>
         </div>
       </div>
     </PageWrapper>

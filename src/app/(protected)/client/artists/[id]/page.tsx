@@ -1,24 +1,55 @@
 "use client";
 
+import { useEffect, useState, use } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockArtists, mockReviews } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, Play, MessageSquare, BookmarkPlus, ArrowLeft, ShieldCheck, FileText, FileAudio, ExternalLink, Globe, Instagram, Mail, Layout, Images, Video, Music } from "lucide-react";
+import { Star, MapPin, Play, MessageSquare, BookmarkPlus, ArrowLeft, ShieldCheck, FileText, FileAudio, ExternalLink, Globe, Instagram, Mail, Layout, Images, Video, Music, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { api } from "@/lib/stubs";
 
 export default function ArtistProfileDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const artistId = resolvedParams.id;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('portfolio');
-  
-  const artist = mockArtists.find(a => a.id === artistId);
-  const artistReviews = mockReviews.filter(r => r.revieweeId === artistId);
+  const [artist, setArtist] = useState<any>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Fire analytics silently
+        api.trackProfileView(artistId);
+        
+        const [artistData, reviewsData] = await Promise.all([
+          api.getArtistById(artistId),
+          api.getReviews(artistId)
+        ]);
+        setArtist(artistData);
+        setReviews(reviewsData);
+      } catch (err) {
+        console.error("Failed to fetch artist details:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, [artistId]);
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   if (!artist) {
     return (
@@ -97,7 +128,10 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-3 mb-8 relative z-10">
-                <button className="w-full h-11 bg-[#00A8E1] text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#0082B4] transition-all hover:shadow-[0_0_20px_rgba(0,168,225,0.4)] group">
+                <button 
+                  onClick={() => router.push(`/client/inbox?artistId=${artistId}`)}
+                  className="w-full h-11 bg-[#00A8E1] text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#0082B4] transition-all hover:shadow-[0_0_20px_rgba(0,168,225,0.4)] group"
+                >
                   <MessageSquare className="h-4 w-4 group-hover:scale-110 transition-transform" /> Message Artist
                 </button>
                 <div className="flex gap-3">
@@ -115,7 +149,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                 <div>
                   <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-3">Primary Roles</h3>
                   <div className="flex flex-wrap gap-2">
-                    {artist.roles.map(r => (
+                    {(artist.roles || []).map((r: string) => (
                       <span key={r} className="text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full bg-[#00A8E1]/10 border border-[#00A8E1]/20 text-[#00A8E1] hover:bg-[#00A8E1]/20 transition-colors cursor-default">
                         {r.toUpperCase()}
                       </span>
@@ -126,7 +160,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                 <div>
                   <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-3">Key Skills</h3>
                   <div className="flex flex-wrap gap-2">
-                    {artist.skills?.map(s => (
+                    {(artist.skills || []).map((s: string) => (
                       <span key={s} className="text-xs font-medium text-gray-300 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
                         {s}
                       </span>
@@ -145,7 +179,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                   <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Platform Rating</h3>
                   <div className="flex items-center text-white font-black text-sm">
                     <Star className="h-4 w-4 fill-[#00A8E1] text-[#00A8E1] mr-1.5 drop-shadow-[0_0_8px_rgba(0,168,225,0.4)]" />
-                    {artist.rating} <span className="text-gray-500 font-medium ml-1.5">({artistReviews.length})</span>
+                    {artist.rating} <span className="text-gray-500 font-medium ml-1.5">({reviews.length})</span>
                   </div>
                 </div>
               </div>
@@ -170,7 +204,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
               About Artist
             </h2>
             <p className="text-gray-300 leading-[1.8] text-base font-light">
-              {artist.bio || `${artist.name} is a professional ${artist.roles[0].toLowerCase()} based in ${artist.city}, known for their versatile performances and dedication to the craft. They have collaborated on various independent and commercial projects.`}
+              {artist.bio || `${artist.name} is a professional ${(artist.roles?.[0] || 'artist').toLowerCase()} based in ${artist.city}, known for their versatile performances and dedication to the craft. They have collaborated on various independent and commercial projects.`}
             </p>
           </motion.div>
 
@@ -247,7 +281,7 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                     <Images className="h-3.5 w-3.5 text-[#00A8E1]" /> Photo Gallery
                   </h3>
                   <div className="grid grid-cols-3 gap-3">
-                    {artist.portfolioImages?.map((img, i) => (
+                    {(artist.portfolioImages || []).map((img: string, i: number) => (
                       <div key={i} className="aspect-square rounded-xl overflow-hidden border border-white/5 group relative cursor-pointer shadow-md">
                          <img src={img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={`Portfolio ${i}`} />
                          <div className="absolute inset-0 bg-[#00A8E1]/20 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -284,9 +318,9 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
             ) : (
               /* Reviews View */
               <div className="space-y-6">
-                {artistReviews.length > 0 ? (
+                {reviews.length > 0 ? (
                   <div className="grid gap-4">
-                    {artistReviews.map((review) => (
+                    {reviews.map((review: any) => (
                       <div key={review.id} className="p-6 rounded-2xl border border-white/10 bg-white/5 relative overflow-hidden group hover:border-[#00A8E1]/30 transition-all">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                            <Star className="h-12 w-12 text-[#00A8E1]" />

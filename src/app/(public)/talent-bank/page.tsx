@@ -2,18 +2,21 @@
 
 import { useState, useEffect } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockArtists } from "@/lib/mockData";
+import { api } from "@/lib/stubs";
 import { Search, SlidersHorizontal, MapPin, ShieldCheck, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import FilterPanel from "@/components/shared/FilterPanel";
 import ArtistCard from "@/components/shared/ArtistCard";
+import SkeletonCard from "@/components/shared/SkeletonCard";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function PublicTalentBank() {
   const [mounted, setMounted] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [artists, setArtists] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Advanced Filters State
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -29,24 +32,39 @@ export default function PublicTalentBank() {
 
   useEffect(() => {
     setMounted(true);
+    const fetchArtists = async () => {
+      try {
+        const data = await api.getArtists();
+        setArtists(data);
+      } catch (error) {
+        console.error("Failed to fetch artists:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchArtists();
   }, []);
 
-  const filteredArtists = mockArtists.filter(artist => {
+  const filteredArtists = artists.filter((artist: any) => {
     // Keyword search
-    if (searchQuery && !artist.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !artist.roles.some(r => r.toLowerCase().includes(searchQuery.toLowerCase())) &&
-        !artist.skills?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))) {
+    const nameMatch = artist.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const roleMatch = artist.roles?.some((r: string) => r.toLowerCase().includes(searchQuery.toLowerCase()));
+    const skillMatch = artist.skills?.some((s: string) => s.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    if (searchQuery && !nameMatch && !roleMatch && !skillMatch) {
       return false;
     }
 
     // Role filtering
-    if (selectedRoles.length > 0 && !artist.roles.some(r => selectedRoles.includes(r))) {
+    if (selectedRoles.length > 0 && !artist.roles?.some((r: string) => selectedRoles.includes(r))) {
       return false;
     }
 
     // Location filtering
-    if (locationStr && !artist.city.toLowerCase().includes(locationStr.toLowerCase()) && !artist.state.toLowerCase().includes(locationStr.toLowerCase())) {
-      return false;
+    if (locationStr) {
+      const cityMatch = artist.city?.toLowerCase().includes(locationStr.toLowerCase());
+      const stateMatch = artist.state?.toLowerCase().includes(locationStr.toLowerCase());
+      if (!cityMatch && !stateMatch) return false;
     }
 
     // Attributes filtering
@@ -227,13 +245,19 @@ export default function PublicTalentBank() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-3">
-                  {filteredArtists.length > 0 ? filteredArtists.map((artist) => (
-                    <ArtistCard
-                      key={artist.id}
-                      artist={artist}
-                      profileUrl={`/register?intent=hire`}
-                    />
-                  )) : (
+                  {isLoading ? (
+                    Array.from({ length: 6 }).map((_, i) => (
+                      <SkeletonCard key={`skeleton-${i}`} />
+                    ))
+                  ) : filteredArtists.length > 0 ? (
+                    filteredArtists.map((artist) => (
+                      <ArtistCard
+                        key={artist.id}
+                        artist={artist}
+                        profileUrl={`/register?intent=hire`}
+                      />
+                    ))
+                  ) : (
                     <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
                       <Search className="h-10 w-10 mb-4 opacity-50" />
                       <p>No artists found matching your criteria.</p>

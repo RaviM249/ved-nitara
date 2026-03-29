@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         name: true,
         email: true,
         role: true,
-        isSubscribed: true,
+        isPremium: true,
         createdAt: true,
         updatedAt: true,
       },

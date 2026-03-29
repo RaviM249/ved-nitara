@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+import NotificationDropdown from "@/components/shared/NotificationDropdown";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -108,10 +109,15 @@ export default function Navbar() {
               </div>
 
               <div className="flex items-center gap-2 md:gap-4">
-                <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white hover:bg-white/5">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#00A8E1] shadow-[0_0_8px_#00A8E1]"></span>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white hover:bg-white/5">
+                      <Bell className="h-5 w-5" />
+                      <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#00A8E1] shadow-[0_0_8px_#00A8E1]"></span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <NotificationDropdown />
+                </DropdownMenu>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger className="focus:outline-none relative h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">

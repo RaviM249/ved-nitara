@@ -39,20 +39,57 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { bio, location, skills, languages, experience, age, gender, imageUrl } = body;
+    const { name, bio, location, skills, languages, experience, age, gender, imageUrl, youtubeUrl, vimeoUrl, roles, state, city } = body;
+  
+    const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
+    
+    // Determine city and state
+    let finalCity = city;
+    let finalState = state;
+
+    if (!finalCity && location && location.includes(',')) {
+      const parts = location.split(',');
+      finalCity = parts[0].trim();
+      finalState = parts[1].trim();
+    } else if (!finalCity && location) {
+      finalCity = location;
+    }
+
+    // Capitalize city
+    if (finalCity) {
+      finalCity = capitalize(finalCity);
+    }
+
+    const finalLocation = finalCity && finalState ? `${finalCity}, ${finalState}` : finalCity || location;
+
+    // Update name in User model
+    if (name) {
+      await prisma.user.update({
+        where: { id: decoded.userId },
+        data: { name: capitalize(name) }
+      });
+    }
 
     const profile = await prisma.talentProfile.upsert({
       where: { userId: decoded.userId },
       create: {
         userId: decoded.userId,
-        bio, location, skills, languages, experience, age, gender, imageUrl,
+        bio, 
+        location: finalLocation, 
+        city: finalCity,
+        state: finalState,
+        skills, languages, experience, age, gender, imageUrl, youtubeUrl, vimeoUrl, roles,
       },
       update: {
-        bio, location, skills, languages, experience, age, gender, imageUrl,
+        bio, 
+        location: finalLocation, 
+        city: finalCity,
+        state: finalState,
+        skills, languages, experience, age, gender, imageUrl, youtubeUrl, vimeoUrl, roles,
       },
     });
 
-    return NextResponse.json({ message: "Profile updated.", profile }, { status: 200 });
+    return NextResponse.json({ success: true, message: "Profile updated.", profile }, { status: 200 });
   } catch (error) {
     console.error("[TALENT PROFILE PUT ERROR]", error);
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });

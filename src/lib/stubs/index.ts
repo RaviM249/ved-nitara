@@ -1,13 +1,3 @@
-import { artists } from "../mockData/artists";
-import { schools } from "../mockData/schools";
-import { productionHouses } from "../mockData/productionHouses";
-import { facultyRequirements } from "../mockData/facultyRequirements";
-import { bookings } from "../mockData/bookings";
-import { messages } from "../mockData/messages";
-import { notifications } from "../mockData/notifications";
-import { reviews } from "../mockData/reviews";
-import { payments } from "../mockData/payments";
-
 // Utility to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -39,38 +29,64 @@ export const api = {
 
   // TODO: Replace with API call - GET /api/v1/artists/:id
   getArtistById: async (id: string) => {
-    await delay(500);
-    return artists.find(a => a.id === id);
+    try {
+      const data = await api.getArtists();
+      return data.find((a: any) => a.id === id) || null;
+    } catch(err) {
+      return null;
+    }
+  },
+
+  // POST /api/talent/[id]/view
+  trackProfileView: async (artistId: string) => {
+    try {
+      // Intentionally swallow the response so it's fully silent metadata
+      fetch(`/api/talent/${artistId}/view`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+      }).catch(() => {});
+      return true;
+    } catch(err) {
+      return false;
+    }
   },
 
   // TODO: Replace with API call - GET /api/v1/schools
   getSchools: async () => {
     await delay(800);
-    return schools;
+    return [];
   },
 
   // TODO: Replace with API call - GET /api/v1/client
   getProductionHouses: async () => {
     await delay(800);
-    return productionHouses;
+    return [];
   },
 
   // TODO: Replace with API call - GET /api/v1/schools/requirements
   getFacultyRequirements: async () => {
     await delay(800);
-    return facultyRequirements;
+    return [];
   },
 
-  // TODO: Replace with API call - POST /api/v1/schools/requirements
+  // POST /api/casting-calls
   postRequirement: async (data: any) => {
-    await delay(1000);
-    return { success: true, message: "Requirement posted successfully." };
+    try {
+      const res = await fetch("/api/casting-calls", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
   },
 
   // TODO: Replace with API call - GET /api/v1/bookings
   getBookings: async () => {
     await delay(800);
-    return bookings;
+    return [];
   },
 
   // TODO: Replace with API call - POST /api/v1/bookings
@@ -82,7 +98,7 @@ export const api = {
   // TODO: Replace with API call - GET /api/v1/messages/conversations
   getConversations: async () => {
     await delay(600);
-    return messages; // Simplified for mock
+    return []; // Simplified for mock removal
   },
 
   // TODO: Replace with API call - POST /api/v1/messages/:receiverId
@@ -91,17 +107,11 @@ export const api = {
     return { success: true, message: "Message sent." };
   },
 
-  // TODO: Replace with API call - GET /api/v1/notifications
-  getNotifications: async () => {
-    await delay(500);
-    return notifications;
-  },
 
   // TODO: Replace with API call - GET /api/v1/reviews/user/:userId
   getReviews: async (userId?: string) => {
     await delay(600);
-    if(userId) return reviews.filter(r => r.revieweeId === userId);
-    return reviews;
+    return [];
   },
 
   // TODO: Replace with API call - POST /api/v1/reviews
@@ -113,7 +123,7 @@ export const api = {
   // TODO: Replace with API call - GET /api/v1/admin/payments
   getPayments: async () => {
     await delay(1000);
-    return payments;
+    return [];
   },
 
   // POST /api/auth/register
@@ -141,6 +151,48 @@ export const api = {
       return await res.json();
     } catch(err) {
       return { success: false, message: "Network error" };
+    }
+  },
+
+  // POST /api/auth/send-otp
+  sendOtp: async (data: { email: string }) => {
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, error: "Network error" };
+    }
+  },
+
+  // POST /api/auth/forgot-password/send-otp
+  forgotPasswordSendOtp: async (data: { email: string }) => {
+    try {
+      const res = await fetch("/api/auth/forgot-password/send-otp", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, error: "Network error" };
+    }
+  },
+
+  // POST /api/auth/forgot-password/reset
+  forgotPasswordReset: async (data: any) => {
+    try {
+      const res = await fetch("/api/auth/forgot-password/reset", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, error: "Network error" };
     }
   },
 
@@ -204,6 +256,33 @@ export const api = {
     return { success: true, subscription_id: "razorpay_sub_mock", message: "Subscription activated." };
   },
 
+  // PATCH /api/casting-calls/[id]
+  updateCastingCall: async (id: string, data: any) => {
+    try {
+      const res = await fetch(`/api/casting-calls/${id}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // DELETE /api/casting-calls/[id]
+  deleteCastingCall: async (id: string) => {
+    try {
+      const res = await fetch(`/api/casting-calls/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
   // TODO: Replace with API call - POST /api/v1/client/shortlist
   addToShortlist: async (artistId: string, projectName?: string) => {
     await delay(600);
@@ -222,9 +301,187 @@ export const api = {
     return { success: true, bookingId: `booking_${Date.now()}`, message: "Booking request sent successfully." };
   },
 
-  // TODO: Replace with API call - PUT /api/v1/artists/profile
+  // POST /api/casting-calls/apply
+  applyToJob: async (castingCallId: string, message?: string) => {
+    try {
+      const res = await fetch("/api/casting-calls/apply", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ castingCallId, message }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // PUT /api/talent/profile
   updateProfile: async (userId: string, data: any) => {
-    await delay(800);
-    return { success: true, message: "Profile updated successfully." };
+    try {
+      const res = await fetch("/api/talent/profile", {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // PUT /api/client/profile
+  updateClientProfile: async (data: any) => {
+    try {
+      const res = await fetch("/api/client/profile", {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/admin/users
+  getAdminUsers: async () => {
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.users || [];
+    } catch(err) {
+      console.error("Fetch admin users failed:", err);
+      return [];
+    }
+  },
+
+  // PATCH /api/admin/verify
+  verifyUser: async (userId: string, isVerified: boolean) => {
+    try {
+      const res = await fetch("/api/admin/verify", {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ userId, isVerified }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/admin/announcements
+  getAnnouncements: async () => {
+    try {
+      const res = await fetch("/api/admin/announcements", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.announcements || [];
+    } catch(err) {
+      console.error("Fetch announcements failed:", err);
+      return [];
+    }
+  },
+
+  // POST /api/admin/announcements
+  postAnnouncement: async (target: string, message: string) => {
+    try {
+      const res = await fetch("/api/admin/announcements", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ target, message }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // GET /api/notifications
+  getNotifications: async () => {
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.notifications || [];
+    } catch(err) {
+      console.error("Fetch notifications failed:", err);
+      return [];
+    }
+  },
+
+  // PATCH /api/notifications
+  markNotificationsRead: async (notificationId?: string, markAll: boolean = false) => {
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ notificationId, markAll }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // PATCH /api/admin/users/:id
+  suspendUser: async (userId: string, isSuspended: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ isSuspended }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // DELETE /api/admin/users/:id
+  deleteUser: async (userId: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // PATCH /api/user/account
+  disableAccount: async (isDisabled: boolean) => {
+    try {
+      const res = await fetch("/api/user/account", {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ isDisabled }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
+  },
+
+  // POST /api/upload/delete
+  deleteImage: async (publicId: string) => {
+    try {
+      const res = await fetch("/api/upload/delete", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ publicId }),
+      });
+      return await res.json();
+    } catch(err) {
+      return { success: false, message: "Network error" };
+    }
   }
 };

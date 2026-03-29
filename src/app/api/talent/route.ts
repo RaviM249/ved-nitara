@@ -10,27 +10,37 @@ export async function GET(req: NextRequest) {
     const talents = await prisma.user.findMany({
       where: {
         role: "TALENT",
+        isSuspended: false,
+        isDisabled: false,
         talentProfile: {
           isNot: null,
           ...(category ? { category } : {}),
-          ...(city ? { location: { contains: city, mode: 'insensitive' } } : {}),
+          ...(city ? {
+            OR: [
+              { city: { contains: city, mode: 'insensitive' } },
+              { state: { contains: city, mode: 'insensitive' } },
+              { location: { contains: city, mode: 'insensitive' } }
+            ]
+          } as any : {}),
         },
-      },
+      } as any,
       include: {
         talentProfile: true,
       },
     });
 
     // Transform to frontend-friendly format
-    const formattedTalents = talents.map(t => ({
+    const formattedTalents = (talents as any).map((t: any) => ({
       id: t.id,
       name: t.name,
       role: t.role,
-      city: t.talentProfile?.location || "Unknown",
-      roles: t.talentProfile?.skills || [],
+      city: t.talentProfile?.city || t.talentProfile?.location?.split(',')[0] || "Unknown",
+      state: t.talentProfile?.state || t.talentProfile?.location?.split(',')[1]?.trim() || "",
+      roles: t.talentProfile?.roles || [],
       skills: t.talentProfile?.skills || [],
+      gender: t.talentProfile?.gender || "Unknown",
       profilePhoto: t.talentProfile?.imageUrl || "/placeholder-avatar.png",
-      isVerified: true, // For demo, we mark them verified
+      isVerified: t.isVerified, 
       rating: 4.8, 
     }));
 

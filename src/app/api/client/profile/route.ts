@@ -39,16 +39,45 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { companyName, contactPerson, location, website, bio, imageUrl } = body;
+    const { companyName, contactPerson, location, website, bio, imageUrl, city, state } = body;
+
+    const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
+    
+    // Determine city and state
+    let finalCity = city;
+    let finalState = state;
+
+    if (!finalCity && location && location.includes(',')) {
+      const parts = location.split(',');
+      finalCity = parts[0].trim();
+      finalState = parts[1].trim();
+    } else if (!finalCity && location) {
+      finalCity = location;
+    }
+
+    // Capitalize city
+    if (finalCity) {
+      finalCity = capitalize(finalCity);
+    }
+
+    const finalLocation = finalCity && finalState ? `${finalCity}, ${finalState}` : finalCity || location;
 
     const profile = await prisma.clientProfile.upsert({
       where: { userId: decoded.userId },
       create: {
         userId: decoded.userId,
-        companyName, contactPerson, location, website, bio, imageUrl,
+        companyName, contactPerson: capitalize(contactPerson), 
+        location: finalLocation, 
+        city: finalCity,
+        state: finalState,
+        website, bio, imageUrl,
       },
       update: {
-        companyName, contactPerson, location, website, bio, imageUrl,
+        companyName, contactPerson: capitalize(contactPerson), 
+        location: finalLocation, 
+        city: finalCity,
+        state: finalState,
+        website, bio, imageUrl,
       },
     });
 

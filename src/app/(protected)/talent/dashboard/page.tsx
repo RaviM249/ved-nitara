@@ -2,59 +2,121 @@
 
 import { useAuthStore } from "@/lib/store/authStore";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { Eye, Briefcase, Star, MessageSquare, TrendingUp, Sparkles, ArrowUpRight, ChevronRight, MapPin, Clock, IndianRupee, CheckCircle2, Circle, Play } from "lucide-react";
+import { Eye, Briefcase, Star, MessageSquare, TrendingUp, Sparkles, ArrowUpRight, ChevronRight, MapPin, Clock, IndianRupee, CheckCircle2, Circle, Play, ShieldCheck } from "lucide-react";
 import SubscriptionGate from "@/components/shared/SubscriptionGate";
-import { mockBookings, mockFacultyRequirements } from "@/lib/mockData";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { api } from "@/lib/stubs";
+import { toast } from "sonner";
 
 import { useEffect, useState } from "react";
+import NotificationFeed from "@/components/shared/NotificationFeed";
 
 const statusConfig: Record<string, { color: string; bg: string }> = {
   CONFIRMED: { color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
-  PENDING:   { color: "text-amber-400",   bg: "bg-amber-500/15 border-amber-500/30" },
-  CANCELLED: { color: "text-red-400",     bg: "bg-red-500/15 border-red-500/30" },
-  COMPLETED: { color: "text-sky-400",     bg: "bg-sky-500/15 border-sky-500/30" },
+  PENDING: { color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
+  CANCELLED: { color: "text-red-400", bg: "bg-red-500/15 border-red-500/30" },
+  COMPLETED: { color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30" },
 };
+
+function AnimatedCounter({ value, duration = 2000 }: { value: number, duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      // Easing out cubic
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      
+      setDisplayValue(Math.floor(easeOutCubic * value));
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setDisplayValue(value);
+      }
+    };
+    
+    if (value > 0) {
+      window.requestAnimationFrame(step);
+    } else {
+      setDisplayValue(0);
+    }
+  }, [value, duration]);
+
+  return <span>{displayValue}</span>;
+}
 
 export default function ArtistDashboard() {
   const { user, isSubscribed } = useAuthStore();
   const [profile, setProfile] = useState<any>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [recentOpps, setRecentOpps] = useState<any[]>([]);
+  const [recentBookings, setRecentBookings] = useState<any[]>([]);
+  const [applied, setApplied] = useState<Record<string, boolean>>({});
+
+  const handleApply = async (id: string) => {
+    try {
+      const res = await api.applyToJob(id);
+      if (res.success) {
+        setApplied(prev => ({ ...prev, [id]: true }));
+        toast.success("Application submitted successfully!");
+      } else {
+        if (res.limitReached) {
+          toast.error("Limit Reached", {
+            description: res.message,
+            action: {
+              label: "Upgrade",
+              onClick: () => window.location.href = "/pricing"
+            }
+          });
+        } else {
+          toast.error(res.error || "Failed to submit application.");
+        }
+      }
+    } catch (err) {
+      toast.error("An error occurred while applying.");
+    }
+  };
 
   useEffect(() => {
-    async function fetchProfile() {
+    async function fetchData() {
       try {
-        const res = await api.getTalentProfile();
-        if (res.profile) {
-          setProfile(res.profile);
-        }
+        const [profileRes, oppsRes, bookingsRes] = await Promise.all([
+          api.getTalentProfile(),
+          api.getFacultyRequirements(),
+          api.getBookings()
+        ]);
+
+        if (profileRes.profile) setProfile(profileRes.profile);
+        setRecentOpps(oppsRes.slice(0, 3));
+        setRecentBookings(bookingsRes.filter((b: any) => b.artistId === user?.id).slice(0, 3));
       } catch (err) {
-        console.error("Failed to fetch profile:", err);
+        console.error("Failed to fetch dashboard data:", err);
       } finally {
         setIsLoadingProfile(false);
       }
     }
-    fetchProfile();
-  }, []);
+    fetchData();
+  }, [user?.id]);
 
   const stats = [
-    { name: "Profile Views", value: "2,405", change: "+14%", icon: Eye, positive: true },
-    { name: "Total Bookings", value: "12", change: "+2 this month", icon: Briefcase, positive: true },
-    { name: "Average Rating", value: "4.8", change: "+0.2 improvement", icon: Star, positive: true },
-    { name: "Unread Messages", value: "5", change: "New", icon: MessageSquare, positive: false },
+    { name: "Profile Views", value: profile?.profileViews || 0, change: "Live", icon: Eye, positive: true, isAnimated: true },
+    { name: "Total Bookings", value: "0", change: "New", icon: Briefcase, positive: true, isAnimated: false },
+    { name: "Average Rating", value: "0.0", change: "N/A", icon: Star, positive: true, isAnimated: false },
+    { name: "Unread Messages", value: "0", change: "None", icon: MessageSquare, positive: false, isAnimated: false },
   ];
 
-  const recentOpps = mockFacultyRequirements.slice(0, 3);
-  const recentBookings = mockBookings.filter(b => b.artistId === 'a1').slice(0, 3);
-
   const profileChecklist = [
-    { label: "Basic Information",    done: !!user },
-    { label: "Bio & Experience",     done: !!profile?.bio },
-    { label: "Skills added",         done: !!profile?.skills?.length },
-    { label: "Profile Picture",      done: !!profile?.imageUrl },
+    { label: "Basic Information", done: !!user },
+    { label: "Bio & Experience", done: !!profile?.bio },
+    { label: "Skills added", done: !!profile?.skills?.length },
+    { label: "Profile Picture", done: !!profile?.imageUrl },
   ];
 
   const completionPercent = Math.round((profileChecklist.filter(i => i.done).length / profileChecklist.length) * 100);
@@ -101,6 +163,23 @@ export default function ArtistDashboard() {
         </div>
       </motion.div>
 
+      {/* ─── Verification Warning ─── */}
+      {!user?.isVerified && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-8 p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 flex items-center gap-4 text-amber-200"
+        >
+          <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+            <ShieldCheck className="h-5 w-5 text-amber-500" />
+          </div>
+          <div>
+            <h4 className="font-bold text-sm">Account Pending Verification</h4>
+            <p className="text-xs text-amber-200/70">Your profile is currently under review by our team. You will still be visible in the talent bank.</p>
+          </div>
+        </motion.div>
+      )}
+
       {/* ─── Stat Cards ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map((stat, i) => (
@@ -120,7 +199,13 @@ export default function ArtistDashboard() {
                   <stat.icon className="h-4 w-4 text-[#00A8E1]" />
                 </div>
               </div>
-              <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+              <div className="text-3xl font-bold text-white mb-1">
+                {stat.isAnimated ? (
+                  <AnimatedCounter value={Number(stat.value)} duration={2000} />
+                ) : (
+                  stat.value
+                )}
+              </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className={`h-3 w-3 ${stat.positive ? "text-emerald-400" : "text-amber-400"}`} />
                 <p className={`text-xs font-medium ${stat.positive ? "text-emerald-400" : "text-amber-400"}`}>
@@ -149,46 +234,51 @@ export default function ArtistDashboard() {
               </Link>
             </div>
 
-            <SubscriptionGate fallbackMessage="Subscribe to view Faculty Opportunities">
-              <div className="space-y-4">
-                {recentOpps.map((opp, i) => (
-                  <motion.div
-                    key={opp.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.07 }}
-                    className="group relative rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-5 hover:border-[#00A8E1]/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,168,225,0.07)]"
-                  >
-                    <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                      <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <h3 className="font-bold text-white text-base">{opp.roleNeeded}</h3>
-                          <Badge className="bg-[#00A8E1]/15 text-[#00A8E1] border border-[#00A8E1]/30 text-[10px] px-2">
-                            {opp.duration}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-400 text-sm mb-3">{opp.subject}</p>
-                        <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-[#00A8E1]/60" />{opp.city}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <IndianRupee className="h-3 w-3 text-[#00A8E1]/60" />
-                            {opp.budgetMin.toLocaleString()} – {opp.budgetMax.toLocaleString()}
-                          </span>
-                        </div>
+            <div className="space-y-4">
+              {recentOpps.map((opp, i) => (
+                <motion.div
+                  key={opp.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + i * 0.07 }}
+                  className="group relative rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-5 hover:border-[#00A8E1]/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,168,225,0.07)]"
+                >
+                  <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 className="font-bold text-white text-base">{opp.roleNeeded || opp.title}</h3>
+                        <Badge className="bg-[#00A8E1]/15 text-[#00A8E1] border border-[#00A8E1]/30 text-[10px] px-2">
+                          {opp.duration || opp.type || "Project"}
+                        </Badge>
                       </div>
+                      <p className="text-gray-400 text-sm mb-3">{opp.subject || opp.description}</p>
+                      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3 text-[#00A8E1]/60" />{opp.city || opp.location || "Remote"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <IndianRupee className="h-3 w-3 text-[#00A8E1]/60" />
+                          {(opp.budgetMin || 0).toLocaleString()} – {(opp.budgetMax || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                    {applied[opp.id] ? (
+                      <Button disabled size="sm" className="shrink-0 bg-green-500/20 text-green-500 font-semibold px-5">
+                        <CheckCircle2 className="h-4 w-4 mr-2" /> Applied
+                      </Button>
+                    ) : (
                       <Button
+                        onClick={() => handleApply(opp.id)}
                         size="sm"
                         className="shrink-0 bg-white text-black hover:bg-gray-100 font-semibold px-5"
                       >
                         Apply Now
                       </Button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </SubscriptionGate>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </section>
 
           {/* Recent Bookings */}
@@ -285,27 +375,6 @@ export default function ArtistDashboard() {
           </div>
 
           {/* Upgrade to Pro */}
-          {!isSubscribed && (
-            <div className="relative overflow-hidden rounded-2xl border border-[#00A8E1]/30 bg-gradient-to-br from-[#00A8E1]/15 via-black/60 to-black/80 backdrop-blur-xl p-6">
-              <div className="absolute -bottom-8 -right-8 h-40 w-40 bg-[#00A8E1]/20 blur-[60px] rounded-full pointer-events-none" />
-              <div className="absolute top-0 left-0 h-20 w-20 bg-[#00A8E1]/10 blur-[30px] rounded-full pointer-events-none" />
-              <div className="relative">
-                <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/30 px-3 py-1">
-                  <Sparkles className="h-3 w-3 text-amber-400" />
-                  <span className="text-xs font-semibold text-amber-400 tracking-wide">Upgrade Available</span>
-                </div>
-                <h3 className="font-bold text-white text-lg mb-2">Unlock Pro Features</h3>
-                <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                  Get faculty opportunities, unlimited applications, priority placement, and direct messaging.
-                </p>
-                <Button asChild className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4] shadow-[0_0_20px_rgba(0,168,225,0.3)] gap-2 font-semibold">
-                  <Link href="/pricing">
-                    View Plans <ArrowUpRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </PageWrapper>

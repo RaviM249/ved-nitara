@@ -6,110 +6,105 @@ const prisma = new PrismaClient();
 async function main() {
   const hashedPassword = await bcrypt.hash("password@123", 10);
 
-  // 1. Create Core Users
-  console.log("Seeding users...");
+  console.log("🔥 Starting Database Core Cleanup...");
   
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@vednitara.com" },
-    update: { password: await bcrypt.hash("admin@123", 10) },
-    create: {
-      email: "admin@vednitara.com",
-      name: "System Admin",
-      password: await bcrypt.hash("admin@123", 10),
-      role: "ADMIN",
-    },
+  // 1. DANGER ZONE: Nuke all non-admins. This cascades through Talents, Clients, Jobs, and Apps.
+  const deletedUsers = await prisma.user.deleteMany({
+    where: { role: { not: "ADMIN" } },
   });
+  console.log(`✅ Nuked ${deletedUsers.count} non-admin accounts and all their cascaded data.`);
 
-  const client = await prisma.user.upsert({
-    where: { email: "client@example.com" },
-    update: { password: await bcrypt.hash("client@123", 10) },
-    create: {
-      email: "client@example.com",
-      name: "Star Productions",
-      password: await bcrypt.hash("client@123", 10),
+  // Clear orphan OTPs just in case
+  await prisma.otpVerification.deleteMany({});
+
+  // 2. Inject Fresh Precision Data
+  console.log("🌱 Injecting Base Precision Accounts...");
+
+  // CLIENT 1
+  const client1 = await prisma.user.create({
+    data: {
+      email: "client1@example.com",
+      name: "Star Productions India",
+      password: hashedPassword,
       role: "CLIENT",
+      isVerified: true,
       clientProfile: {
         create: {
           companyName: "Star Productions India",
           location: "Mumbai, Maharashtra",
+          state: "Maharashtra",
+          city: "Mumbai"
         },
       },
     },
   });
+  console.log("✅ Client 1 Created (client1@example.com)");
 
-  const mainTalent = await prisma.user.upsert({
-    where: { email: "talent@example.com" },
-    update: { password: await bcrypt.hash("talent@123", 10) },
-    create: {
-      email: "talent@example.com",
+  // CLIENT 2
+  const client2 = await prisma.user.create({
+    data: {
+      email: "client2@example.com",
+      name: "Neon Lights Casting",
+      password: hashedPassword,
+      role: "CLIENT",
+      isVerified: true,
+      clientProfile: {
+        create: {
+          companyName: "Neon Lights Casting",
+          location: "Bangalore, Karnataka",
+          state: "Karnataka",
+          city: "Bangalore"
+        },
+      },
+    },
+  });
+  console.log("✅ Client 2 Created (client2@example.com)");
+
+  // TALENT 1
+  const talent1 = await prisma.user.create({
+    data: {
+      email: "talent1@example.com",
       name: "Aryan Kapoor",
-      password: await bcrypt.hash("talent@123", 10),
+      password: hashedPassword,
       role: "TALENT",
+      isVerified: true,
       talentProfile: {
         create: {
-          bio: "Professional actor with experience in feature films and commercials.",
-          skills: ["Acting", "Dancing", "Action"],
+          bio: "Professional actor with experience in feature films and big-budget commercial shoots.",
+          skills: ["Acting", "Dancing", "Action Sequences"],
           experience: "5 years",
-          location: "Mumbai",
+          location: "Mumbai, Maharashtra",
+          state: "Maharashtra",
+          city: "Mumbai"
         },
       },
     },
   });
+  console.log("✅ Talent 1 Created (talent1@example.com)");
 
-  // 2. Create 9 more Talents (Total 10)
-  console.log("Seeding 9 more talents...");
-  const talentNames = [
-    "Sanya Malhotra", "Rohan Mehra", "Priya Singh", "Vikram Rathore", 
-    "Ananya Pandey", "Ishaan Khattar", "Sara Ali", "Varun Dhawan", "Kiara Advani"
-  ];
-
-  for (let i = 0; i < talentNames.length; i++) {
-    const email = `talent${i + 1}@example.com`;
-    await prisma.user.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email,
-        name: talentNames[i],
-        password: hashedPassword,
-        role: "TALENT",
-        talentProfile: {
-          create: {
-            bio: `Talented ${i % 2 === 0 ? "Actor" : "Model"} looking for great opportunities.`,
-            skills: ["Performance", "Stunts"],
-            experience: `${Math.floor(Math.random() * 8) + 1} years`,
-            location: "Delhi",
-          },
+  // TALENT 2
+  const talent2 = await prisma.user.create({
+    data: {
+      email: "talent2@example.com",
+      name: "Sanya Malhotra",
+      password: hashedPassword,
+      role: "TALENT",
+      isVerified: true,
+      talentProfile: {
+        create: {
+          bio: "Versatile model and performer seeking dynamic roles in OTT series and ad campaigns.",
+          skills: ["Modeling", "Performance Art", "Kathak"],
+          experience: "3 years",
+          location: "Delhi",
+          state: "Delhi",
+          city: "New Delhi"
         },
       },
-    });
-  }
+    },
+  });
+  console.log("✅ Talent 2 Created (talent2@example.com)");
 
-  // 3. Create 5 Casting Calls (Jobs)
-  console.log("Seeding 5 casting calls...");
-  const jobs = [
-    { title: "Lead Actor for Feature Film", budget: "₹50,000 - ₹1,00,000" },
-    { title: "Fashion Model for Summer Collection", budget: "₹20,000 - ₹40,000" },
-    { title: "Commercial Ad - Soft Drink Brand", budget: "₹15,000 - ₹25,000" },
-    { title: "Web Series - Supporting Role", budget: "₹30,000 - ₹60,000" },
-    { title: "Print Shoot - Luxury Watch", budget: "₹40,000 - ₹70,000" },
-  ];
-
-  for (const job of jobs) {
-    await prisma.castingCall.create({
-      data: {
-        title: job.title,
-        description: `We are looking for a professional for an upcoming project.`,
-        location: "Mumbai, Maharashtra",
-        budget: job.budget,
-        deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
-        status: "OPEN",
-        clientId: client.id,
-      },
-    });
-  }
-
-  console.log("Seeding completed successfully! 🚀");
+  console.log("✅ Database Reset and Precision Seeding Completed Successfully! 🚀");
 }
 
 main()

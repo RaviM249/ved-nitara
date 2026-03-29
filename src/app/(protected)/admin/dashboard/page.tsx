@@ -1,13 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockArtists, mockSchools, mockProductionHouses, mockBookings, mockPayments } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Building2, Film, CreditCard, TrendingUp, UserCheck, BarChart3 } from "lucide-react";
+import { Users, Building2, Film, CreditCard, TrendingUp, UserCheck, BarChart3, Loader2 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Legend,
 } from "recharts";
+import { api } from "@/lib/stubs";
 
 const revenueData = [
   { month: "Oct", revenue: 125000, subscriptions: 42 },
@@ -16,13 +17,6 @@ const revenueData = [
   { month: "Jan", revenue: 183000, subscriptions: 91 },
   { month: "Feb", revenue: 240000, subscriptions: 110 },
   { month: "Mar", revenue: 289000, subscriptions: 132 },
-];
-
-const roleData = [
-  { role: "Artists", count: mockArtists.length, color: "#00A8E1" },
-  { role: "Schools", count: mockSchools.length, color: "#3b82f6" },
-  { role: "Production", count: mockProductionHouses.length, color: "#8b5cf6" },
-  { role: "Clients", count: 24, color: "#10b981" },
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -42,15 +36,57 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function AdminDashboard() {
-  const totalRevenue = mockPayments.reduce((sum, p) => sum + p.amount, 0);
-  const verifiedArtists = mockArtists.filter(a => a.isVerified).length;
+  const [stats, setStats] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const [artists, bookings, payments] = await Promise.all([
+          api.getArtists(),
+          api.getBookings(),
+          api.getPayments(),
+        ]);
+        
+        setStats({
+          artistCount: artists.length,
+          verifiedArtists: artists.filter((a: any) => a.isVerified).length,
+          bookingCount: bookings.length,
+          totalRevenue: payments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0),
+          clientCount: 24, // Fallback for now
+        });
+      } catch (err) {
+        console.error("Failed to fetch admin stats:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
+  if (isLoading || !stats) {
+    return (
+      <PageWrapper>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  const roleData = [
+    { role: "Artists", count: stats.artistCount, color: "#00A8E1" },
+    { role: "Schools", count: 0, color: "#3b82f6" },
+    { role: "Production", count: 0, color: "#8b5cf6" },
+    { role: "Clients", count: stats.clientCount, color: "#10b981" },
+  ];
 
   const kpis = [
-    { name: "Total Users", value: (mockArtists.length + mockSchools.length + mockProductionHouses.length + 24).toString(), icon: Users, trend: "+12%", up: true },
+    { name: "Total Users", value: (stats.artistCount + stats.clientCount).toString(), icon: Users, trend: "+12%", up: true },
     { name: "Active Subscriptions", value: "132", icon: UserCheck, trend: "+18%", up: true },
-    { name: "Total Revenue", value: `₹${(totalRevenue / 1000).toFixed(0)}K`, icon: CreditCard, trend: "+22%", up: true },
-    { name: "Total Bookings", value: mockBookings.length.toString(), icon: BarChart3, trend: "+8%", up: true },
-    { name: "Verified Artists", value: verifiedArtists.toString(), icon: TrendingUp, trend: "+5", up: true },
+    { name: "Total Revenue", value: `₹${(stats.totalRevenue / 1000).toFixed(0)}K`, icon: CreditCard, trend: "+22%", up: true },
+    { name: "Total Bookings", value: stats.bookingCount.toString(), icon: BarChart3, trend: "+8%", up: true },
+    { name: "Verified Artists", value: stats.verifiedArtists.toString(), icon: TrendingUp, trend: "+5", up: true },
     { name: "Pending Verifications", value: "7", icon: Film, trend: "-3", up: false },
   ];
 

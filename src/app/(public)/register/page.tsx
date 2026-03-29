@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,6 +22,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
+import { AnimatedPlaceholderInput } from "@/components/shared/AnimatedPlaceholderInput";
+import { LocationSelector } from "@/components/shared/LocationSelector";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const intents = [
   { id: "hire", label: "I want to hire talent", desc: "Post projects and find the right people", icon: Film, color: "#00A8E1" },
@@ -35,30 +44,47 @@ function RegisterContent() {
   const searchParams = useSearchParams();
   const initialIntent = searchParams?.get("intent") as IntentType | null;
   
-  const { login } = useAuthStore();
+  const { login, isLoggedIn, user } = useAuthStore();
+  
+  // Redirect if already logged in (checked on mount)
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      if (user.role === "CLIENT") {
+        router.replace("/client/dashboard");
+      } else if (user.role === "ADMIN") {
+        router.replace("/admin/dashboard");
+      } else {
+        router.replace("/talent/dashboard");
+      }
+    }
+    // Only run on mount to prevent interfering with registration redirect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [step, setStep] = useState<number>(initialIntent ? 2 : 1);
   const [selectedIntent, setSelectedIntent] = useState<IntentType>(initialIntent || null);
   const [isLoading, setIsLoading] = useState(false);
   
+  // State to track OTP and pending unverified values
+  const [otp, setOtp] = useState("");
+  const [pendingValues, setPendingValues] = useState<any>(null);
+
   // State to track which field is focused for placeholder hiding
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState("+91");
 
   const form = useForm<z.infer<typeof basicInfoSchema>>({
     resolver: zodResolver(basicInfoSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       confirmPassword: "",
       phone: "",
       city: "",
+      state: "",
     },
   });
-
-  const getPlaceholder = (fieldName: string, defaultText: string) => {
-    return focusedField === fieldName ? "" : defaultText;
-  };
 
   const handleIntentSelect = (intent: IntentType) => {
     setSelectedIntent(intent);
@@ -67,39 +93,45 @@ function RegisterContent() {
 
   async function onSubmit(values: z.infer<typeof basicInfoSchema>) {
     if (!selectedIntent) return;
+    try {
+      setIsLoading(true);
+      const res = await api.sendOtp({ email: values.email }) as any;
+      if (res.success) {
+        setPendingValues(values);
+        setStep(3);
+        toast.success("Verification code sent to your email!");
+      } else {
+        toast.error(res.error || "Failed to send code. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleVerifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    if (otp.length !== 6 || !pendingValues) return;
     
     try {
       setIsLoading(true);
-      
       const intentRoleMapping: Record<string, "TALENT" | "CLIENT"> = {
         "work": "TALENT",
         "hire": "CLIENT"
       };
-      const assignedRole = intentRoleMapping[selectedIntent];
+      const assignedRole = intentRoleMapping[selectedIntent as string];
+      const fullPhone = `${countryCode} ${pendingValues.phone}`;
       
-      // Combine country code with phone
-      const fullPhone = `${countryCode} ${values.phone}`;
-      const res = await api.register({ ...values, phone: fullPhone, role: assignedRole }) as any;
+      const res = await api.register({ ...pendingValues, phone: fullPhone, role: assignedRole, otp }) as any;
 
       if (res.user) {
         toast.success(res.message || "Account created successfully!");
-        
-        // Store user in Zustand (it's persisted now!)
-        login(assignedRole, res.user, false); // New users start unsubscribed
-        
-        // Save token to localStorage for subsequent API calls
-        if (res.token) {
-          localStorage.setItem("auth-token", res.token);
-        }
-        
-        // Redirect to onboarding
-        if (assignedRole === "CLIENT") {
-          router.push("/client/onboarding");
-        } else {
-          router.push("/talent/onboarding");
-        }
+        login(assignedRole, res.user, false);
+        if (res.token) localStorage.setItem("auth-token", res.token);
+        router.push(assignedRole === "CLIENT" ? "/client/onboarding" : "/talent/onboarding");
       } else {
-        toast.error(res.error || "Registration failed. Please try again.");
+        toast.error(res.error || "Verification failed. Please check the code.");
       }
     } catch (error) {
       toast.error("An unexpected error occurred.");
@@ -112,10 +144,10 @@ function RegisterContent() {
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-2xl bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 md:p-12 relative z-10 shadow-2xl overflow-hidden"
+      className="w-full max-w-xl bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[32px] p-6 md:p-8 relative z-10 shadow-2xl overflow-hidden"
     >
-      <div className="text-center mb-10 relative z-10">
-        <Link href="/" className="inline-block font-display text-4xl tracking-wider text-[#00A8E1] mb-6 hover-blue-glow transition-all">
+      <div className="text-center mb-6 relative z-10">
+        <Link href="/" className="inline-block font-display text-4xl tracking-wider text-[#00A8E1] mb-4 hover-blue-glow transition-all">
           VED NITARA
         </Link>
         {/* Decorative background glow moved here or into fragments if needed, but keeping logic clean */}
@@ -126,10 +158,10 @@ function RegisterContent() {
            <div className={`h-1.5 w-8 rounded-full transition-all duration-500 ${step === 1 ? 'bg-[#00A8E1] shadow-[0_0_10px_rgba(0,168,225,0.5)]' : 'bg-white/20'}`} />
            <div className={`h-1.5 w-8 rounded-full transition-all duration-500 ${step === 2 ? 'bg-[#00A8E1] shadow-[0_0_10px_rgba(0,168,225,0.5)]' : 'bg-white/20'}`} />
         </div>
-        <h1 className="text-3xl font-bold text-white tracking-tight">
+        <h1 className="text-2xl font-bold text-white tracking-tight">
           {step === 1 ? "Choose your path" : "Create your account"}
         </h1>
-        <p className="text-gray-400 mt-3 text-sm font-medium">
+        <p className="text-gray-400 mt-2 text-sm font-medium">
           {step === 1 ? "Select how you'd like to use the platform." : "Join the premium entertainment network based in India."}
         </p>
       </div>
@@ -141,20 +173,20 @@ function RegisterContent() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="grid gap-5 relative z-10"
+            className="grid gap-4 relative z-10"
           >
             {intents.map((intent) => (
               <button
                 key={intent.id}
                 type="button"
                 onClick={() => handleIntentSelect(intent.id as IntentType)}
-                className="flex items-center p-8 bg-white/5 border border-white/10 rounded-2xl hover:border-[#00A8E1]/40 hover:bg-white/[0.08] transition-all text-left group relative overflow-hidden"
+                className="flex items-center p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-[#00A8E1]/40 hover:bg-white/[0.08] transition-all text-left group relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-                   <intent.icon className="h-24 w-24" />
+                <div className="absolute top-0 right-0 p-5 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                   <intent.icon className="h-20 w-20" />
                 </div>
-                <div className="h-16 w-16 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center mr-8 group-hover:scale-110 group-hover:border-[#00A8E1]/30 transition-all shrink-0">
-                  <intent.icon className="h-8 w-8 text-gray-400 group-hover:text-[#00A8E1] transition-colors" />
+                <div className="h-14 w-14 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center mr-6 group-hover:scale-110 group-hover:border-[#00A8E1]/30 transition-all shrink-0">
+                  <intent.icon className="h-7 w-7 text-gray-400 group-hover:text-[#00A8E1] transition-colors" />
                 </div>
                 <div>
                   <h3 className="font-bold text-xl text-white mb-1 group-hover:text-[#00A8E1] transition-colors tracking-wide">{intent.label}</h3>
@@ -163,7 +195,7 @@ function RegisterContent() {
               </button>
             ))}
           </motion.div>
-        ) : (
+        ) : step === 2 ? (
           <motion.div 
             key="step2"
             initial={{ opacity: 0, x: 20 }}
@@ -171,7 +203,7 @@ function RegisterContent() {
             exit={{ opacity: 0, x: -20 }}
             className="relative z-10"
           >
-            <div className="mb-8 flex items-center justify-between p-4 bg-[#00A8E1]/5 border border-[#00A8E1]/20 rounded-2xl shadow-inner">
+            <div className="mb-6 flex items-center justify-between p-3 bg-[#00A8E1]/5 border border-[#00A8E1]/20 rounded-2xl shadow-inner">
                <div className="flex items-center gap-3">
                  <div className="h-8 w-8 rounded-full bg-[#00A8E1]/20 flex items-center justify-center">
                     <CheckCircle2 className="h-4 w-4 text-[#00A8E1]" />
@@ -191,28 +223,100 @@ function RegisterContent() {
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <div className="grid md:grid-cols-2 gap-5">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Full Name</FormLabel>
+                        <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">First Name</FormLabel>
                         <FormControl>
-                          <div className="relative group">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-[#00A8E1] transition-colors" />
-                            <Input 
-                              className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
-                              placeholder={getPlaceholder("name", "e.g. Rahul Sharma")}
-                              onFocus={() => setFocusedField("name")}
-                              {...field}
-                              onBlur={(e) => {
-                                field.onBlur();
-                                setFocusedField(null);
-                              }}
-                            />
-                          </div>
+                          <AnimatedPlaceholderInput 
+                            placeholder="e.g. Rahul"
+                            icon={User}
+                            field={field}
+                            className="bg-black/20 border-white/10 text-white h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Last Name</FormLabel>
+                        <FormControl>
+                          <AnimatedPlaceholderInput 
+                            placeholder="e.g. Sharma"
+                            icon={User}
+                            field={field}
+                            className="bg-black/20 border-white/10 text-white h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2 items-center">
+                             <div className="w-[85px] shrink-0">
+                               <Select 
+                                 value={countryCode}
+                                 onValueChange={setCountryCode}
+                               >
+                                  <SelectTrigger className="bg-black/20 border-white/10 text-white text-sm font-bold h-11 rounded-xl focus:ring-1 focus:ring-[#00A8E1]/50 focus:border-[#00A8E1]/40 outline-none transition-all px-3">
+                                    <SelectValue placeholder="+91" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-[#1A1A1A] border-white/10 text-white">
+                                    <SelectItem value="+91">
+                                      <span className="flex items-center gap-1.5">
+                                        <span>+91</span>
+                                        <span className="text-gray-400 text-[10px] font-normal">(IN)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="+1">
+                                      <span className="flex items-center gap-1.5">
+                                        <span>+1</span>
+                                        <span className="text-gray-400 text-[10px] font-normal">(US)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="+44">
+                                      <span className="flex items-center gap-1.5">
+                                        <span>+44</span>
+                                        <span className="text-gray-400 text-[10px] font-normal">(UK)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="+971">
+                                      <span className="flex items-center gap-1.5">
+                                        <span>+971</span>
+                                        <span className="text-gray-400 text-[10px] font-normal">(UAE)</span>
+                                      </span>
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="flex-1">
+                                <AnimatedPlaceholderInput 
+                                  placeholder="98765 43210"
+                                  icon={Phone}
+                                  field={field}
+                                  className="bg-black/20 border-white/10 text-white h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all w-full" 
+                                />
+                              </div>
+                           </div>
                         </FormControl>
                         <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
                       </FormItem>
@@ -225,20 +329,13 @@ function RegisterContent() {
                       <FormItem>
                         <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Email Address</FormLabel>
                         <FormControl>
-                          <div className="relative group">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-[#00A8E1] transition-colors" />
-                            <Input 
-                              type="email" 
-                              className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
-                              placeholder={getPlaceholder("email", "rahul@example.com")}
-                              onFocus={() => setFocusedField("email")}
-                              {...field}
-                              onBlur={(e) => {
-                                field.onBlur();
-                                setFocusedField(null);
-                              }}
-                            />
-                          </div>
+                          <AnimatedPlaceholderInput 
+                            type="email"
+                            placeholder="rahul@example.com"
+                            icon={Mail}
+                            field={field}
+                            className="bg-black/20 border-white/10 text-white h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
+                          />
                         </FormControl>
                         <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
                       </FormItem>
@@ -246,79 +343,14 @@ function RegisterContent() {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Phone Number</FormLabel>
-                        <FormControl>
-                          <div className="flex gap-2">
-                             <div className="relative">
-                               <select 
-                                 value={countryCode}
-                                 onChange={(e) => setCountryCode(e.target.value)}
-                                 className="bg-black/20 border border-white/10 text-white text-xs font-bold px-3 h-12 rounded-xl focus:ring-1 focus:ring-[#00A8E1]/50 focus:border-[#00A8E1]/40 outline-none transition-all appearance-none cursor-pointer pr-8"
-                               >
-                                  <option value="+91">+91 (IN)</option>
-                                  <option value="+1">+1 (US)</option>
-                                  <option value="+44">+44 (UK)</option>
-                                  <option value="+971">+971 (UAE)</option>
-                               </select>
-                               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                               </div>
-                             </div>
-                             <div className="relative group flex-1">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-[#00A8E1] transition-colors" />
-                                <Input 
-                                  className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all w-full" 
-                                  placeholder={getPlaceholder("phone", "98765 43210")}
-                                  onFocus={() => setFocusedField("phone")}
-                                  {...field}
-                                  onBlur={(e) => {
-                                    field.onBlur();
-                                    setFocusedField(null);
-                                  }}
-                                />
-                             </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Location / City</FormLabel>
-                        <FormControl>
-                          <div className="relative group">
-                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-[#00A8E1] transition-colors" />
-                            <Input 
-                              className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
-                              placeholder={getPlaceholder("city", "Mumbai, MH")}
-                              onFocus={() => setFocusedField("city")}
-                              {...field}
-                              onBlur={(e) => {
-                                field.onBlur();
-                                setFocusedField(null);
-                              }}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
-                      </FormItem>
-                    )}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <LocationSelector 
+                    form={form}
+                    className="md:col-span-2"
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5 mb-4">
+                <div className="grid md:grid-cols-2 gap-4 mb-2">
                   <FormField
                     control={form.control}
                     name="password"
@@ -326,20 +358,13 @@ function RegisterContent() {
                       <FormItem>
                         <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Set Password</FormLabel>
                         <FormControl>
-                          <div className="relative group">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-[#00A8E1] transition-colors" />
-                            <Input 
-                              type="password" 
-                              className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
-                              placeholder={getPlaceholder("password", "••••••••")}
-                              onFocus={() => setFocusedField("password")}
-                              {...field}
-                              onBlur={(e) => {
-                                field.onBlur();
-                                setFocusedField(null);
-                              }}
-                            />
-                          </div>
+                          <AnimatedPlaceholderInput 
+                            type="password"
+                            placeholder="••••••••"
+                            icon={Lock}
+                            field={field}
+                            className="bg-black/20 border-white/10 text-white h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
+                          />
                         </FormControl>
                         <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
                       </FormItem>
@@ -352,20 +377,13 @@ function RegisterContent() {
                       <FormItem>
                         <FormLabel className="text-gray-400 text-xs font-bold uppercase tracking-wider ml-1">Confirm Password</FormLabel>
                         <FormControl>
-                          <div className="relative group">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-[#00A8E1] transition-colors" />
-                            <Input 
-                              type="password" 
-                              className="bg-black/20 border-white/10 text-white pl-11 h-12 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
-                              placeholder={getPlaceholder("confirmPassword", "••••••••")}
-                              onFocus={() => setFocusedField("confirmPassword")}
-                              {...field}
-                              onBlur={(e) => {
-                                field.onBlur();
-                                setFocusedField(null);
-                              }}
-                            />
-                          </div>
+                          <AnimatedPlaceholderInput 
+                            type="password"
+                            placeholder="••••••••"
+                            icon={Lock}
+                            field={field}
+                            className="bg-black/20 border-white/10 text-white h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-[#00A8E1]/50 focus-visible:border-[#00A8E1]/40 transition-all" 
+                          />
                         </FormControl>
                         <FormMessage className="text-red-400 text-[10px] font-bold mt-1 ml-1" />
                       </FormItem>
@@ -376,7 +394,7 @@ function RegisterContent() {
                 <button 
                   type="submit" 
                   disabled={isLoading}
-                  className="w-full h-14 bg-[#00A8E1] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#0082B4] transition-all hover:shadow-[0_0_30px_rgba(0,168,225,0.4)] relative overflow-hidden group mt-4 overflow-hidden"
+                  className="w-full h-12 bg-[#00A8E1] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#0082B4] transition-all hover:shadow-[0_0_30px_rgba(0,168,225,0.4)] relative overflow-hidden group mt-2 overflow-hidden"
                 >
                   {isLoading ? (
                     <>
@@ -395,10 +413,70 @@ function RegisterContent() {
               </form>
             </Form>
           </motion.div>
-        )}
+        ) : step === 3 ? (
+          <motion.div 
+            key="step3"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="relative z-10 space-y-6 text-center"
+          >
+            <div className="mx-auto h-20 w-20 bg-[#00A8E1]/10 rounded-full flex items-center justify-center mb-4 border border-[#00A8E1]/20 shadow-[0_0_30px_rgba(0,168,225,0.15)]">
+              <Mail className="h-10 w-10 text-[#00A8E1]" />
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-white tracking-widest uppercase">Verify Email</h2>
+              <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                We've sent a 6-digit verification code to <span className="text-white font-bold">{pendingValues?.email}</span>.
+              </p>
+            </div>
+
+            <form onSubmit={handleVerifyOtp} className="space-y-6 mt-8 max-w-sm mx-auto">
+              <div>
+                <Input
+                  type="text"
+                  maxLength={6}
+                  placeholder="------"
+                  className="bg-black/40 border-white/20 text-white h-16 text-center text-3xl tracking-[1em] rounded-2xl focus-visible:ring-[#00A8E1] transition-all"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isLoading || otp.length !== 6}
+                className="w-full h-14 bg-[#00A8E1] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#0082B4] transition-all disabled:opacity-50 hover:shadow-[0_0_30px_rgba(0,168,225,0.4)] relative overflow-hidden group"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <span className="relative z-10 flex items-center gap-2">
+                      Verify & Continue <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                  </>
+                )}
+              </button>
+
+              <div className="flex justify-center gap-6 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="text-gray-400 text-xs font-bold uppercase tracking-wider hover:text-white transition-colors flex items-center gap-1"
+                >
+                  <ChevronLeft className="h-3 w-3" /> Back
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
 
-      <div className="mt-10 text-center relative z-10">
+      <div className="mt-8 text-center relative z-10">
         <p className="text-gray-400 text-sm font-medium">
           Already a member?{" "}
           <Link href="/login" className="text-white hover:text-[#00A8E1] font-bold underline underline-offset-4 decoration-[#00A8E1]/30 hover:decoration-[#00A8E1] transition-all">
@@ -412,10 +490,16 @@ function RegisterContent() {
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0F171E] px-4 py-20 relative overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00A8E1]/5 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#10B981]/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2" />
+    <div 
+      className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ backgroundImage: "url('https://res.cloudinary.com/dqfntq4ld/image/upload/f_auto,q_auto,w_1920/v1774534572/Untitled_3_dcv5sw.jpg')" }}
+    >
+      {/* Dark overlay for better readability */}
+      <div className="absolute inset-0 bg-black/60 z-0" />
+
+      {/* Dynamic Background Glows */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00A8E1]/5 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 z-0" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#10B981]/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2 z-0" />
       
       <Suspense fallback={<div className="text-white font-display text-xl animate-pulse tracking-widest uppercase">Initializing...</div>}>
         <RegisterContent />

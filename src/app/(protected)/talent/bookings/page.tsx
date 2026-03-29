@@ -1,18 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockBookings } from "@/lib/mockData";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin, Clock, MessageCircle, FileText } from "lucide-react";
+import { CalendarDays, MapPin, Clock, MessageCircle, FileText, Loader2 } from "lucide-react";
+import { api } from "@/lib/stubs";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function ArtistBookingsPage() {
-  // Using artist 'a1' for demo purposes
-  const artistBookings = mockBookings.filter(b => b.artistId === 'a1');
+  const { user } = useAuthStore();
+  const [artistBookings, setArtistBookings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchBookings() {
+      try {
+        const data = await api.getBookings();
+        setArtistBookings(data.filter((b: any) => b.artistId === user?.id));
+      } catch (err) {
+        console.error("Failed to fetch bookings:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchBookings();
+  }, [user?.id]);
   
   const upcomingBookings = artistBookings.filter(b => b.status === 'CONFIRMED' || b.status === 'PENDING');
   const pastBookings = artistBookings.filter(b => b.status === 'COMPLETED' || b.status === 'CANCELLED');
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   const BookingCard = ({ booking }: { booking: any }) => (
     <Card className="bg-[#1f1f1f] border-white/5 hover:border-white/20 transition-all">
@@ -47,7 +74,7 @@ export default function ArtistBookingsPage() {
                 {booking.durationHours} Hours
               </div>
               <div className="flex items-center gap-2 font-bold text-white">
-                ₹{booking.amount.toLocaleString()}
+                ₹{(booking.amount || 0).toLocaleString()}
               </div>
             </div>
           </div>

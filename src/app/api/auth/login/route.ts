@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid email or password." },
+        { error: "USER_NOT_FOUND" },
         { status: 401 }
       );
     }
@@ -28,9 +28,24 @@ export async function POST(req: NextRequest) {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
-        { error: "Invalid email or password." },
+        { error: "INVALID_PASSWORD" },
         { status: 401 }
       );
+    }
+
+    if (user.isSuspended) {
+      return NextResponse.json(
+        { error: "ACCOUNT_SUSPENDED" },
+        { status: 403 }
+      );
+    }
+
+    // Auto-enable if it was disabled by user
+    if (user.isDisabled) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { isDisabled: false }
+      });
     }
 
     const token = jwt.sign(
@@ -40,9 +55,13 @@ export async function POST(req: NextRequest) {
     );
 
     const { password: _, ...userWithoutPassword } = user;
+    const userWithSub = {
+      ...userWithoutPassword,
+      isSubscribed: (user as any).isPremium
+    };
 
     return NextResponse.json(
-      { message: "Login successful.", user: userWithoutPassword, token },
+      { message: "Login successful.", user: userWithSub, token },
       { status: 200 }
     );
   } catch (error) {

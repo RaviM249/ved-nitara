@@ -29,9 +29,28 @@ export default function TalentJobsPage() {
     fetchJobs();
   }, []);
 
-  const handleApply = (id: string) => {
-    setApplied(prev => ({ ...prev, [id]: true }));
-    toast.success("Application submitted successfully!");
+  const handleApply = async (id: string) => {
+    try {
+      const res = await api.applyToJob(id);
+      if (res.success) {
+        setApplied(prev => ({ ...prev, [id]: true }));
+        toast.success("Application submitted successfully!");
+      } else {
+        if (res.limitReached) {
+          toast.error("Limit Reached", {
+            description: res.message,
+            action: {
+              label: "Upgrade",
+              onClick: () => window.location.href = "/pricing"
+            }
+          });
+        } else {
+          toast.error(res.error || "Failed to submit application.");
+        }
+      }
+    } catch (err) {
+      toast.error("An error occurred while applying.");
+    }
   };
 
   return (
@@ -43,7 +62,6 @@ export default function TalentJobsPage() {
         <p className="text-gray-400 text-sm">Find and apply to the latest project opportunities.</p>
       </div>
 
-      <SubscriptionGate fallbackMessage="Subscribe to Pro to apply for unlimited casting calls.">
         <div className="grid gap-6">
           {isLoading ? (
             <div className="text-center py-20">
@@ -112,7 +130,6 @@ export default function TalentJobsPage() {
             </div>
           )}
         </div>
-      </SubscriptionGate>
     </PageWrapper>
   );
 }
