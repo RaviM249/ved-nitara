@@ -76,11 +76,48 @@ export default function CastingCallsPage() {
     fetchApplicants();
   }, [reviewingCall]);
 
-  const setStatus = (artistId: string, status: ApplicantStatus) => {
-    setApplicantStatuses(prev => ({ ...prev, [artistId]: status }));
-    const label = status === "SHORTLISTED" ? "Shortlisted" : "Rejected";
-    toast.success(`Applicant ${label}`);
+  useEffect(() => {
+    if (reviewingCall?.applications) {
+      const initialStatuses: Record<string, ApplicantStatus> = {};
+      reviewingCall.applications.forEach((app: any) => {
+        initialStatuses[app.talentId] = app.status as ApplicantStatus;
+      });
+      setApplicantStatuses(initialStatuses);
+    }
+  }, [reviewingCall]);
+
+  const setStatus = async (artistId: string, status: ApplicantStatus) => {
+    // Find the application ID
+    const application = reviewingCall?.applications?.find((a: any) => a.talentId === artistId);
+    if (!application) return;
+
+    try {
+      const res = await api.updateApplicationStatus(application.id, status);
+      if (res.success) {
+        setApplicantStatuses(prev => ({ ...prev, [artistId]: status }));
+        const label = status === "SHORTLISTED" ? "Shortlisted" : (status === "ACCEPTED" ? "Accepted" : "Rejected");
+        toast.success(`Applicant ${label}`);
+        
+        // Update local casting calls state to keep statuses in sync if modal reopens
+        setCastingCalls(prev => prev.map(c => {
+          if (c.id === reviewingCall.id) {
+            return {
+              ...c,
+              applications: c.applications.map((a: any) => 
+                a.id === application.id ? { ...a, status } : a
+              )
+            };
+          }
+          return c;
+        }));
+      } else {
+        toast.error(res.error || "Failed to update status");
+      }
+    } catch (err) {
+      toast.error("Failed to update status");
+    }
   };
+
 
   const handleEdit = (call: any) => {
     setEditingCall(call);
@@ -108,8 +145,33 @@ export default function CastingCallsPage() {
   };
 
   const handleToggleStatus = async (id: string, currentStatus: string) => {
+    const call = castingCalls.find(c => c.id === id);
+
+    // If trying to REOPEN a closed call, check if the deadline has passed
+    if (currentStatus === "CLOSED" && call) {
+      const deadlineStr = call.deadline || call.lastDate;
+      if (deadlineStr) {
+        const deadline = new Date(deadlineStr);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (deadline < today) {
+          toast.error("Deadline Expired", {
+            description: "Please update the closing date to the future before reopening this casting call.",
+            action: {
+              label: "Edit Date",
+              onClick: () => handleEdit(call)
+            },
+            duration: 5000
+          });
+          return;
+        }
+      }
+    }
+
     try {
       const newStatus = currentStatus === "OPEN" ? "CLOSED" : "OPEN";
+
       const res = await api.updateCastingCall(id, { status: newStatus });
       if (res.success) {
         toast.success(`Casting call marked as ${newStatus}`);

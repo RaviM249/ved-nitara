@@ -28,19 +28,37 @@ export default function AboutPage() {
             </ul>
           </div>
           
-          <div className="bg-[#141414] border border-white/5 rounded-2xl p-8 mt-12">
-            <h2 className="text-2xl font-bold text-white mb-4">Leadership</h2>
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="h-24 w-24 bg-[#00A8E1]/20 rounded-full flex items-center justify-center shrink-0 border border-[#00A8E1]/30">
-                <span className="text-[#00A8E1] text-3xl font-bold">AK</span>
+          <div className="bg-[#141414] border border-white/5 rounded-2xl p-8 mt-12 space-y-12">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-8">Leadership</h2>
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="h-24 w-24 bg-[#00A8E1]/20 rounded-full flex items-center justify-center shrink-0 border border-[#00A8E1]/30">
+                  <span className="text-[#00A8E1] text-3xl font-bold">AK</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Mr. Amrendra Kumar</h3>
+                  <p className="text-[#00A8E1] text-sm mb-3">Founder</p>
+                  <p className="text-sm text-gray-400">Founded on transparency and authenticity, Amrendra's vision is to structure the unorganized entertainment industry using modern technology.</p>
+                  <div className="flex gap-4 mt-4 text-xs text-gray-500">
+                    <span className="flex items-center"><Phone className="h-3 w-3 mr-1" /> +91 9122567345</span>
+                    <span className="flex items-center"><Mail className="h-3 w-3 mr-1" /> amrendrakumar8102@gmail.com</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">Mr. Amrendra Kumar</h3>
-                <p className="text-[#00A8E1] text-sm mb-3">Founder</p>
-                <p className="text-sm text-gray-400">Founded on transparency and authenticity, Amrendra's vision is to structure the unorganized entertainment industry using modern technology.</p>
-                <div className="flex gap-4 mt-4 text-xs text-gray-500">
-                  <span className="flex items-center"><Phone className="h-3 w-3 mr-1" /> +91 9122567345</span>
-                  <span className="flex items-center"><Mail className="h-3 w-3 mr-1" /> amrendrakumar8102@gmail.com</span>
+            </div>
+
+            <div className="pt-12 border-t border-white/5">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="h-24 w-24 bg-purple-500/10 rounded-full flex items-center justify-center shrink-0 border border-purple-500/30">
+                  <span className="text-purple-400 text-3xl font-bold">RK</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Mr. Ravi Kumar</h3>
+                  <p className="text-purple-400 text-sm mb-3">Co-Founder & Developer</p>
+                  <p className="text-sm text-gray-400">As the architect of Ved Nitara, Ravi is dedicated to engineering a seamless digital ecosystem. His focus is on building high-performance tools that empower the creative community and solve real-world industry challenges.</p>
+                  <div className="flex gap-4 mt-4 text-xs text-gray-500">
+                    <span className="flex items-center"><Mail className="h-3 w-3 mr-1" /> vednitara@gmail.com</span>
+                  </div>
                 </div>
               </div>
             </div>

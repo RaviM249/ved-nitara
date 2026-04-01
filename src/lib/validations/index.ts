@@ -19,7 +19,9 @@ export const basicInfoSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
   confirmPassword: z.string(),
-  phone: z.string().min(10, "Valid phone number required").max(15),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Invalid phone number"),
+
+
   city: z.string().min(2, "City is required"),
   state: z.string().min(1, "State is required"),
 }).refine((data) => data.password === data.confirmPassword, {

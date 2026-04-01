@@ -81,10 +81,12 @@ export default function TalentOnboarding() {
             setProfilePicture(result.info.secure_url);
             setCloudinaryPublicId(result.info.public_id);
             toast.success("Profile picture uploaded!");
-          } else if (error) {
+          } else if (error && Object.keys(error).length > 0) {
+            // Only log if it's a real technical error, not a manual abort
             console.error("Upload error:", error);
           }
         }
+
       ).open();
     } else {
       toast.error("Upload service is initializing. Please wait a moment.");

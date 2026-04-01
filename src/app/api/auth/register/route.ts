@@ -29,6 +29,20 @@ export async function POST(req: NextRequest) {
     }
 
     if (phone) {
+      // Validate Indian phone number format (assuming +91 is used)
+      // Extract the 10-digit part from "+91 9876543210"
+      const phoneParts = phone.split(' ');
+      const mainNumber = phoneParts.length > 1 ? phoneParts[1] : phoneParts[0];
+      
+      const indianPhoneRegex = /^[6-9]\d{9}$/;
+      if (phone.includes("+91") && !indianPhoneRegex.test(mainNumber)) {
+        return NextResponse.json(
+          { error: "Invalid phone number" },
+          { status: 400 }
+        );
+      }
+
+
       const existingPhone = await prisma.user.findFirst({ where: { phone } });
       if (existingPhone) {
         return NextResponse.json(
@@ -37,6 +51,7 @@ export async function POST(req: NextRequest) {
         );
       }
     }
+
 
     // Verify OTP
     const otpRecord = await prisma.otpVerification.findUnique({ where: { email } });
@@ -68,9 +83,10 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         phone,
         role: role as "TALENT" | "CLIENT" | "ADMIN",
-        isVerified: true,
+        isVerified: false,
       },
     });
+
 
     // Automatically create an empty profile on registration with location
     if (user.role === "TALENT") {

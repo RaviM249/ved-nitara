@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
   try {
     const profile = await prisma.talentProfile.findUnique({
       where: { userId: decoded.userId },
-      include: { user: { select: { name: true, email: true } } },
+      include: { user: { select: { name: true, email: true, isVerified: true } } },
+
     });
 
     if (!profile) return NextResponse.json({ error: "Profile not found." }, { status: 404 });
@@ -39,7 +40,11 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { name, bio, location, skills, languages, experience, age, gender, imageUrl, youtubeUrl, vimeoUrl, roles, state, city } = body;
+    const { 
+      name, bio, location, skills, languages, experience, 
+      age, gender, imageUrl, youtubeUrl, vimeoUrl, roles, 
+      state, city, availability 
+    } = body;
   
     const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
     
@@ -70,24 +75,32 @@ export async function PUT(req: NextRequest) {
       });
     }
 
+    const profileData = {
+      bio, 
+      location: finalLocation, 
+      city: finalCity,
+      state: finalState,
+      availability,
+      skills, 
+      languages, 
+      experience, 
+      age: age ? parseInt(String(age)) : undefined, 
+      gender, 
+      imageUrl, 
+      youtubeUrl, 
+      vimeoUrl, 
+      roles
+    };
+
     const profile = await prisma.talentProfile.upsert({
       where: { userId: decoded.userId },
       create: {
         userId: decoded.userId,
-        bio, 
-        location: finalLocation, 
-        city: finalCity,
-        state: finalState,
-        skills, languages, experience, age, gender, imageUrl, youtubeUrl, vimeoUrl, roles,
+        ...profileData
       },
-      update: {
-        bio, 
-        location: finalLocation, 
-        city: finalCity,
-        state: finalState,
-        skills, languages, experience, age, gender, imageUrl, youtubeUrl, vimeoUrl, roles,
-      },
+      update: profileData
     });
+
 
     return NextResponse.json({ success: true, message: "Profile updated.", profile }, { status: 200 });
   } catch (error) {

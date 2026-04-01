@@ -63,11 +63,35 @@ export const api = {
     return [];
   },
 
-  // TODO: Replace with API call - GET /api/v1/schools/requirements
+  // getFacultyRequirements: calls /api/casting-calls
   getFacultyRequirements: async () => {
-    await delay(800);
-    return [];
+    try {
+      const res = await fetch("/api/casting-calls", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.jobs || [];
+    } catch(err) {
+      console.error("Fetch faculty requirements failed:", err);
+      return [];
+    }
   },
+
+  updateApplicationStatus: async (applicationId: string, status: string) => {
+    try {
+      const res = await fetch(`/api/casting-calls/apply/${applicationId}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+      });
+      return await res.json();
+    } catch (err) {
+      console.error("Update application status failed:", err);
+      return { success: false, error: "Network error" };
+    }
+  },
+
 
   // POST /api/casting-calls
   postRequirement: async (data: any) => {
@@ -95,17 +119,76 @@ export const api = {
     return { success: true, message: "Your request has been sent. Artist will confirm within 24 hours." };
   },
 
-  // TODO: Replace with API call - GET /api/v1/messages/conversations
   getConversations: async () => {
-    await delay(600);
-    return []; // Simplified for mock removal
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.conversations || [];
+    } catch (err) {
+      console.error("Fetch conversations failed:", err);
+      return [];
+    }
   },
 
-  // TODO: Replace with API call - POST /api/v1/messages/:receiverId
-  sendMessage: async (data: any) => {
-    await delay(500);
-    return { success: true, message: "Message sent." };
+  startConversation: async (partnerId: string) => {
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ partnerId }),
+      });
+      return await res.json();
+    } catch (err) {
+      console.error("Start conversation failed:", err);
+      return { success: false, error: "Failed to start conversation" };
+    }
   },
+
+  getMessages: async (conversationId: string) => {
+    try {
+      const res = await fetch(`/api/messages?conversationId=${conversationId}`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      return data.messages || [];
+    } catch (err) {
+      console.error("Fetch messages failed:", err);
+      return [];
+    }
+  },
+
+  sendMessage: async (conversationId: string, content: string) => {
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ conversationId, content }),
+      });
+      return await res.json();
+    } catch (err) {
+      console.error("Send message failed:", err);
+      return { success: false, error: "Failed to send message" };
+    }
+  },
+
+  markMessagesRead: async (conversationId: string) => {
+    try {
+      const res = await fetch("/api/messages", {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ conversationId }),
+      });
+      return await res.json();
+    } catch (err) {
+      console.error("Mark read failed:", err);
+      return { success: false };
+    }
+  },
+
 
 
   // TODO: Replace with API call - GET /api/v1/reviews/user/:userId

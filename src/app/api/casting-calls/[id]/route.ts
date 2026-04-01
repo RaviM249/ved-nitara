@@ -15,10 +15,11 @@ function getAuthUser(req: NextRequest) {
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id: castingCallId } = await params;
     const user = getAuthUser(req);
-    if (!user || user.role !== "CLIENT") {
+    if (!user || (user.role !== "CLIENT" && user.role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
@@ -27,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // Verify ownership
     const existing = await prisma.castingCall.findUnique({
-      where: { id: params.id },
+      where: { id: castingCallId },
       select: { clientId: true }
     });
 
@@ -35,12 +36,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ error: "Casting call not found." }, { status: 404 });
     }
 
-    if (existing.clientId !== user.userId) {
+    if (user.role !== "ADMIN" && existing.clientId !== user.userId) {
       return NextResponse.json({ error: "You do not have permission to edit this posting." }, { status: 403 });
     }
 
     const updated = await prisma.castingCall.update({
-      where: { id: params.id },
+      where: { id: castingCallId },
       data: {
         title,
         description,
@@ -60,16 +61,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id: castingCallId } = await params;
     const user = getAuthUser(req);
-    if (!user || user.role !== "CLIENT") {
+    if (!user || (user.role !== "CLIENT" && user.role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
     // Verify ownership
     const existing = await prisma.castingCall.findUnique({
-      where: { id: params.id },
+      where: { id: castingCallId },
       select: { clientId: true }
     });
 
@@ -77,16 +79,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ error: "Casting call not found." }, { status: 404 });
     }
 
-    if (existing.clientId !== user.userId) {
+    if (user.role !== "ADMIN" && existing.clientId !== user.userId) {
       return NextResponse.json({ error: "You do not have permission to delete this posting." }, { status: 403 });
     }
 
-    // Instead of deleting, just close it? 
-    // The user said "not calls of others", "be able to edit other's job".
-    // I'll implement full delete for now, or just status update to CLOSED if preferred.
-    // Let's do DELETE to be thorough.
     await prisma.castingCall.delete({
-      where: { id: params.id }
+      where: { id: castingCallId }
     });
 
     return NextResponse.json({ success: true, message: "Casting call removed." }, { status: 200 });
@@ -95,3 +93,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json({ error: "Failed to delete casting call." }, { status: 500 });
   }
 }
+

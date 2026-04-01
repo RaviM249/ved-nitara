@@ -1,17 +1,15 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Checking Database...");
-  const count = await prisma.user.count({ where: { role: "TALENT" } });
-  const talents = await prisma.user.findMany({
-    where: { role: "TALENT" },
-    select: { name: true, email: true }
-  });
-  console.log("TOTAL TALENTS IN DB:", count);
-  console.log("NAMES:", talents.map(t => t.name));
+  try {
+    const tables = await prisma.$queryRaw`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`;
+    console.log('Tables in DB:', tables.map(t => t.table_name));
+  } catch (err) {
+    console.error('Error checking tables:', err);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
-main()
-  .catch(e => console.error(e))
-  .finally(() => prisma.$disconnect());
+main();

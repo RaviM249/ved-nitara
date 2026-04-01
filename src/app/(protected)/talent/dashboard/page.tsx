@@ -84,18 +84,33 @@ export default function ArtistDashboard() {
     }
   };
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const [profileRes, oppsRes, bookingsRes] = await Promise.all([
+        const [profileRes, oppsRes, bookingsRes, convRes] = await Promise.all([
           api.getTalentProfile(),
           api.getFacultyRequirements(),
-          api.getBookings()
+          api.getBookings(),
+          api.getConversations()
         ]);
 
         if (profileRes.profile) setProfile(profileRes.profile);
         setRecentOpps(oppsRes.slice(0, 3));
         setRecentBookings(bookingsRes.filter((b: any) => b.artistId === user?.id).slice(0, 3));
+        
+        // Populate applied status map
+        const appliedMap: Record<string, boolean> = {};
+        oppsRes.forEach((opp: any) => {
+          if (opp.isApplied) appliedMap[opp.id] = true;
+        });
+        setApplied(appliedMap);
+
+        // Calculate unread count
+        const unread = convRes.filter((c: any) => c.hasUnread).length;
+        setUnreadCount(unread);
+
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
       } finally {
@@ -106,11 +121,13 @@ export default function ArtistDashboard() {
   }, [user?.id]);
 
   const stats = [
-    { name: "Profile Views", value: profile?.profileViews || 0, change: "Live", icon: Eye, positive: true, isAnimated: true },
-    { name: "Total Bookings", value: "0", change: "New", icon: Briefcase, positive: true, isAnimated: false },
-    { name: "Average Rating", value: "0.0", change: "N/A", icon: Star, positive: true, isAnimated: false },
-    { name: "Unread Messages", value: "0", change: "None", icon: MessageSquare, positive: false, isAnimated: false },
+    { name: "Profile Views", value: profile?.profileViews || 0, change: "Live", icon: Eye, positive: true, isAnimated: true, link: "/talent/profile" },
+    { name: "Total Bookings", value: recentBookings.length, change: "New", icon: Briefcase, positive: true, isAnimated: false, link: "/talent/bookings" },
+    { name: "Average Rating", value: "0.0", change: "N/A", icon: Star, positive: true, isAnimated: false, link: "/talent/reviews" },
+    { name: "Client Inquiries", value: unreadCount, change: unreadCount > 0 ? "Pending" : "None", icon: MessageSquare, positive: unreadCount > 0, isAnimated: unreadCount > 0, link: "/talent/inbox" },
   ];
+
+
 
   const profileChecklist = [
     { label: "Basic Information", done: !!user },
@@ -183,39 +200,41 @@ export default function ArtistDashboard() {
       {/* ─── Stat Cards ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map((stat, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.08 }}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-5 hover:border-[#00A8E1]/30 transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,168,225,0.08)]"
-          >
-            {/* Hover shimmer */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#00A8E1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative">
-              <div className="flex items-start justify-between mb-4">
-                <p className="text-sm text-gray-400 font-medium">{stat.name}</p>
-                <div className="h-9 w-9 rounded-xl bg-[#00A8E1]/15 flex items-center justify-center">
-                  <stat.icon className="h-4 w-4 text-[#00A8E1]" />
+          <Link key={i} href={stat.link}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-5 hover:border-[#00A8E1]/30 transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,168,225,0.08)] h-full cursor-pointer"
+            >
+              {/* Hover shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00A8E1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative">
+                <div className="flex items-start justify-between mb-4">
+                  <p className="text-sm text-gray-400 font-medium">{stat.name}</p>
+                  <div className="h-9 w-9 rounded-xl bg-[#00A8E1]/15 flex items-center justify-center">
+                    <stat.icon className="h-4 w-4 text-[#00A8E1]" />
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  {stat.isAnimated ? (
+                    <AnimatedCounter value={Number(stat.value)} duration={2000} />
+                  ) : (
+                    stat.value
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className={`h-3 w-3 ${stat.positive ? "text-emerald-400" : "text-amber-400"}`} />
+                  <p className={`text-xs font-medium ${stat.positive ? "text-emerald-400" : "text-amber-400"}`}>
+                    {stat.change}
+                  </p>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-white mb-1">
-                {stat.isAnimated ? (
-                  <AnimatedCounter value={Number(stat.value)} duration={2000} />
-                ) : (
-                  stat.value
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <TrendingUp className={`h-3 w-3 ${stat.positive ? "text-emerald-400" : "text-amber-400"}`} />
-                <p className={`text-xs font-medium ${stat.positive ? "text-emerald-400" : "text-amber-400"}`}>
-                  {stat.change}
-                </p>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </Link>
         ))}
       </div>
+
 
       {/* ─── Main Content Grid ─── */}
       <div className="grid lg:grid-cols-3 gap-8">

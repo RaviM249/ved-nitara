@@ -43,15 +43,45 @@ export async function GET(req: NextRequest) {
       delete where.status; // Client sees all their jobs, open or closed
     }
 
-    const jobs = await prisma.castingCall.findMany({
+    const jobsData = await prisma.castingCall.findMany({
       where,
       include: {
-        applications: true,
+        applications: {
+          select: {
+            id: true,
+            talentId: true,
+            status: true,
+            createdAt: true,
+          }
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
+    // Transform for the requester
+    const jobs = jobsData.map(job => {
+      const isApplied = !!(userId && job.applications?.some((a: any) => a.talentId === userId));
+      const applicantCount = job.applications?.length || 0;
+
+      // Privacy: Only return full applications list to the Owner or Admins
+      // Ensure we compare strings properly
+      const isOwner = !!(userId && String(job.clientId) === String(userId));
+      const isAdmin = userRole === 'ADMIN';
+      const showApps = isOwner || isAdmin;
+      
+      return {
+        ...job,
+        isApplied,
+        applicantCount,
+        applications: showApps ? job.applications : [],
+      };
+    });
+
+
+
+
     return NextResponse.json({ jobs }, { status: 200 });
+
   } catch (error) {
     console.error("[CASTING CALLS LIST ERROR]", error);
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });
@@ -77,6 +107,7 @@ export async function POST(req: NextRequest) {
       where: { id: decoded.userId },
       select: { isPremium: true }
     });
+
 
     if (!user) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });

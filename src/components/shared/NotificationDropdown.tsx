@@ -1,26 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/stubs";
-import { Bell, Check, Clock, ExternalLink, Info, Loader2 } from "lucide-react";
+import { Bell, Clock, ExternalLink, Info, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { useNotificationStore } from "@/lib/store/notificationStore";
 
 export default function NotificationDropdown() {
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { notifications, unreadCount, isLoading, fetchNotifications, markAsRead, markAllAsRead } = useNotificationStore();
   const [isMounted, setIsMounted] = useState(false);
-
-  const fetchNotifications = async () => {
-    try {
-      const data = await api.getNotifications();
-      setNotifications(data);
-    } catch (err) {
-      console.error("Failed to fetch notifications:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -30,22 +18,14 @@ export default function NotificationDropdown() {
   const handleMarkRead = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const res = await api.markNotificationsRead(id);
-    if (res.success) {
-      setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-    }
+    await markAsRead(id);
   };
 
   const handleMarkAllRead = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const res = await api.markNotificationsRead(undefined, true);
-    if (res.success) {
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    }
+    await markAllAsRead();
   };
-
-  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <DropdownMenuContent 
@@ -93,7 +73,7 @@ export default function NotificationDropdown() {
                 }`}
               >
                 {!n.isRead && (
-                  <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#00A8E1] shadow-[0_0_10px_#00A8E1]" />
+                   <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#00A8E1] shadow-[0_0_10px_#00A8E1]" />
                 )}
                 
                 <div className="flex gap-3">

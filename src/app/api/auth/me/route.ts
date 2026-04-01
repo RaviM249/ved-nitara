@@ -22,9 +22,12 @@ export async function GET(req: NextRequest) {
         email: true,
         role: true,
         isPremium: true,
+        isVerified: true,
+        isSuspended: true,
         createdAt: true,
         updatedAt: true,
       },
+
     });
 
     if (!user) {

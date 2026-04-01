@@ -20,6 +20,14 @@ export default function TalentJobsPage() {
       try {
         const jobs = await api.getCastingCalls();
         setCastingCalls(jobs);
+
+        // Populate applied status map
+        const appliedMap: Record<string, boolean> = {};
+        jobs.forEach((call: any) => {
+          if (call.isApplied) appliedMap[call.id] = true;
+        });
+        setApplied(appliedMap);
+
       } catch (err) {
         console.error("Failed to fetch jobs:", err);
       } finally {

@@ -128,7 +128,7 @@ export default function ClientOnboarding() {
             {step === 2 && "Start by telling us what kind of talent you're looking for."}
             {step === 3 && "Give candidates an idea of the compensation."}
             {step === 4 && "When do you need the talent to start?"}
-            {step === 5 && "Add any location constraints or final job details."}
+            {step === 5 && "Add your company location and a brief description."}
           </p>
         </div>
 
@@ -228,9 +228,9 @@ export default function ClientOnboarding() {
             <div className="grid grid-cols-1 gap-3">
               {['Immediately (Next 24-48 hours)', 'Within a week', 'In 2-4 weeks', 'More than a month away'].map(t => (
                 <button
-                  key={t}
-                  onClick={() => { setTimeline(t); handleNext(); }}
-                  className={`p-5 rounded-xl border text-left font-semibold transition-all ${timeline === t ? 'border-[#00A8E1] bg-[#00A8E1]/10 text-white' : 'border-white/10 bg-[#141414] text-gray-400 hover:text-white hover:border-white/30'}`}
+                   key={t}
+                   onClick={() => { setTimeline(t); handleNext(); }}
+                   className={`p-5 rounded-xl border text-left font-semibold transition-all ${timeline === t ? 'border-[#00A8E1] bg-[#00A8E1]/10 text-white' : 'border-white/10 bg-[#141414] text-gray-400 hover:text-white hover:border-white/30'}`}
                 >
                   {t}
                 </button>
@@ -242,22 +242,22 @@ export default function ClientOnboarding() {
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-semibold text-gray-300 mb-2 block flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#00A8E1]" /> Location (Optional)
+                  <MapPin className="w-4 h-4 text-[#00A8E1]" /> Company Office / Base City
                 </label>
                 <Input 
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="bg-[#141414] border-white/10 text-white h-12 rounded-xl px-4 focus-visible:ring-[#00A8E1]" 
-                  placeholder="e.g. Mumbai, or Remote" 
+                  placeholder="e.g. Mumbai, Delhi, or Remote" 
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-gray-300 mb-2 block mt-6">Project Description</label>
+                <label className="text-sm font-semibold text-gray-300 mb-2 block mt-6">About Company</label>
                 <textarea 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full bg-[#141414] border border-white/10 rounded-xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#00A8E1] resize-none h-24"
-                  placeholder="Briefly describe the project and what the talent will be doing..."
+                  placeholder="Briefly describe your company, brand, or projects..."
                 />
               </div>
             </div>
@@ -279,9 +279,10 @@ export default function ClientOnboarding() {
             </Button>
           ) : (
             <Button onClick={handleComplete} className="bg-[#00A8E1] text-white hover:bg-[#0082B4] font-bold px-8 h-12 rounded-xl shadow-[0_0_20px_rgba(0,168,225,0.4)]">
-              Post Requirement <SendHorizontal className="w-5 h-5 ml-2" />
+              Complete Profile Setup <SendHorizontal className="w-5 h-5 ml-2" />
             </Button>
           )}
+
         </div>
 
       </div>

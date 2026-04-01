@@ -46,8 +46,10 @@ export default function ArtistProfilePage() {
     experience: "",
     youtubeUrl: "",
     vimeoUrl: "",
-    imageUrl: ""
+    imageUrl: "",
+    availability: ""
   });
+
 
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
@@ -72,8 +74,10 @@ export default function ArtistProfilePage() {
             experience: res.profile.experience || "",
             youtubeUrl: res.profile.youtubeUrl || "",
             vimeoUrl: res.profile.vimeoUrl || "",
-            imageUrl: res.profile.imageUrl || ""
+            imageUrl: res.profile.imageUrl || "",
+            availability: res.profile.availability || ""
           });
+
           setSkills(res.profile.skills || []);
           setRoles(res.profile.roles || []);
           setLanguages(res.profile.languages || []);
@@ -98,8 +102,10 @@ export default function ArtistProfilePage() {
         age: formData.age ? parseInt(formData.age) : undefined,
         skills,
         roles,
-        languages
+        languages,
+        availability: formData.availability
       });
+
       if (res.success || res.profile) {
         if (res.profile) setProfile(res.profile);
         updateUser({ name: formData.name });
@@ -130,6 +136,10 @@ export default function ArtistProfilePage() {
   };
 
   const handleUploadClick = () => {
+    console.log("Cloudinary Config Check:", {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+    });
     if (window.cloudinary) {
       const widget = window.cloudinary.createUploadWidget(
         {
@@ -155,12 +165,17 @@ export default function ArtistProfilePage() {
             }
             setFormData(prev => ({ ...prev, imageUrl: result.info.secure_url }));
             toast.success("Profile picture uploaded!");
+          } else if (error && Object.keys(error).length > 0) {
+            // Only log if it's a real technical error, not a manual abort
+            console.error("Upload error:", error);
+            toast.error("Upload failed. Please try again.");
           }
         }
       );
       widget.open();
     }
   };
+
 
   const addItem = (item: string, setItem: (s: string) => void, list: string[], setList: (l: string[]) => void) => {
     if (item && !list.includes(item)) {
@@ -191,8 +206,11 @@ export default function ArtistProfilePage() {
     roles: roles,
     languages: languages,
     skills: skills,
-    isVerified: profile?.isVerified || false
+    availability: formData.availability || profile?.availability || "Not set",
+    isVerified: user?.isVerified || (profile as any)?.user?.isVerified || false
+
   };
+
 
   return (
     <PageWrapper>
@@ -345,7 +363,23 @@ export default function ArtistProfilePage() {
                         placeholder="Share your artistic journey, achievements, and what you're looking for..."
                       />
                     </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-gray-400">Availability</Label>
+                      <select
+                        value={formData.availability}
+                        onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+                        className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#00A8E1]"
+                      >
+                        <option value="">Select Availability</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Project-based">Project-based</option>
+                        <option value="Weekends Only">Weekends Only</option>
+                      </select>
+                    </div>
                   </div>
+
                 ) : (
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
@@ -361,7 +395,12 @@ export default function ArtistProfilePage() {
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Experience</p>
                         <p className="text-white font-medium">{formData.experience || "—"}</p>
                       </div>
+                      <div>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Availability</p>
+                        <p className="text-white font-medium">{formData.availability || "—"}</p>
+                      </div>
                     </div>
+
                     <div>
                       <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Detailed Bio</p>
                       <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-sm">
@@ -397,8 +436,15 @@ export default function ArtistProfilePage() {
                       {(roles || []).map(r => (
                         <Badge key={r} variant="secondary" className="bg-[#141414] border-white/10 text-gray-300 py-1.5 px-3 flex items-center gap-2">
                           {r}
-                          <X className="h-3 w-3 cursor-pointer hover:text-red-400" onClick={() => removeItem(r, roles, setRoles)} />
+                          <button 
+                            type="button" 
+                            onClick={() => removeItem(r, roles, setRoles)}
+                            className="text-gray-500 hover:text-red-400 focus:outline-none"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </Badge>
+
                       ))}
                     </div>
                   </CardContent>
@@ -425,8 +471,15 @@ export default function ArtistProfilePage() {
                       {(languages || []).map(l => (
                         <Badge key={l} variant="secondary" className="bg-[#141414] border-white/10 text-gray-300 py-1.5 px-3 flex items-center gap-2">
                           {l}
-                          <X className="h-3 w-3 cursor-pointer hover:text-red-400" onClick={() => removeItem(l, languages, setLanguages)} />
+                          <button 
+                            type="button" 
+                            onClick={() => removeItem(l, languages, setLanguages)}
+                            className="text-gray-500 hover:text-red-400 focus:outline-none"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </Badge>
+
                       ))}
                     </div>
                   </CardContent>
@@ -551,6 +604,19 @@ export default function ArtistProfilePage() {
             </Card>
           </div>
         </div>
+
+        {isEditing && (
+          <div className="flex justify-end gap-3 mt-8">
+            <Button variant="outline" onClick={() => setIsEditing(false)} className="border-white/10 text-white">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving} className="bg-[#00A8E1] text-white hover:bg-[#0082B4]">
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+              Save Changes
+            </Button>
+          </div>
+        )}
+
 
         <AnimatePresence>
           {showSuccess && (

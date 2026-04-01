@@ -65,6 +65,7 @@ export default function Footer() {
           <div>© {new Date().getFullYear()} Ved Nitara. All rights reserved.</div>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center"><Mail className="h-3 w-3 mr-1" /> amrendrakumar8102@gmail.com</div>
+            <div className="flex items-center"><Mail className="h-3 w-3 mr-1" /> vednitara@gmail.com</div>
             <div className="flex items-center"><Phone className="h-3 w-3 mr-1" /> +91 9122567345</div>
           </div>
         </div>

@@ -8,44 +8,86 @@ import { Search, Send, FileImage, Settings, MessageSquare, Loader2 } from "lucid
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { api } from "@/lib/stubs";
+import { useSearchParams } from "next/navigation";
 
 export default function ProductionInboxPage() {
   const { user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const artistId = searchParams.get("artistId");
+  const convId = searchParams.get("convId");
   const currentUserId = user?.id || "";
 
   const [conversations, setConversations] = useState<any[]>([]);
   const [activeConv, setActiveConv] = useState<any>(null);
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+
+  const fetchConversations = async (autoSelectId?: string) => {
+    try {
+      const data = await api.getConversations();
+      setConversations(data);
+      
+      const targetId = autoSelectId || convId;
+      if (targetId) {
+        const found = data.find((c: any) => c.id === targetId || c.partnerId === targetId);
+        if (found) setActiveConv(found);
+      } else if (data.length > 0 && !activeConv) {
+        setActiveConv(data[0]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch conversations:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchConversations() {
-      try {
-        const data = await api.getConversations();
-        setConversations(data);
-        if (data.length > 0) setActiveConv(data[0]);
-      } catch (err) {
-        console.error("Failed to fetch conversations:", err);
-      } finally {
-        setIsLoading(false);
+    async function init() {
+      if (artistId) {
+        const res = await api.startConversation(artistId);
+        if (res.success) {
+          await fetchConversations(res.conversation.id);
+        } else {
+          await fetchConversations();
+        }
+      } else {
+        await fetchConversations();
       }
     }
-    fetchConversations();
-  }, []);
+    init();
+  }, [artistId, convId]);
 
-  const handleSend = () => {
+
+  useEffect(() => {
+    if (activeConv) {
+      async function fetchMessages() {
+        setIsMessagesLoading(true);
+        const data = await api.getMessages(activeConv.id);
+        setMessages(data);
+        setIsMessagesLoading(false);
+        // Mark as read
+        api.markMessagesRead(activeConv.id);
+      }
+      fetchMessages();
+    }
+  }, [activeConv?.id]);
+
+  const handleSend = async () => {
     if (!newMessage.trim() || !activeConv) return;
-    const newMsgObj = {
-      id: `m_new_${Date.now()}`,
-      senderId: currentUserId,
-      receiverId: activeConv.partnerId,
-      content: newMessage,
-      timestamp: new Date().toISOString(),
-      read: false
-    };
-    setActiveConv({ ...activeConv, messages: [...(activeConv.messages || []), newMsgObj] });
-    setNewMessage("");
+    
+    const res = await api.sendMessage(activeConv.id, newMessage);
+    if (res.success) {
+      setMessages(prev => [...prev, res.message]);
+      setNewMessage("");
+      // Update last message in conversations list
+      setConversations(prev => prev.map(c => 
+        c.id === activeConv.id ? { ...c, lastMessage: res.message } : c
+      ));
+    }
   };
+
 
   if (isLoading) {
     return (
@@ -70,11 +112,11 @@ export default function ProductionInboxPage() {
           </div>
           <div className="flex-1 overflow-y-auto">
             {conversations.map(conv => {
-              const lastMsg = conv.messages[conv.messages.length - 1];
+              const lastMsg = conv.lastMessage;
               return (
                 <div
-                  key={conv.partnerId}
-                  className={`p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 flex items-start gap-3 ${activeConv?.partnerId === conv.partnerId ? 'bg-white/5 border-l-2 border-l-[#00A8E1]' : 'border-l-2 border-l-transparent'}`}
+                  key={conv.id}
+                  className={`p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 flex items-start gap-3 ${activeConv?.id === conv.id ? 'bg-white/5 border-l-2 border-l-[#00A8E1]' : 'border-l-2 border-l-transparent'}`}
                   onClick={() => setActiveConv(conv)}
                 >
                   <Avatar className="h-10 w-10 border border-white/10">
@@ -85,13 +127,13 @@ export default function ProductionInboxPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-1">
                       <h4 className="font-medium text-white text-sm truncate">{conv.partnerName}</h4>
-                      <span className="text-[10px] text-gray-500">{new Date(lastMsg.timestamp).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-gray-500">{lastMsg ? new Date(lastMsg.createdAt).toLocaleDateString() : ""}</span>
                     </div>
-                    <p className={`text-xs truncate ${conv.unread ? 'text-white font-medium' : 'text-gray-400'}`}>
-                      {lastMsg.senderId === currentUserId ? 'You: ' : ''}{lastMsg.content}
+                    <p className={`text-xs truncate ${lastMsg && !lastMsg.isRead && lastMsg.senderId !== currentUserId ? 'text-white font-medium' : 'text-gray-400'}`}>
+                      {lastMsg ? (lastMsg.senderId === currentUserId ? 'You: ' : '') + lastMsg.content : "No messages yet"}
                     </p>
                   </div>
-                  {conv.unread && <div className="h-2 w-2 rounded-full bg-[#00A8E1] mt-1.5 shrink-0" />}
+                  {lastMsg && !lastMsg.isRead && lastMsg.senderId !== currentUserId && <div className="h-2 w-2 rounded-full bg-[#00A8E1] mt-1.5 shrink-0" />}
                 </div>
               );
             })}
@@ -112,16 +154,18 @@ export default function ProductionInboxPage() {
                 </Avatar>
                 <div>
                   <h3 className="font-bold text-white text-sm">{activeConv.partnerName}</h3>
-                  <p className="text-xs text-gray-400">Artist</p>
+                  <p className="text-xs text-gray-400">{activeConv.partnerRole}</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white"><Settings className="h-4 w-4" /></Button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-[#141414]">
-              {activeConv.messages
-                .sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-                .map((msg: any) => {
+              {isMessagesLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="h-6 w-6 text-[#00A8E1] animate-spin" />
+                </div>
+              ) : messages.map((msg: any) => {
                   const isMe = msg.senderId === currentUserId;
                   return (
                     <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
@@ -129,12 +173,13 @@ export default function ProductionInboxPage() {
                         {msg.content}
                       </div>
                       <span className="text-[10px] text-gray-500 mt-1 mx-1">
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   );
                 })}
             </div>
+
 
             <div className="p-4 bg-[#1f1f1f] border-t border-white/10">
               <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex items-center gap-2">

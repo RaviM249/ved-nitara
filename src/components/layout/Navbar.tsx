@@ -17,9 +17,12 @@ import {
 import NotificationDropdown from "@/components/shared/NotificationDropdown";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNotificationStore } from "@/lib/store/notificationStore";
 
 export default function Navbar() {
   const { isLoggedIn, currentMode, activeRole, user, logout } = useAuthStore();
+  const { unreadCount, fetchNotifications } = useNotificationStore();
+
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -27,7 +30,11 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (isLoggedIn) {
+      fetchNotifications();
+    }
+  }, [isLoggedIn]);
+
 
   // Close menu on navigation
   useEffect(() => {
@@ -101,11 +108,15 @@ export default function Navbar() {
                     <Link href="/talent/jobs" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                       Opportunities
                     </Link>
+                    <Link href="/talent/inbox" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
+                      Client Inquiries
+                    </Link>
                     <Link href="/talent/bookings" className="font-display text-xl tracking-wider text-white hover:text-[#00A8E1] transition-all">
                       Bookings
                     </Link>
                   </>
                 )}
+
               </div>
 
               <div className="flex items-center gap-2 md:gap-4">
@@ -113,7 +124,9 @@ export default function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white hover:bg-white/5">
                       <Bell className="h-5 w-5" />
-                      <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#00A8E1] shadow-[0_0_8px_#00A8E1]"></span>
+                      {unreadCount > 0 && (
+                        <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#00A8E1] shadow-[0_0_8px_#00A8E1]"></span>
+                      )}
                     </Button>
                   </DropdownMenuTrigger>
                   <NotificationDropdown />
@@ -263,10 +276,15 @@ export default function Navbar() {
                         <Stars className="h-6 w-6 text-[#00A8E1]" />
                         Opportunities
                       </Link>
+                      <Link href="/talent/inbox" className="flex items-center gap-4 text-2xl font-bold text-white hover:text-[#00A8E1]">
+                        <MessageSquare className="h-6 w-6 text-[#00A8E1]" />
+                        Client Inquiries
+                      </Link>
                       <Link href="/talent/bookings" className="flex items-center gap-4 text-2xl font-bold text-white hover:text-[#00A8E1]">
                         <Film className="h-6 w-6 text-[#00A8E1]" />
                         Bookings
                       </Link>
+
                     </>
                   )}
                   <DropdownMenuSeparator className="bg-white/10" />
