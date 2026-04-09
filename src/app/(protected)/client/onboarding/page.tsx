@@ -110,25 +110,23 @@ export default function ClientOnboarding() {
         <div className="absolute top-0 left-0 h-1 bg-white/10 w-full">
           <div 
             className="h-full bg-[#00A8E1] transition-all duration-500 ease-in-out" 
-            style={{ width: `${(step / 5) * 100}%` }}
+            style={{ width: `${(step / 4) * 100}%` }}
           />
         </div>
 
         <div className="mb-8">
-          <p className="text-[#00A8E1] text-sm font-bold tracking-widest uppercase mb-2">Step {step} of 5</p>
+          <p className="text-[#00A8E1] text-sm font-bold tracking-widest uppercase mb-2">Step {step} of 4</p>
           <h2 className="text-3xl font-display text-white mb-2">
             {step === 1 && "Setup your Profile"}
             {step === 2 && "What do you need?"}
-            {step === 3 && "Estimated Budget"}
-            {step === 4 && "Project Timeline"}
-            {step === 5 && "Location & Details"}
+            {step === 3 && "Project Timeline"}
+            {step === 4 && "Location & Details"}
           </h2>
           <p className="text-gray-400">
             {step === 1 && "Help talent recognize you with a name and logo."}
             {step === 2 && "Start by telling us what kind of talent you're looking for."}
-            {step === 3 && "Give candidates an idea of the compensation."}
-            {step === 4 && "When do you need the talent to start?"}
-            {step === 5 && "Add your company location and a brief description."}
+            {step === 3 && "When do you need the talent to start?"}
+            {step === 4 && "Add your company location and a brief description."}
           </p>
         </div>
 
@@ -202,29 +200,6 @@ export default function ClientOnboarding() {
           )}
 
           {step === 3 && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                 <div>
-                    <label className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 block">Minimum (₹)</label>
-                    <Input type="number" className="bg-[#141414] border-white/10 h-14 rounded-xl text-white text-xl" placeholder="5000" />
-                 </div>
-                 <div>
-                    <label className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 block">Maximum (₹)</label>
-                    <Input type="number" className="bg-[#141414] border-white/10 h-14 rounded-xl text-white text-xl" placeholder="25000" />
-                 </div>
-              </div>
-              <div className="flex items-center gap-4 mt-6">
-                <div className="h-px bg-white/10 flex-1"></div>
-                <span className="text-gray-500 text-sm font-semibold">OR</span>
-                <div className="h-px bg-white/10 flex-1"></div>
-              </div>
-              <button className="w-full p-4 border border-white/10 rounded-xl text-gray-300 font-semibold hover:bg-white/5 transition-colors text-center">
-                Unpaid / Collaboration Project
-              </button>
-            </div>
-          )}
-
-          {step === 4 && (
             <div className="grid grid-cols-1 gap-3">
               {['Immediately (Next 24-48 hours)', 'Within a week', 'In 2-4 weeks', 'More than a month away'].map(t => (
                 <button
@@ -238,7 +213,7 @@ export default function ClientOnboarding() {
             </div>
           )}
 
-          {step === 5 && (
+          {step === 4 && (
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-semibold text-gray-300 mb-2 block flex items-center gap-2">
@@ -273,7 +248,7 @@ export default function ClientOnboarding() {
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           
-          {step < 5 ? (
+          {step < 4 ? (
             <Button onClick={handleNext} disabled={isSubmitting || (step === 2 && !need)} className="bg-white text-black hover:bg-gray-200 font-bold px-8 h-12 rounded-xl min-w-[140px]">
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Next Step <ArrowRight className="w-4 h-4 ml-2" /></>}
             </Button>
@@ -282,6 +257,7 @@ export default function ClientOnboarding() {
               Complete Profile Setup <SendHorizontal className="w-5 h-5 ml-2" />
             </Button>
           )}
+
 
         </div>
 

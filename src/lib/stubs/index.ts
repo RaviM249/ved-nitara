@@ -1,4 +1,7 @@
+import { useAuthStore } from "@/lib/store/authStore";
+
 // Utility to simulate network delay
+
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const getAuthHeaders = () => {
@@ -121,12 +124,21 @@ export const api = {
 
   getConversations: async () => {
     try {
-      const res = await fetch("/api/conversations", {
+      const res = await fetch(`/api/conversations?_t=${Date.now()}`, {
         method: "GET",
         headers: getAuthHeaders(),
+        cache: "no-store",
       });
+
+      if (res.status === 401 && typeof window !== "undefined") {
+         useAuthStore.getState().logout();
+         window.location.href = "/login";
+         return [];
+      }
+
       const data = await res.json();
       return data.conversations || [];
+
     } catch (err) {
       console.error("Fetch conversations failed:", err);
       return [];
@@ -149,12 +161,21 @@ export const api = {
 
   getMessages: async (conversationId: string) => {
     try {
-      const res = await fetch(`/api/messages?conversationId=${conversationId}`, {
+      const res = await fetch(`/api/messages?conversationId=${conversationId}&_t=${Date.now()}`, {
         method: "GET",
         headers: getAuthHeaders(),
+        cache: "no-store",
       });
+
+      if (res.status === 401 && typeof window !== "undefined") {
+         useAuthStore.getState().logout();
+         window.location.href = "/login";
+         return [];
+      }
+
       const data = await res.json();
       return data.messages || [];
+
     } catch (err) {
       console.error("Fetch messages failed:", err);
       return [];
@@ -226,9 +247,13 @@ export const api = {
   // POST /api/auth/login
   login: async (data: any) => {
     try {
+      // Clear any stale token before attempting login
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("auth-token");
+      }
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       return await res.json();
@@ -236,6 +261,7 @@ export const api = {
       return { success: false, message: "Network error" };
     }
   },
+
 
   // POST /api/auth/send-otp
   sendOtp: async (data: { email: string }) => {

@@ -27,7 +27,12 @@ export default function ProductionInboxPage() {
   const fetchConversations = async (autoSelectId?: string) => {
     try {
       const data = await api.getConversations();
-      setConversations(data);
+      // Ensure uniqueness by ID
+      setConversations(prev => {
+        const combined = [...data];
+        const unique = Array.from(new Map(combined.map(c => [c.id, c])).values());
+        return unique.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      });
       
       const targetId = autoSelectId || convId;
       if (targetId) {
@@ -57,30 +62,73 @@ export default function ProductionInboxPage() {
       }
     }
     init();
+
+    // Poll for new conversations/sidebar updates every 5 seconds
+    const convInterval = setInterval(() => {
+      fetchConversations();
+    }, 5000);
+
+    return () => clearInterval(convInterval);
   }, [artistId, convId]);
 
 
+
   useEffect(() => {
-    if (activeConv) {
-      async function fetchMessages() {
-        setIsMessagesLoading(true);
+    if (!activeConv) return;
+
+    // Initial fetch
+    const fetchMessages = async (showLoading = true) => {
+      if (showLoading) setIsMessagesLoading(true);
+      try {
         const data = await api.getMessages(activeConv.id);
+        
+        // Update state if we have different messages
         setMessages(data);
-        setIsMessagesLoading(false);
+        
         // Mark as read
         api.markMessagesRead(activeConv.id);
+      } catch (err) {
+        console.error("Polling error:", err);
+      } finally {
+        if (showLoading) setIsMessagesLoading(false);
       }
-      fetchMessages();
-    }
+    };
+
+    fetchMessages(true);
+
+    // Poll for new messages every 3 seconds
+    const msgInterval = setInterval(() => {
+      fetchMessages(false); // Silent update
+    }, 3000);
+
+    // Chrome tab throttling fix: refresh instantly when tab becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchMessages(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(msgInterval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [activeConv?.id]);
+
 
   const handleSend = async () => {
     if (!newMessage.trim() || !activeConv) return;
     
     const res = await api.sendMessage(activeConv.id, newMessage);
     if (res.success) {
-      setMessages(prev => [...prev, res.message]);
+      // De-duplicate immediately on send
+      setMessages(prev => {
+        const exists = prev.some(m => m.id === res.message.id);
+        if (exists) return prev;
+        return [...prev, res.message];
+      });
       setNewMessage("");
+
       // Update last message in conversations list
       setConversations(prev => prev.map(c => 
         c.id === activeConv.id ? { ...c, lastMessage: res.message } : c
@@ -178,7 +226,10 @@ export default function ProductionInboxPage() {
                     </div>
                   );
                 })}
+              {/* Scroll anchor */}
+              <div ref={(el) => el?.scrollIntoView({ behavior: "smooth" })} />
             </div>
+
 
 
             <div className="p-4 bg-[#1f1f1f] border-t border-white/10">

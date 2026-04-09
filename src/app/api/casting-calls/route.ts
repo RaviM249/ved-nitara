@@ -46,6 +46,11 @@ export async function GET(req: NextRequest) {
     const jobsData = await prisma.castingCall.findMany({
       where,
       include: {
+        client: {
+          include: {
+            clientProfile: true
+          }
+        },
         applications: {
           select: {
             id: true,
@@ -55,6 +60,7 @@ export async function GET(req: NextRequest) {
           }
         },
       },
+
       orderBy: { createdAt: "desc" },
     });
 

@@ -33,12 +33,18 @@ export const useAuthStore = create<AuthState>()(
           isSubscribed
         });
       },
-      logout: () => set({ 
-        isLoggedIn: false, 
-        user: null,
-        currentMode: null,
-        isSubscribed: false
-      }),
+      logout: () => {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("auth-token");
+        }
+        set({ 
+          isLoggedIn: false, 
+          user: null,
+          currentMode: null,
+          isSubscribed: false
+        });
+      },
+
       switchMode: (mode) => set({ currentMode: mode }),
       setSubscribed: (status) => set({ isSubscribed: status }),
       updateUser: (data) => set((state) => ({
