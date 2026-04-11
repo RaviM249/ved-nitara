@@ -1,68 +1,138 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockMessages } from "@/lib/mockData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, FileImage, Settings, Phone, Video, MessageSquare } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Send, FileImage, Settings, MessageSquare, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuthStore } from "@/lib/store/authStore";
+import { api } from "@/lib/stubs";
+import { useSearchParams } from "next/navigation";
 
 export default function ArtistInboxPage() {
-  // Mock logged in user (Artist A1)
-  const currentUserId = "a1";
+  const { user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const conversationId = searchParams.get("convId");
+  const currentUserId = user?.id || "";
   
-  // Group messages by conversation partner
-  const conversationsMap = new Map();
-  mockMessages.forEach(msg => {
-    // Only care about messages involving current user
-    if (msg.senderId !== currentUserId && msg.receiverId !== currentUserId) return;
-    
-    const partnerId = msg.senderId === currentUserId ? msg.receiverId : msg.senderId;
-    
-    if (!conversationsMap.has(partnerId)) {
-      conversationsMap.set(partnerId, {
-        partnerId,
-        // Mock partner name based on ID (In real app, fetch from user data)
-        partnerName: partnerId.startsWith('p') ? `Production House ${partnerId.replace('p','')}` 
-                    : partnerId.startsWith('c') ? `Client ${partnerId.replace('c','')}` 
-                    : `User ${partnerId}`,
-        messages: [],
-        unread: msg.receiverId === currentUserId && !msg.isRead
-      });
-    }
-    
-    const conv = conversationsMap.get(partnerId);
-    conv.messages.push(msg);
-    if (msg.receiverId === currentUserId && !msg.isRead) {
-      conv.unread = true;
-    }
-  });
-
-  const conversations = Array.from(conversationsMap.values());
-  const [activeConv, setActiveConv] = useState(conversations[0]);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [activeConv, setActiveConv] = useState<any>(null);
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMessagesLoading, setIsMessagesLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!newMessage.trim()) return;
-    
-    // In real app: call API
-    const newMsgObj = {
-      id: `m_new_${Date.now()}`,
-      senderId: currentUserId,
-      receiverId: activeConv.partnerId,
-      content: newMessage,
-      timestamp: new Date().toISOString(),
-      read: false
-    };
-    
-    // Optimistic UI update
-    setActiveConv({
-      ...activeConv,
-      messages: [...activeConv.messages, newMsgObj]
-    });
-    setNewMessage("");
+  const fetchConversations = async (autoSelectId?: string) => {
+    try {
+      const data = await api.getConversations();
+      // Ensure specific uniqueness by ID to prevent React errors
+      setConversations(prev => {
+        const combined = [...data];
+        const unique = Array.from(new Map(combined.map(c => [c.id, c])).values());
+        return unique.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      });
+      
+      if (autoSelectId) {
+        const found = data.find((c: any) => c.id === autoSelectId);
+        if (found) setActiveConv(found);
+      } else if (data.length > 0 && !activeConv) {
+        setActiveConv(data[0]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch conversations:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+
+  useEffect(() => {
+    fetchConversations(conversationId || undefined);
+
+    // Poll for new conversations/sidebar updates every 5 seconds
+    const convInterval = setInterval(() => {
+      fetchConversations();
+    }, 5000);
+
+    return () => clearInterval(convInterval);
+  }, [conversationId]);
+
+  useEffect(() => {
+    if (!activeConv) return;
+
+    // Initial fetch
+    const fetchMessages = async (showLoading = true) => {
+      if (showLoading) setIsMessagesLoading(true);
+      try {
+        console.log(`[CHAT POLL] Fetching messages for ${activeConv.id}...`);
+        const data = await api.getMessages(activeConv.id);
+        
+        // Update state if we have different messages
+        setMessages(data);
+        
+        // Mark as read
+        api.markMessagesRead(activeConv.id);
+      } catch (err) {
+        console.error("Polling error:", err);
+      } finally {
+        if (showLoading) setIsMessagesLoading(false);
+      }
+    };
+
+
+    fetchMessages(true);
+
+    // Poll for new messages every 3 seconds
+    const msgInterval = setInterval(() => {
+      fetchMessages(false); // Silent update
+    }, 3000);
+
+    // Chrome tab throttling fix: refresh instantly when tab becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchMessages(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(msgInterval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [activeConv?.id]);
+
+
+
+  const handleSend = async () => {
+    if (!newMessage.trim() || !activeConv) return;
+    
+    const res = await api.sendMessage(activeConv.id, newMessage);
+    if (res.success) {
+      // De-duplicate immediately on send
+      setMessages(prev => {
+        const exists = prev.some(m => m.id === res.message.id);
+        if (exists) return prev;
+        return [...prev, res.message];
+      });
+      setNewMessage("");
+      // Update last message in conversations list
+      setConversations(prev => prev.map(c => 
+        c.id === activeConv.id ? { ...c, lastMessage: res.message } : c
+      ));
+    }
+  };
+
+
+  if (isLoading) {
+    return (
+      <PageWrapper className="h-[calc(100vh-64px)] overflow-hidden p-0 md:p-4" noPadding>
+        <div className="flex items-center justify-center h-full">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper className="h-[calc(100vh-64px)] overflow-hidden p-0 md:p-4" noPadding>
@@ -70,11 +140,11 @@ export default function ArtistInboxPage() {
         {/* Sidebar */}
         <div className={`w-full md:w-80 border-r border-white/10 flex flex-col ${activeConv && 'hidden md:flex'}`}>
           <div className="p-4 border-b border-white/10">
-            <h2 className="text-xl font-bold text-white mb-4">Messages</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Client Inquiries</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input 
-                placeholder="Search conversations..." 
+                placeholder="Search inquiries..." 
                 className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
               />
             </div>
@@ -82,11 +152,11 @@ export default function ArtistInboxPage() {
           
           <div className="flex-1 overflow-y-auto">
             {conversations.map(conv => {
-              const lastMsg = conv.messages[conv.messages.length - 1];
+              const lastMsg = conv.lastMessage;
               return (
                 <div 
-                  key={conv.partnerId}
-                  className={`p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors flex items-start gap-3 ${activeConv?.partnerId === conv.partnerId ? 'bg-white/5 border-l-2 border-l-[#00A8E1]' : 'border-l-2 border-l-transparent'}`}
+                  key={conv.id}
+                  className={`p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors flex items-start gap-3 ${activeConv?.id === conv.id ? 'bg-white/5 border-l-2 border-l-[#00A8E1]' : 'border-l-2 border-l-transparent'}`}
                   onClick={() => setActiveConv(conv)}
                 >
                   <Avatar className="h-10 w-10 border border-white/10">
@@ -98,14 +168,14 @@ export default function ArtistInboxPage() {
                     <div className="flex justify-between items-baseline mb-1">
                       <h4 className="font-medium text-white text-sm truncate pr-2">{conv.partnerName}</h4>
                       <span className="text-[10px] text-gray-500 shrink-0">
-                        {new Date(lastMsg.timestamp).toLocaleDateString()}
+                        {lastMsg ? new Date(lastMsg.createdAt).toLocaleDateString() : ""}
                       </span>
                     </div>
-                    <p className={`text-xs truncate ${conv.unread ? 'text-white font-medium' : 'text-gray-400'}`}>
-                      {lastMsg.senderId === currentUserId ? 'You: ' : ''}{lastMsg.content}
+                    <p className={`text-xs truncate ${lastMsg && !lastMsg.isRead && lastMsg.senderId !== currentUserId ? 'text-white font-medium' : 'text-gray-400'}`}>
+                      {lastMsg ? (lastMsg.senderId === currentUserId ? 'You: ' : '') + lastMsg.content : "No messages yet"}
                     </p>
                   </div>
-                  {conv.unread && (
+                  {lastMsg && !lastMsg.isRead && lastMsg.senderId !== currentUserId && (
                     <div className="h-2 w-2 rounded-full bg-[#00A8E1] mt-1.5 shrink-0" />
                   )}
                 </div>
@@ -129,18 +199,20 @@ export default function ArtistInboxPage() {
                 </Avatar>
                 <div>
                   <h3 className="font-bold text-white text-sm">{activeConv.partnerName}</h3>
-                  <p className="text-xs text-green-500">Online</p>
+                  <p className="text-xs text-blue-400">{activeConv.partnerRole}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hidden sm:flex"><Phone className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hidden sm:flex"><Video className="h-4 w-4" /></Button>
                 <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white"><Settings className="h-4 w-4" /></Button>
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-[#141414]">
-              {activeConv.messages.sort((a:any, b:any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()).map((msg:any) => {
+              {isMessagesLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="h-6 w-6 text-[#00A8E1] animate-spin" />
+                </div>
+              ) : messages.map((msg:any) => {
                 const isMe = msg.senderId === currentUserId;
                 return (
                   <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
@@ -152,12 +224,15 @@ export default function ArtistInboxPage() {
                       {msg.content}
                     </div>
                     <span className="text-[10px] text-gray-500 mt-1 mx-1">
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 );
               })}
+              {/* Scroll anchor */}
+              <div ref={(el) => el?.scrollIntoView({ behavior: "smooth" })} />
             </div>
+
 
             <div className="p-4 bg-[#1f1f1f] border-t border-white/10">
               <form 

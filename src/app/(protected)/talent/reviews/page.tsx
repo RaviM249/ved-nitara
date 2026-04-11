@@ -2,24 +2,52 @@
 
 import PageWrapper from "@/components/layout/PageWrapper";
 import { useAuthStore } from "@/lib/store/authStore";
-import { mockReviews, mockPayments } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, FileText, Download, ShieldCheck, CreditCard, CalendarDays } from "lucide-react";
+import { Star, FileText, Download, ShieldCheck, CreditCard, CalendarDays, Loader2 } from "lucide-react";
 import Link from "next/link";
 import SubscriptionBadge from "@/components/shared/SubscriptionBadge";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/stubs";
 
 export default function ArtistReviewsSubscriptionPage() {
-  const { isSubscribed } = useAuthStore();
-  
-  // Mock data for demo artist 'a1'
-  const artistReviews = mockReviews.filter(r => r.revieweeId === 'a1');
-  const artistPayments = mockPayments.filter(p => p.userId === 'a1');
+  const { user, isSubscribed } = useAuthStore();
+  const [artistReviews, setArtistReviews] = useState<any[]>([]);
+  const [artistPayments, setArtistPayments] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [reviewsRes, paymentsRes] = await Promise.all([
+          api.getReviews(user?.id),
+          api.getPayments() // Assuming this returns payments for the current user
+        ]);
+        setArtistReviews(reviewsRes);
+        setArtistPayments(paymentsRes.filter((p: any) => p.userId === user?.id));
+      } catch (err) {
+        console.error("Failed to fetch reviews/payments:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, [user?.id]);
 
   const avgRating = artistReviews.length > 0 
     ? (artistReviews.reduce((acc, r) => acc + r.rating, 0) / artistReviews.length).toFixed(1)
     : "0.0";
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>

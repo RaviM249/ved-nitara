@@ -10,7 +10,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative z-10 bg-[#0a0a0a] border-t border-white/10 pt-16 pb-8 mt-auto">
+    <footer className="bg-[#0a0a0a] border-t border-white/10 pt-16 pb-8 mt-auto">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
@@ -65,6 +65,7 @@ export default function Footer() {
           <div>© {new Date().getFullYear()} Ved Nitara. All rights reserved.</div>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center"><Mail className="h-3 w-3 mr-1" /> amrendrakumar8102@gmail.com</div>
+            <div className="flex items-center"><Mail className="h-3 w-3 mr-1" /> vednitara@gmail.com</div>
             <div className="flex items-center"><Phone className="h-3 w-3 mr-1" /> +91 9122567345</div>
           </div>
         </div>

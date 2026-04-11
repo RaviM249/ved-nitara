@@ -1,28 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import FilterPanel from "@/components/shared/FilterPanel";
 import SubscriptionGate from "@/components/shared/SubscriptionGate";
-import { mockFacultyRequirements } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SlidersHorizontal, Search, MapPin, IndianRupee, Clock, Briefcase } from "lucide-react";
+import { SlidersHorizontal, Search, MapPin, IndianRupee, Clock, Briefcase, Loader2, CheckCircle2 } from "lucide-react";
+import { api } from "@/lib/stubs";
+import { toast } from "sonner";
 
 export default function FacultyOpportunitiesPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [opps, setOpps] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [applied, setApplied] = useState<Record<string, boolean>>({});
 
-  const filteredOpps = mockFacultyRequirements.filter(opp => {
-    if (searchQuery && !opp.roleNeeded.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !opp.subject.toLowerCase().includes(searchQuery.toLowerCase())) {
+  const handleApply = async (id: string) => {
+    try {
+      const res = await api.applyToJob(id); // Using the same job application logic
+      if (res.success) {
+        setApplied(prev => ({ ...prev, [id]: true }));
+        toast.success("Application submitted successfully!");
+      } else {
+        if (res.limitReached) {
+          toast.error("Limit Reached", {
+            description: res.message,
+            action: {
+              label: "Upgrade",
+              onClick: () => window.location.href = "/pricing"
+            }
+          });
+        } else {
+          toast.error(res.error || "Failed to submit application.");
+        }
+      }
+    } catch (err) {
+      toast.error("An error occurred while applying.");
+    }
+  };
+
+  useEffect(() => {
+    async function fetchOpps() {
+      try {
+        const data = await api.getFacultyRequirements();
+        setOpps(data);
+      } catch (err) {
+        console.error("Failed to fetch faculty opportunities:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchOpps();
+  }, []);
+
+  const filteredOpps = opps.filter(opp => {
+    if (searchQuery && !opp.roleNeeded?.toLowerCase().includes(searchQuery.toLowerCase()) && 
+        !opp.subject?.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
-    // Added simplified mock filtering
-    return opp.isActive;
+    return opp.isActive !== false;
   });
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>
@@ -97,7 +148,6 @@ export default function FacultyOpportunitiesPage() {
             </div>
           </div>
 
-          <SubscriptionGate fallbackMessage="Subscribe to view all opportunities and apply">
             <div className="space-y-4">
               {filteredOpps.length > 0 ? filteredOpps.map((opp) => (
                 <Card key={opp.id} className="bg-[#1f1f1f] border-white/5 overflow-hidden hover:border-white/20 transition-all hover:-translate-y-1">
@@ -106,38 +156,38 @@ export default function FacultyOpportunitiesPage() {
                     <div className="flex flex-col md:flex-row justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                          <h2 className="text-xl font-bold text-white">{opp.roleNeeded}</h2>
+                          <h2 className="text-xl font-bold text-white">{opp.roleNeeded || "N/A"}</h2>
                           <Badge variant="outline" className="border-[#00A8E1]/30 text-[#00A8E1] bg-[#00A8E1]/10">
-                            {opp.duration}
+                            {opp.duration || "N/A"}
                           </Badge>
-                          <span className="text-xs text-gray-500">Posted 2 days ago</span>
+                          <span className="text-xs text-gray-500">Posted {opp.postedDate ? new Date(opp.postedDate).toLocaleDateString() : "Just now"}</span>
                         </div>
                         
-                        <div className="text-lg text-gray-300 mb-4">{opp.subject}</div>
+                        <div className="text-lg text-gray-300 mb-4">{opp.subject || "N/A"}</div>
                         
                         <div className="flex flex-wrap gap-y-2 gap-x-6 text-sm text-gray-400 mb-6">
                           <div className="flex items-center">
                             <MapPin className="h-4 w-4 mr-2 opacity-70" />
-                            {opp.city}
+                            {opp.city || "Remote"}
                           </div>
                           <div className="flex items-center">
                             <IndianRupee className="h-4 w-4 mr-2 opacity-70" />
-                            ₹{opp.budgetMin.toLocaleString()} - ₹{opp.budgetMax.toLocaleString()}
+                            ₹{(opp.budgetMin || 0).toLocaleString()} - ₹{(opp.budgetMax || 0).toLocaleString()}
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-2 opacity-70" />
-                            Starts {new Date(opp.startDate || opp.postedDate).toLocaleDateString()}
+                            Starts {new Date(opp.startDate || opp.postedDate || Date.now()).toLocaleDateString()}
                           </div>
                           <div className="flex items-center">
                             <Briefcase className="h-4 w-4 mr-2 opacity-70" />
-                            {opp.schoolId === 's1' ? 'National School of Drama' : 'Whistling Woods'}
+                            {opp.schoolName || "Top Institute"}
                           </div>
                         </div>
 
                         <div className="space-y-2 mb-6">
                           <h4 className="text-sm font-semibold text-white">Requirements:</h4>
                           <ul className="grid sm:grid-cols-2 gap-2">
-                            {(opp.requirements || []).map((req, i) => (
+                            {(opp.requirements || []).map((req: string, i: number) => (
                               <li key={i} className="flex items-start text-sm text-gray-400">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#00A8E1] mt-2 mr-2 shrink-0"></span>
                                 {req}
@@ -150,9 +200,18 @@ export default function FacultyOpportunitiesPage() {
                       </div>
                       
                       <div className="flex flex-col gap-3 min-w-[140px] border-t border-white/10 md:border-t-0 md:border-l md:border-white/10 pt-4 md:pt-0 md:pl-6 justify-center">
-                        <Button className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]">
-                          Apply Now
-                        </Button>
+                        {applied[opp.id] ? (
+                          <Button disabled className="w-full bg-green-500/20 text-green-500 font-bold">
+                            <CheckCircle2 className="h-5 w-5 mr-2" /> Applied
+                          </Button>
+                        ) : (
+                          <Button 
+                            onClick={() => handleApply(opp.id)}
+                            className="w-full bg-[#00A8E1] text-white hover:bg-[#0082B4]"
+                          >
+                            Apply Now
+                          </Button>
+                        )}
                         <Button variant="outline" className="w-full border-white/20 text-gray-300 hover:text-white hover:bg-white/10">
                           Save Job
                         </Button>
@@ -173,7 +232,6 @@ export default function FacultyOpportunitiesPage() {
                 </div>
               )}
             </div>
-          </SubscriptionGate>
         </div>
       </div>
     </PageWrapper>

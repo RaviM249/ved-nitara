@@ -71,17 +71,17 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative z-10">
+      <div className="relative">
         {/* Shared Background image & gradient overlay for Hero + Stats */}
         <div
-          className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_1920/v1774266196/Gemini_Generated_Image_iokyfxiokyfxioky_pj6xc5_xf4bya.jpg')" }}
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+          style={{ backgroundImage: "url('https://res.cloudinary.com/dqfntq4ld/image/upload/f_auto,q_auto,w_1920/v1774534572/Untitled_3_dcv5sw.jpg')" }}
         />
 
         {/* Dynamic Darkening Overlays - reveals background as user scrolls down */}
         <motion.div
           style={{ opacity: overlayOpacity }}
-          className="fixed inset-0 -z-10 pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none"
         >
           <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/70 to-[#0F171E]/40" />
           <div className="absolute inset-0 z-0 bg-black/40" />
@@ -106,8 +106,7 @@ export default function LandingPage() {
               transition={{ duration: 1, delay: 0.2 }}
               className="font-display text-4xl sm:text-6xl lg:text-7xl tracking-wider text-white mb-4 lg:mb-6 leading-[1.1] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
             >
-              Find the right <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">talent.</span><br />
-              Or become one.
+              Build your career in <span className="text-[#00A8E1] drop-shadow-[0_0_25px_rgba(0,168,225,0.6)]">entertainment.</span>
             </motion.h1>
 
             <motion.p
@@ -206,7 +205,7 @@ export default function LandingPage() {
               <div className="relative">
                 <div className="absolute inset-0 bg-[#00A8E1]/20 blur-[100px] rounded-full z-0" />
                 <div className="relative z-10 bg-[#0F171E] border border-white/10 rounded-2xl shadow-2xl p-2 overflow-hidden">
-                  <img src="https://res.cloudinary.com/entermock/image/upload/f_auto,q_auto,w_800/v1774065749/Gemini_Generated_Image_auzrvaauzrvaauzr_absldm.png" alt="Artist Bank Preview" className="rounded-xl w-full opacity-80" />
+                  <img src="https://res.cloudinary.com/dqfntq4ld/image/upload/f_auto,q_auto,w_800/v1774535126/Untitled_4_hc2xwl.jpg" alt="Artist Bank Preview" className="rounded-xl w-full opacity-80" />
                 </div>
               </div>
             </div>

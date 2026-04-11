@@ -1,26 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockBookings, mockPayments } from "@/lib/mockData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
-import { Search, Download } from "lucide-react";
+import { Search, Download, Loader2 } from "lucide-react";
+import { api } from "@/lib/stubs";
 
 const SearchableTable = ({
   data,
   columns,
   searchKey,
+  isLoading = false,
 }: {
   data: any[];
   columns: { key: string; label: string; render?: (val: any, row: any) => React.ReactNode }[];
   searchKey: string;
+  isLoading?: boolean;
 }) => {
   const [search, setSearch] = useState("");
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-10 w-10 text-[#00A8E1] animate-spin" />
+      </div>
+    );
+  }
+
   const filtered = data.filter(row =>
-    String(row[searchKey]).toLowerCase().includes(search.toLowerCase())
+    String(row[searchKey] || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -74,22 +85,49 @@ const SearchableTable = ({
   );
 };
 
-// Mocked subscription data
-const subscriptions = [
-  { id: "sub_1", userName: "Arjun Sharma", role: "ARTIST", plan: "Pro", amount: 999, status: "ACTIVE", renewsAt: "2026-03-15" },
-  { id: "sub_2", userName: "National School of Drama", role: "SCHOOL", plan: "School Pro", amount: 4999, status: "ACTIVE", renewsAt: "2026-01-10" },
-  { id: "sub_3", userName: "Blue Star Productions", role: "PRODUCTION", plan: "Production Elite", amount: 9999, status: "ACTIVE", renewsAt: "2026-02-01" },
-  { id: "sub_4", userName: "Priya Iyer", role: "ARTIST", plan: "Pro", amount: 999, status: "CANCELLED", renewsAt: "2025-12-20" },
-  { id: "sub_5", userName: "Ravi Mehta Events", role: "CLIENT", plan: "Client Pro", amount: 2499, status: "ACTIVE", renewsAt: "2026-04-05" },
-];
-
 export default function AdminSubscriptionsPage() {
+  const [data, setData] = useState<{ payments: any[], bookings: any[], subscriptions: any[] }>({
+    payments: [],
+    bookings: [],
+    subscriptions: [],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [payments, bookings] = await Promise.all([
+          api.getPayments(),
+          api.getBookings(),
+        ]);
+        
+        // Mock subscriptions based on payments for now
+        const subscriptions = payments.map((p: any) => ({
+          id: `sub_${p.id}`,
+          userName: `User ${p.userId}`,
+          role: "TALENT",
+          plan: p.plan,
+          amount: p.amount,
+          status: "ACTIVE",
+          renewsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        }));
+
+        setData({ payments, bookings, subscriptions });
+      } catch (err) {
+        console.error("Failed to fetch admin data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   const bookingColumns = [
     { key: "id", label: "ID", render: (v: string) => <span className="text-gray-500 font-mono text-xs">{v}</span> },
     { key: "eventType", label: "Event", render: (v: string) => <span className="text-white font-medium">{v}</span> },
     { key: "eventDate", label: "Date", render: (v: string) => <span className="text-gray-300">{v}</span> },
     { key: "eventCity", label: "City", render: (v: string) => <span className="text-gray-300">{v}</span> },
-    { key: "amount", label: "Amount", render: (v: number) => <span className="text-white font-bold">₹{v.toLocaleString()}</span> },
+    { key: "amount", label: "Amount", render: (v: number) => <span className="text-white font-bold">₹{v?.toLocaleString()}</span> },
     {
       key: "status", label: "Status", render: (v: string) => (
         <Badge className={`text-[10px] hover:opacity-100
@@ -108,7 +146,7 @@ export default function AdminSubscriptionsPage() {
     { key: "id", label: "Txn ID", render: (v: string) => <span className="text-gray-500 font-mono text-xs">{v}</span> },
     { key: "userId", label: "User ID", render: (v: string) => <span className="text-gray-300">{v}</span> },
     { key: "plan", label: "Plan", render: (v: string) => <span className="text-white font-medium">{v}</span> },
-    { key: "amount", label: "Amount", render: (v: number) => <span className="text-white font-bold">₹{v.toLocaleString()}</span> },
+    { key: "amount", label: "Amount", render: (v: number) => <span className="text-white font-bold">₹{v?.toLocaleString()}</span> },
     {
       key: "status", label: "Status", render: (v: string) => (
         <Badge className={`text-[10px]
@@ -118,7 +156,7 @@ export default function AdminSubscriptionsPage() {
         </Badge>
       )
     },
-    { key: "createdAt", label: "Date", render: (v: string) => <span className="text-gray-400">{new Date(v).toLocaleDateString()}</span> },
+    { key: "createdAt", label: "Date", render: (v: string) => <span className="text-gray-400">{v ? new Date(v).toLocaleDateString() : '—'}</span> },
   ];
 
   const subColumns = [
@@ -127,17 +165,16 @@ export default function AdminSubscriptionsPage() {
     {
       key: "role", label: "Role", render: (v: string) => (
         <Badge variant="outline" className={`text-[10px] h-5 border-none
-          ${v === 'ARTIST' ? 'bg-[#00A8E1]/10 text-[#00A8E1]' : ''}
+          ${v === 'ARTIST' || v === 'TALENT' ? 'bg-[#00A8E1]/10 text-[#00A8E1]' : ''}
           ${v === 'SCHOOL' ? 'bg-blue-500/10 text-blue-400' : ''}
-          ${v === 'PRODUCTION' ? 'bg-purple-500/10 text-purple-400' : ''}
-          ${v === 'CLIENT' ? 'bg-green-500/10 text-green-400' : ''}
+          ${v === 'PRODUCTION' || v === 'CLIENT' ? 'bg-purple-500/10 text-purple-400' : ''}
         `}>
           {v}
         </Badge>
       )
     },
     { key: "plan", label: "Plan", render: (v: string) => <span className="text-white">{v}</span> },
-    { key: "amount", label: "Amount", render: (v: number) => <span className="text-white font-bold">₹{v.toLocaleString()}</span> },
+    { key: "amount", label: "Amount", render: (v: number) => <span className="text-white font-bold">₹{v?.toLocaleString()}</span> },
     {
       key: "status", label: "Status", render: (v: string) => (
         <Badge className={`text-[10px]
@@ -147,7 +184,7 @@ export default function AdminSubscriptionsPage() {
         </Badge>
       )
     },
-    { key: "renewsAt", label: "Renews", render: (v: string) => <span className="text-gray-400">{new Date(v).toLocaleDateString()}</span> },
+    { key: "renewsAt", label: "Renews", render: (v: string) => <span className="text-gray-400">{v ? new Date(v).toLocaleDateString() : '—'}</span> },
   ];
 
   return (
@@ -171,13 +208,13 @@ export default function AdminSubscriptionsPage() {
         </TabsList>
 
         <TabsContent value="subscriptions">
-          <SearchableTable data={subscriptions} columns={subColumns as any} searchKey="userName" />
+          <SearchableTable data={data.subscriptions} columns={subColumns as any} searchKey="userName" isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="payments">
-          <SearchableTable data={mockPayments} columns={paymentColumns as any} searchKey="plan" />
+          <SearchableTable data={data.payments} columns={paymentColumns as any} searchKey="plan" isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="bookings">
-          <SearchableTable data={mockBookings} columns={bookingColumns as any} searchKey="eventType" />
+          <SearchableTable data={data.bookings} columns={bookingColumns as any} searchKey="eventType" isLoading={isLoading} />
         </TabsContent>
       </Tabs>
     </PageWrapper>

@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,74 +10,152 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  TALENT
-  CLIENT
-  ADMIN
-}
-
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String         @unique
-  password      String?
-  role          UserRole       @default(TALENT)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  talentProfile ArtistProfile?
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(TALENT)
+  isPremium     Boolean   @default(false)
+  isVerified    Boolean   @default(false)
+  isSuspended   Boolean   @default(false)
+  isDisabled    Boolean   @default(false)
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  talentProfile TalentProfile?
   clientProfile ClientProfile?
+  applications  Application[]
+  castingCalls  CastingCall[]
+  notifications Notification[]
+  announcements Announcement[] @relation("AdminAnnouncements")
+  conversations1 Conversation[] @relation("User1Conversations")
+  conversations2 Conversation[] @relation("User2Conversations")
+  sentMessages   Message[]      @relation("SentMessages")
 }
 
-model ArtistProfile {
-  id           String   @id @default(cuid())
-  userId       String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio          String?
-  category     String?  // Actor, Singer, etc.
-  subCategory  String?
-  location     String?
-  experience   String?
-  skills       String[]
-  images       String[] // URLs
-  socialLinks  Json?    // { instagram: '', youtube: '' }
-  updatedAt    DateTime @updatedAt
-  applications Application[]
+model OtpVerification {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model TalentProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio         String?
+  skills      String[] // e.g. ["Acting", "Dancing"]
+  roles       String[] // e.g. ["Actor", "Model"]
+  languages   String[] // e.g. ["Hindi", "English"]
+  experience  String?  // e.g. "5 years"
+  age         Int?
+  gender      String?
+  city        String?
+  state       String?
+  location    String? // Keep for legacy if needed, but city/state preferred
+  imageUrl    String?
+  youtubeUrl  String?
+  vimeoUrl    String?
+  availability String?
+  profileViews Int     @default(0)
+  updatedAt   DateTime @updatedAt
+
 }
 
 model ClientProfile {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyName   String?
-  contactPerson String?
-  location      String?
-  website       String?
-  bio           String?
-  updatedAt     DateTime @updatedAt
-  castingCalls  CastingCall[]
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName    String?
+  contactPerson  String?
+  city           String?
+  state          String?
+  location       String?
+  website        String?
+  bio            String?
+  imageUrl       String?
+  updatedAt      DateTime @updatedAt
 }
 
 model CastingCall {
-  id          String   @id @default(cuid())
-  clientId    String
-  client      ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  title       String
-  description String
-  location    String?
-  budget      String?
-  role        String?
-  status      String   @default("OPEN") // OPEN, CLOSED, COMPLETED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String        @id @default(cuid())
+  clientId     String
+  client       User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  type         String?
+  roles        String[]
+  tags         String[]      @default([])
+  location     String?
+  budget       String?
+  deadline     DateTime?
+  status       String        @default("OPEN") // OPEN, CLOSED
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   applications Application[]
 }
 
 model Application {
   id            String      @id @default(cuid())
+  talentId      String
+  talent        User        @relation(fields: [talentId], references: [id], onDelete: Cascade)
   castingCallId String
   castingCall   CastingCall @relation(fields: [castingCallId], references: [id], onDelete: Cascade)
-  talentId      String
-  talent        ArtistProfile @relation(fields: [talentId], references: [id], onDelete: Cascade)
-  status        String      @default("PENDING") // PENDING, SHORTLISTED, REJECTED
+  status        String      @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  message       String?
   createdAt     DateTime    @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // e.g. "USER_SIGNUP", "VERIFICATION_SUCCESS", "ANNOUNCEMENT"
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?  // e.g. "/admin/verification"
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation("AdminAnnouncements", fields: [adminId], references: [id], onDelete: Cascade)
+  target    String   // "TALENT", "CLIENT", "BOTH"
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  user1Id   String
+  user1     User      @relation("User1Conversations", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2Id   String
+  user2     User      @relation("User2Conversations", fields: [user2Id], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  @@unique([user1Id, user2Id])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
+
+enum Role {
+  TALENT
+  CLIENT
+  ADMIN
 }

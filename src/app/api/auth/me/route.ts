@@ -1,30 +1,42 @@
-import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import jwt from "jsonwebtoken";
 
-export const dynamic = "force-dynamic";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
-// This is a placeholder for a real session check (e.g. from cookies/JWT)
-// For now, we'll simulate an authenticated session using a query param or header for testing
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email") || "talent@example.com"; 
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
 
-    const user = await db.user.findUnique({
-      where: { email },
-      include: {
-        talentProfile: true,
-        clientProfile: true,
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        isPremium: true,
+        isVerified: true,
+        isSuspended: true,
+        createdAt: true,
+        updatedAt: true,
       },
+
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error("Auth session error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("[ME ERROR]", error);
+    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 }

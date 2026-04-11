@@ -49,6 +49,8 @@ export const metadata: Metadata = {
   },
 };
 
+import AuthProvider from "@/components/providers/AuthProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,12 +61,14 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${bebasNeue.variable} antialiased min-h-screen flex flex-col`}
       >
-        <Navbar />
-        {children}
-        <Footer />
-        <MobileBottomNav />
-        <RoleSwitcher />
-        <Toaster theme="dark" position="bottom-right" />
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <MobileBottomNav />
+          <RoleSwitcher />
+          <Toaster theme="dark" position="top-center" />
+        </AuthProvider>
       </body>
     </html>
   );

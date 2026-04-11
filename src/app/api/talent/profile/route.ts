@@ -1,60 +1,110 @@
-import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import jwt from "jsonwebtoken";
 
-export const dynamic = "force-dynamic";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function GET(request: Request) {
+function getUserFromRequest(req: NextRequest) {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) return null;
   try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email") || "talent@example.com";
-
-    const user = await db.user.findUnique({
-      where: { email },
-      include: {
-        talentProfile: true,
-      },
-    });
-
-    if (!user || user.role !== "TALENT") {
-      return NextResponse.json({ error: "Talent not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ profile: user.talentProfile });
-  } catch (error) {
-    console.error("Talent profile fetch error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const token = authHeader.split(" ")[1];
+    return jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+  } catch {
+    return null;
   }
 }
 
-export async function POST(request: Request) {
+export async function GET(req: NextRequest) {
+  const decoded = getUserFromRequest(req);
+  if (!decoded) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   try {
-    const body = await request.json();
-    const { email, ...profileData } = body;
+    const profile = await prisma.talentProfile.findUnique({
+      where: { userId: decoded.userId },
+      include: { user: { select: { name: true, email: true, isVerified: true } } },
 
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
-
-    const user = await db.user.findUnique({
-      where: { email },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const profile = await db.artistProfile.upsert({
-      where: { userId: user.id },
-      update: profileData,
-      create: {
-        ...profileData,
-        userId: user.id,
-      },
-    });
-
-    return NextResponse.json({ profile });
+    if (!profile) return NextResponse.json({ error: "Profile not found." }, { status: 404 });
+    return NextResponse.json({ profile }, { status: 200 });
   } catch (error) {
-    console.error("Talent profile update error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("[TALENT PROFILE GET ERROR]", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  const decoded = getUserFromRequest(req);
+  if (!decoded) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
+  try {
+    const body = await req.json();
+    const { 
+      name, bio, location, skills, languages, experience, 
+      age, gender, imageUrl, youtubeUrl, vimeoUrl, roles, 
+      state, city, availability 
+    } = body;
+  
+    const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
+    
+    // Determine city and state
+    let finalCity = city;
+    let finalState = state;
+
+    if (!finalCity && location && location.includes(',')) {
+      const parts = location.split(',');
+      finalCity = parts[0].trim();
+      finalState = parts[1].trim();
+    } else if (!finalCity && location) {
+      finalCity = location;
+    }
+
+    // Capitalize city
+    if (finalCity) {
+      finalCity = capitalize(finalCity);
+    }
+
+    const finalLocation = finalCity && finalState ? `${finalCity}, ${finalState}` : finalCity || location;
+
+    // Update name in User model
+    if (name) {
+      await prisma.user.update({
+        where: { id: decoded.userId },
+        data: { name: capitalize(name) }
+      });
+    }
+
+    const profileData = {
+      bio, 
+      location: finalLocation, 
+      city: finalCity,
+      state: finalState,
+      availability,
+      skills, 
+      languages, 
+      experience, 
+      age: age ? parseInt(String(age)) : undefined, 
+      gender, 
+      imageUrl, 
+      youtubeUrl, 
+      vimeoUrl, 
+      roles
+    };
+
+    const profile = await prisma.talentProfile.upsert({
+      where: { userId: decoded.userId },
+      create: {
+        userId: decoded.userId,
+        ...profileData
+      },
+      update: profileData
+    });
+
+
+    return NextResponse.json({ success: true, message: "Profile updated.", profile }, { status: 200 });
+  } catch (error) {
+    console.error("[TALENT PROFILE PUT ERROR]", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }

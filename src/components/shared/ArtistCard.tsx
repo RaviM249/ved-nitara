@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { MapPin, Star, ShieldCheck } from "lucide-react";
 import SubscriptionBadge from "./SubscriptionBadge";
 import Link from "next/link";
+import { useAuthStore } from "@/lib/store/authStore";
 
 interface ArtistCardProps {
   artist: Artist;
@@ -14,6 +15,7 @@ interface ArtistCardProps {
 }
 
 export default function ArtistCard({ artist, onShortlist, basePath = "/production", profileUrl }: ArtistCardProps) {
+  const { isLoggedIn } = useAuthStore();
   return (
     <Card className="group overflow-hidden bg-[#1f1f1f] border-white/5 hover:border-white/20 transition-all duration-300 hover-blue-glow">
       <div className="relative aspect-[4/5] overflow-hidden">
@@ -53,11 +55,11 @@ export default function ArtistCard({ artist, onShortlist, basePath = "/productio
           
           <div className="flex items-center text-gray-400 text-sm mb-3">
             <MapPin className="w-3.5 h-3.5 mr-1" />
-            {artist.city}, {artist.state}
+            {artist.city}{artist.state ? `, ${artist.state}` : ""}
           </div>
 
           <div className="flex items-center justify-between gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-            <Link href={profileUrl || `${basePath}/artists/${artist.id}`} className="w-full">
+            <Link href={isLoggedIn ? (profileUrl || `${basePath}/artists/${artist.id}`) : "/login"} className="w-full">
               <Button size="sm" className="w-full bg-white text-black hover:bg-gray-200">
                 View Profile
               </Button>
@@ -93,14 +95,6 @@ export default function ArtistCard({ artist, onShortlist, basePath = "/productio
           )}
         </div>
         
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-1.5 pt-1">
-            <div className={`w-2 h-2 rounded-full ${artist.availability ? "bg-green-500 shadow-[0_0_8px_#22c55e]" : "bg-red-500 shadow-[0_0_8px_#ef4444]"}`} />
-            <span className="text-gray-400">
-              {artist.availability ? "Available Now" : "Currently Busy"}
-            </span>
-          </div>
-        </div>
       </div>
     </Card>
   );

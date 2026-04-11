@@ -1,72 +1,110 @@
-import { PrismaClient, UserRole } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding database...");
+  const hashedPassword = await bcrypt.hash("password@123", 10);
 
-  // Create a default Talent user
-  const talentUser = await prisma.user.upsert({
-    where: { email: "talent@example.com" },
-    update: {},
-    create: {
-      email: "talent@example.com",
-      name: "John Artist",
-      role: UserRole.TALENT,
-      talentProfile: {
-        create: {
-          bio: "Passionate actor and performer with 5 years of experience in regional cinema.",
-          category: "Actor",
-          subCategory: "Lead / Character Artist",
-          location: "Mumbai, Maharashtra",
-          experience: "5 Years",
-          skills: ["Acting", "Dancing", "Martial Arts"],
-          images: [
-            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400&auto=format&fit=crop"
-          ],
-          socialLinks: {
-            instagram: "https://instagram.com/johnartist",
-            youtube: "https://youtube.com/johnartist"
-          }
-        }
-      }
-    }
+  console.log("🔥 Starting Database Core Cleanup...");
+  
+  // 1. DANGER ZONE: Nuke all non-admins. This cascades through Talents, Clients, Jobs, and Apps.
+  const deletedUsers = await prisma.user.deleteMany({
+    where: { role: { not: "ADMIN" } },
   });
+  console.log(`✅ Nuked ${deletedUsers.count} non-admin accounts and all their cascaded data.`);
 
-  // Create a default Client user
-  const clientUser = await prisma.user.upsert({
-    where: { email: "client@example.com" },
-    update: {},
-    create: {
-      email: "client@example.com",
-      name: "Sarah Producer",
-      role: UserRole.CLIENT,
+  // Clear orphan OTPs just in case
+  await prisma.otpVerification.deleteMany({});
+
+  // 2. Inject Fresh Precision Data
+  console.log("🌱 Injecting Base Precision Accounts...");
+
+  // CLIENT 1
+  const client1 = await prisma.user.create({
+    data: {
+      email: "client1@example.com",
+      name: "Star Productions India",
+      password: hashedPassword,
+      role: "CLIENT",
+      isVerified: true,
       clientProfile: {
         create: {
-          companyName: "Starlight Productions",
-          contactPerson: "Sarah Jenkins",
-          location: "Hyderabad, Telangana",
-          website: "https://starlightproductions.in",
-          bio: "Leading production house specialized in commercial ads and regional feature films."
-        }
-      }
-    }
+          companyName: "Star Productions India",
+          location: "Mumbai, Maharashtra",
+          state: "Maharashtra",
+          city: "Mumbai"
+        },
+      },
+    },
   });
+  console.log("✅ Client 1 Created (client1@example.com)");
 
-  // Create a sample Casting Call
-  const castingCall = await prisma.castingCall.create({
+  // CLIENT 2
+  const client2 = await prisma.user.create({
     data: {
-      clientId: (await prisma.clientProfile.findUnique({ where: { userId: clientUser.id } }))!.id,
-      title: "Lead Female Actor for TV Commercial",
-      description: "Looking for a female actor (age 20-25) for a high-end luxury watch commercial. Previous experience in modeling or acting preferred.",
-      location: "Bangalore",
-      budget: "₹25,000 - ₹40,000",
-      role: "Lead",
-      status: "OPEN"
-    }
+      email: "client2@example.com",
+      name: "Neon Lights Casting",
+      password: hashedPassword,
+      role: "CLIENT",
+      isVerified: true,
+      clientProfile: {
+        create: {
+          companyName: "Neon Lights Casting",
+          location: "Bangalore, Karnataka",
+          state: "Karnataka",
+          city: "Bangalore"
+        },
+      },
+    },
   });
+  console.log("✅ Client 2 Created (client2@example.com)");
 
-  console.log("Seeding complete!");
+  // TALENT 1
+  const talent1 = await prisma.user.create({
+    data: {
+      email: "talent1@example.com",
+      name: "Aryan Kapoor",
+      password: hashedPassword,
+      role: "TALENT",
+      isVerified: true,
+      talentProfile: {
+        create: {
+          bio: "Professional actor with experience in feature films and big-budget commercial shoots.",
+          skills: ["Acting", "Dancing", "Action Sequences"],
+          experience: "5 years",
+          location: "Mumbai, Maharashtra",
+          state: "Maharashtra",
+          city: "Mumbai"
+        },
+      },
+    },
+  });
+  console.log("✅ Talent 1 Created (talent1@example.com)");
+
+  // TALENT 2
+  const talent2 = await prisma.user.create({
+    data: {
+      email: "talent2@example.com",
+      name: "Sanya Malhotra",
+      password: hashedPassword,
+      role: "TALENT",
+      isVerified: true,
+      talentProfile: {
+        create: {
+          bio: "Versatile model and performer seeking dynamic roles in OTT series and ad campaigns.",
+          skills: ["Modeling", "Performance Art", "Kathak"],
+          experience: "3 years",
+          location: "Delhi",
+          state: "Delhi",
+          city: "New Delhi"
+        },
+      },
+    },
+  });
+  console.log("✅ Talent 2 Created (talent2@example.com)");
+
+  console.log("✅ Database Reset and Precision Seeding Completed Successfully! 🚀");
 }
 
 main()

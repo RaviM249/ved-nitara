@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { User, Role } from '@/types';
 
 interface AuthState {
@@ -11,31 +12,47 @@ interface AuthState {
   logout: () => void;
   switchMode: (mode: "TALENT" | "CLIENT") => void;
   setSubscribed: (status: boolean) => void;
+  updateUser: (data: Partial<User>) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false,
-  user: null,
-  activeRole: "TALENT", // default role
-  currentMode: null, // set during login or intent selection
-  isSubscribed: false,
-  login: (role, user, isSubscribed = false) => {
-    // Determine initial UI mode based on role
-    const defaultMode = role === "CLIENT" ? "CLIENT" : "TALENT";
-    set({ 
-      isLoggedIn: true, 
-      user, 
-      activeRole: role,
-      currentMode: defaultMode,
-      isSubscribed
-    });
-  },
-  logout: () => set({ 
-    isLoggedIn: false, 
-    user: null,
-    currentMode: null,
-    isSubscribed: false
-  }),
-  switchMode: (mode) => set({ currentMode: mode }),
-  setSubscribed: (status) => set({ isSubscribed: status }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      isLoggedIn: false,
+      user: null,
+      activeRole: "TALENT",
+      currentMode: null,
+      isSubscribed: false,
+      login: (role, user, isSubscribed = false) => {
+        const defaultMode = role === "CLIENT" ? "CLIENT" : "TALENT";
+        set({ 
+          isLoggedIn: true, 
+          user, 
+          activeRole: role,
+          currentMode: defaultMode,
+          isSubscribed
+        });
+      },
+      logout: () => {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("auth-token");
+        }
+        set({ 
+          isLoggedIn: false, 
+          user: null,
+          currentMode: null,
+          isSubscribed: false
+        });
+      },
+
+      switchMode: (mode) => set({ currentMode: mode }),
+      setSubscribed: (status) => set({ isSubscribed: status }),
+      updateUser: (data) => set((state) => ({
+        user: state.user ? { ...state.user, ...data } : null
+      })),
+    }),
+    {
+      name: 'auth-storage', // name of the item in localStorage
+    }
+  )
+);

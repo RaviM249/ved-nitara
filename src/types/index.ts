@@ -27,6 +27,8 @@ export interface TalentProfile {
     amount: number;
     currency: string;
   };
+  youtubeUrl?: string;
+  vimeoUrl?: string;
   availability: boolean;
 }
 
@@ -41,8 +43,12 @@ export interface User {
   password?: string;
   role: Role;
   isEmailVerified: boolean;
-  isSubscribed: boolean;
+  isVerified: boolean;
+  isPremium: boolean;
+  isSubscribed: boolean; // Alias for isPremium in frontend
+  isSuspended: boolean;
   status: UserStatus;
+
   
   profile?: UserProfile;
   talentProfile?: TalentProfile;
@@ -58,7 +64,11 @@ export interface User {
     updatedAt: string;
   };
 
+  createdAt?: string;
+  updatedAt?: string;
+
   // Keep these for backward compatibility during refactoring
+
   avatar?: string;
   roles?: Role[]; // Some old code may still expect an array
 }
@@ -88,7 +98,7 @@ export interface Artist {
   reviewCount: number;
   joinedDate: string;
   experience: string;
-  availability: boolean;
+  gender: string;
   hourlyRate?: number;
 }
 

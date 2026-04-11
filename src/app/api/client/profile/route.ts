@@ -1,60 +1,89 @@
-import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import jwt from "jsonwebtoken";
 
-export const dynamic = "force-dynamic";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function GET(request: Request) {
+function getUserFromRequest(req: NextRequest) {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) return null;
   try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email") || "client@example.com";
-
-    const user = await db.user.findUnique({
-      where: { email },
-      include: {
-        clientProfile: true,
-      },
-    });
-
-    if (!user || user.role !== "CLIENT") {
-      return NextResponse.json({ error: "Client not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ profile: user.clientProfile });
-  } catch (error) {
-    console.error("Client profile fetch error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const token = authHeader.split(" ")[1];
+    return jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+  } catch {
+    return null;
   }
 }
 
-export async function POST(request: Request) {
+export async function GET(req: NextRequest) {
+  const decoded = getUserFromRequest(req);
+  if (!decoded) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   try {
-    const body = await request.json();
-    const { email, ...profileData } = body;
-
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
-
-    const user = await db.user.findUnique({
-      where: { email },
+    const profile = await prisma.clientProfile.findUnique({
+      where: { userId: decoded.userId },
+      include: { user: { select: { name: true, email: true } } },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!profile) return NextResponse.json({ error: "Profile not found." }, { status: 404 });
+    return NextResponse.json({ profile }, { status: 200 });
+  } catch (error) {
+    console.error("[CLIENT PROFILE GET ERROR]", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  const decoded = getUserFromRequest(req);
+  if (!decoded) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
+  try {
+    const body = await req.json();
+    const { companyName, contactPerson, location, website, bio, imageUrl, city, state } = body;
+
+    const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
+    
+    // Determine city and state
+    let finalCity = city;
+    let finalState = state;
+
+    if (!finalCity && location && location.includes(',')) {
+      const parts = location.split(',');
+      finalCity = parts[0].trim();
+      finalState = parts[1].trim();
+    } else if (!finalCity && location) {
+      finalCity = location;
     }
 
-    const profile = await db.clientProfile.upsert({
-      where: { userId: user.id },
-      update: profileData,
+    // Capitalize city
+    if (finalCity) {
+      finalCity = capitalize(finalCity);
+    }
+
+    const finalLocation = finalCity && finalState ? `${finalCity}, ${finalState}` : finalCity || location;
+
+    const profile = await prisma.clientProfile.upsert({
+      where: { userId: decoded.userId },
       create: {
-        ...profileData,
-        userId: user.id,
+        userId: decoded.userId,
+        companyName, contactPerson: capitalize(contactPerson), 
+        location: finalLocation, 
+        city: finalCity,
+        state: finalState,
+        website, bio, imageUrl,
+      },
+      update: {
+        companyName, contactPerson: capitalize(contactPerson), 
+        location: finalLocation, 
+        city: finalCity,
+        state: finalState,
+        website, bio, imageUrl,
       },
     });
 
-    return NextResponse.json({ profile });
+    return NextResponse.json({ message: "Profile updated.", profile }, { status: 200 });
   } catch (error) {
-    console.error("Client profile update error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("[CLIENT PROFILE PUT ERROR]", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }

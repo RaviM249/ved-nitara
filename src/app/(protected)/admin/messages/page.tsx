@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import { mockMessages } from "@/lib/mockData";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,17 +9,39 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Send, Megaphone, Flag, Eye } from "lucide-react";
+import { Search, Send, Megaphone, Flag, Eye, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "@/lib/stubs";
 
 export default function AdminMessagesPage() {
   const [announcement, setAnnouncement] = useState({ title: "", message: "", target: "all" });
   const [isSending, setIsSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredMessages = mockMessages.filter(m =>
-    m.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.senderId.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    async function fetchMessages() {
+      try {
+        const data = await api.getConversations();
+        // Flatten conversations into individual messages for monitoring
+        const flattened = data.flatMap((c: any) => (c.messages || []).map((m: any) => ({
+          ...m,
+          senderName: c.partnerName,
+        })));
+        setMessages(flattened);
+      } catch (err) {
+        console.error("Failed to fetch messages for monitor:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchMessages();
+  }, []);
+
+  const filteredMessages = messages.filter(m =>
+    (m.content || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (m.senderId || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSendAnnouncement = async () => {
