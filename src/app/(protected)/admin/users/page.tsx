@@ -28,6 +28,7 @@ const DataTable = ({
   onDelete: (userId: string) => void
 }) => {
   const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("ALL");
   const { user: currentUser } = useAuthStore();
   
   if (isLoading) {
@@ -38,22 +39,36 @@ const DataTable = ({
     );
   }
 
-  const filtered = data.filter(u =>
-    u.name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
-    u.role?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = data.filter(u => {
+    const matchesSearch = u.name?.toLowerCase().includes(search.toLowerCase()) ||
+                          u.email?.toLowerCase().includes(search.toLowerCase()) ||
+                          u.role?.toLowerCase().includes(search.toLowerCase());
+    const matchesRole = roleFilter === "ALL" || 
+                       (roleFilter === "CLIENT" && u.role === "CLIENT") || 
+                       (roleFilter === "TALENT" && (u.role === "TALENT" || u.role === "ARTIST"));
+    return matchesSearch && matchesRole;
+  });
 
   return (
     <div>
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <Input
-          placeholder="Search users..."
-          className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6">
+        <Tabs defaultValue="ALL" onValueChange={setRoleFilter} className="w-full md:w-auto">
+          <TabsList className="bg-[#141414] border border-white/10 text-white">
+            <TabsTrigger value="ALL" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white">All Users</TabsTrigger>
+            <TabsTrigger value="CLIENT" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white">Clients</TabsTrigger>
+            <TabsTrigger value="TALENT" className="data-[state=active]:bg-[#00A8E1] data-[state=active]:text-white">Talents</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <div className="relative w-full md:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search users..."
+            className="pl-9 bg-[#141414] border-white/10 text-white focus-visible:ring-[#00A8E1]"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-white/5">

@@ -26,6 +26,7 @@ export default function ClientDashboard() {
   const [minAge, setMinAge] = useState<string>("");
   const [maxAge, setMaxAge] = useState<string>("");
   const [locationStr, setLocationStr] = useState<string>("");
+  const [selectedAvailability, setSelectedAvailability] = useState<string[]>([]);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [hasShowreel, setHasShowreel] = useState(false);
 
@@ -36,6 +37,7 @@ export default function ClientDashboard() {
         const data = await api.getArtists({
           role: selectedRoles.join(","),
           city: locationStr || searchQuery,
+          availability: selectedAvailability.join(","),
         });
         setArtists(data);
       } catch (err) {
@@ -45,7 +47,7 @@ export default function ClientDashboard() {
       }
     }
     fetchArtists();
-  }, [selectedRoles, locationStr, searchQuery]);
+  }, [selectedRoles, locationStr, searchQuery, selectedAvailability]);
 
   const stats = [
     { name: "Active Projects / Casting", value: "3", icon: Film },
@@ -160,6 +162,31 @@ export default function ClientDashboard() {
                           onChange={(e) => setLocationStr(e.target.value)}
                           className="bg-[#141414] border-white/10 text-white h-10 pl-9 focus-visible:ring-[#00A8E1] transition-all" 
                         />
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-medium text-white mb-3">Availability</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {['Full-time', 'Part-time', 'Project-based', 'Weekends Only'].map((avail) => {
+                          const isSelected = selectedAvailability.includes(avail);
+                          return (
+                            <button
+                              key={avail}
+                              onClick={() => {
+                                if (isSelected) setSelectedAvailability(prev => prev.filter(a => a !== avail));
+                                else setSelectedAvailability(prev => [...prev, avail]);
+                              }}
+                              className={`text-xs px-3 py-1.5 rounded-full transition-all duration-300 border ${
+                                isSelected 
+                                  ? 'bg-[#00A8E1]/20 border-[#00A8E1] text-[#00A8E1] shadow-[0_0_10px_rgba(0,168,225,0.2)]' 
+                                  : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20'
+                              }`}
+                            >
+                              {avail}
+                            </button>
+                          )
+                        })}
                       </div>
                     </div>
 

@@ -270,7 +270,13 @@ export default function TalentJobsPage() {
                                 </div>
                                 <div className="text-center mb-8">
                                    <h4 className="text-xl font-bold text-white mb-1">{selectedJob.client?.clientProfile?.companyName || "Production House"}</h4>
-                                   <Badge variant="secondary" className="bg-[#00A8E1]/10 text-[#00A8E1] border-none uppercase tracking-widest text-[10px]">PREMIUM EMPLOYER</Badge>
+                                   {selectedJob.client?.isPremium ? (
+                                      <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 border-none uppercase tracking-widest text-[10px]">PREMIUM EMPLOYER</Badge>
+                                   ) : selectedJob.client?.isVerified ? (
+                                      <Badge variant="secondary" className="bg-[#00A8E1]/10 text-[#00A8E1] border-none uppercase tracking-widest text-[10px]">VERIFIED CLIENT</Badge>
+                                   ) : (
+                                      <Badge variant="secondary" className="bg-gray-500/10 text-gray-400 border-none uppercase tracking-widest text-[10px]">NEW CLIENT</Badge>
+                                   )}
                                 </div>
                                 <div className="space-y-4">
                                    <p className="text-gray-400 text-sm leading-relaxed text-center">

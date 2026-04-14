@@ -24,8 +24,8 @@ export async function GET(req: NextRequest) {
   try {
     const users = await prisma.user.findMany({
       include: {
-        talentProfile: { select: { location: true } },
-        clientProfile: { select: { location: true } }
+        talentProfile: true, // Fetch all data
+        clientProfile: true  // Fetch all data including panNumber/gstNumber
       },
       orderBy: { createdAt: "desc" }
     });
@@ -37,8 +37,13 @@ export async function GET(req: NextRequest) {
       role: u.role,
       isVerified: u.isVerified,
       isPremium: u.isPremium,
-      city: u.talentProfile?.location || u.clientProfile?.location || "Not Set",
-      createdAt: u.createdAt
+      isDisabled: u.isDisabled,
+      isSuspended: u.isSuspended,
+      phone: u.phone,
+      city: u.talentProfile?.location || u.clientProfile?.location || u.talentProfile?.city || u.clientProfile?.city || "Not Set",
+      createdAt: u.createdAt,
+      talentProfile: u.talentProfile,
+      clientProfile: u.clientProfile,
     }));
 
     return NextResponse.json({ users: formattedUsers }, { status: 200 });

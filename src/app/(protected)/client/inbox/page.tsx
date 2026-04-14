@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, FileImage, Settings, MessageSquare, Loader2 } from "lucide-react";
+import { Search, Send, FileImage, Settings, MessageSquare, Loader2, Lock, ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { api } from "@/lib/stubs";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function ProductionInboxPage() {
   const { user } = useAuthStore();
@@ -25,6 +26,10 @@ export default function ProductionInboxPage() {
   const [isMessagesLoading, setIsMessagesLoading] = useState(false);
 
   const fetchConversations = async (autoSelectId?: string) => {
+    if (user && !user.isPremium) {
+      setIsLoading(false);
+      return;
+    }
     try {
       const data = await api.getConversations();
       // Ensure uniqueness by ID
@@ -49,6 +54,8 @@ export default function ProductionInboxPage() {
   };
 
   useEffect(() => {
+    if (user && !user.isPremium) return;
+
     async function init() {
       if (artistId) {
         const res = await api.startConversation(artistId);
@@ -74,7 +81,7 @@ export default function ProductionInboxPage() {
 
 
   useEffect(() => {
-    if (!activeConv) return;
+    if (!activeConv || (user && !user.isPremium)) return;
 
     // Initial fetch
     const fetchMessages = async (showLoading = true) => {
@@ -136,6 +143,30 @@ export default function ProductionInboxPage() {
     }
   };
 
+
+  if (user && !user.isPremium) {
+    return (
+      <PageWrapper className="h-[calc(100vh-64px)] overflow-hidden p-0 md:p-4" noPadding>
+        <div className="flex flex-col items-center justify-center h-full bg-[#141414] md:bg-[#1f1f1f] md:border border-white/10 md:rounded-xl p-8 text-center mt-16 md:mt-2 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#00A8E1]/5 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#10B981]/5 rounded-full blur-[100px]" />
+          
+          <div className="mx-auto h-24 w-24 bg-black/40 border border-[#00A8E1]/20 rounded-full flex items-center justify-center mb-6 relative z-10 shadow-[0_0_30px_rgba(0,168,225,0.1)]">
+            <Lock className="h-10 w-10 text-[#00A8E1]" />
+          </div>
+          <h2 className="text-3xl font-display text-white mb-4 relative z-10 tracking-wide">Premium Feature</h2>
+          <p className="text-gray-400 mb-8 max-w-md relative z-10 text-sm leading-relaxed">
+            Direct messaging is exclusive to our Premium members. Upgrade your account today to negotiate directly, share attachments, and manage all your conversations in one place.
+          </p>
+          <Button asChild className="bg-[#00A8E1] hover:bg-[#0082B4] text-white rounded-full px-8 h-12 font-bold shadow-[0_0_20px_rgba(0,168,225,0.4)] transition-all hover:scale-105 relative z-10 group">
+            <Link href="/pricing">
+              Upgrade to Premium <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </Button>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   if (isLoading) {
     return (

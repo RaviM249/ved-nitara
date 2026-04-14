@@ -10,11 +10,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { api } from "@/lib/stubs";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function ArtistProfileDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const artistId = resolvedParams.id;
   const router = useRouter();
+  const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [artist, setArtist] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
@@ -129,10 +131,23 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
               {/* Action Buttons */}
               <div className="flex flex-col gap-3 mb-8 relative z-10">
                 <button 
-                  onClick={() => router.push(`/client/inbox?artistId=${artistId}`)}
-                  className="w-full h-11 bg-[#00A8E1] text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#0082B4] transition-all hover:shadow-[0_0_20px_rgba(0,168,225,0.4)] group"
+                  onClick={() => {
+                    if (user?.isPremium) {
+                      router.push(`/client/inbox?artistId=${artistId}`);
+                    } else {
+                      router.push('/pricing');
+                    }
+                  }}
+                  className={`w-full h-11 text-white rounded-full font-bold flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_20px_rgba(0,168,225,0.4)] group ${user?.isPremium ? 'bg-[#00A8E1] hover:bg-[#0082B4]' : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'}`}
                 >
-                  <MessageSquare className="h-4 w-4 group-hover:scale-110 transition-transform" /> Message Artist
+                  {user?.isPremium ? (
+                    <MessageSquare className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                  )}
+                  {user?.isPremium ? "Message Artist" : "Unlock Messaging"}
                 </button>
                 <div className="flex gap-3">
                   <button className="flex-1 h-11 border border-white/10 text-white rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-white/5 hover:border-white/20 transition-all group">
@@ -171,7 +186,21 @@ export default function ArtistProfileDetailPage({ params }: { params: Promise<{ 
                 <div className="flex justify-between items-center pb-4 border-b border-white/5">
                   <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Languages</h3>
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-300">
-                    {artist.languages?.join(" • ")}
+                    {artist.languages?.join(" • ") || "Not specified"}
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Experience</h3>
+                  <div className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                    {artist.experience || "Not specified"}
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Availability</h3>
+                  <div className="flex flex-wrap items-center justify-end gap-2 text-xs font-medium text-gray-300 max-w-[60%]">
+                    {artist.availability && artist.availability.length > 0 ? artist.availability.join(' • ') : "Not specified"}
                   </div>
                 </div>
                 

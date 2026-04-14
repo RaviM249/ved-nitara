@@ -60,7 +60,7 @@ model TalentProfile {
   imageUrl    String?
   youtubeUrl  String?
   vimeoUrl    String?
-  availability String?
+  availability String[] @default([])
   profileViews Int     @default(0)
   updatedAt   DateTime @updatedAt
 
@@ -78,6 +78,8 @@ model ClientProfile {
   website        String?
   bio            String?
   imageUrl       String?
+  gstNumber      String?
+  panNumber      String?
   updatedAt      DateTime @updatedAt
 }
 
