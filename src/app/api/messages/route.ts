@@ -19,6 +19,9 @@ export async function GET(req: NextRequest) {
   const user = getAuthUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const dbUser = await prisma.user.findUnique({ where: { id: user.userId }, select: { isPremium: true } });
+  if (!dbUser?.isPremium) return NextResponse.json({ error: "Premium feature only" }, { status: 403 });
+
   const { searchParams } = new URL(req.url);
   const conversationId = searchParams.get("conversationId");
 
@@ -49,6 +52,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const user = getAuthUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const dbUser = await prisma.user.findUnique({ where: { id: user.userId }, select: { isPremium: true } });
+  if (!dbUser?.isPremium) return NextResponse.json({ error: "Premium feature only" }, { status: 403 });
 
   try {
     const { conversationId, content } = await req.json();
@@ -108,6 +114,9 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const user = getAuthUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const dbUser = await prisma.user.findUnique({ where: { id: user.userId }, select: { isPremium: true } });
+  if (!dbUser?.isPremium) return NextResponse.json({ error: "Premium feature only" }, { status: 403 });
 
   try {
     const { conversationId } = await req.json();

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Camera, Video, ArrowRight, ArrowLeft, Briefcase, Calendar, MapPin, CheckCircle2 } from "lucide-react";
+import { Camera, Video, ArrowRight, ArrowLeft, Briefcase, Calendar, MapPin, CheckCircle2, Loader2 } from "lucide-react";
 import { api } from "@/lib/stubs";
 import { toast } from "sonner";
 
@@ -18,10 +18,11 @@ export default function TalentOnboarding() {
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [bio, setBio] = useState("");
-  const [availability, setAvailability] = useState("");
+  const [availability, setAvailability] = useState<string[]>([]);
   const [city, setCity] = useState("");
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [cloudinaryPublicId, setCloudinaryPublicId] = useState<string | null>(null);
+  const [isWidgetLoading, setIsWidgetLoading] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [vimeoUrl, setVimeoUrl] = useState("");
 
@@ -59,6 +60,10 @@ export default function TalentOnboarding() {
 
   const handleUploadClick = () => {
     if (typeof window !== "undefined" && (window as any).cloudinary) {
+      if (isWidgetLoading) return;
+      setIsWidgetLoading(true);
+      setTimeout(() => setIsWidgetLoading(false), 2000);
+
       (window as any).cloudinary.createUploadWidget(
         {
           cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -78,7 +83,13 @@ export default function TalentOnboarding() {
             if (cloudinaryPublicId) {
               api.deleteImage(cloudinaryPublicId).catch(console.error);
             }
-            setProfilePicture(result.info.secure_url);
+
+            let finalUrl = result.info.secure_url;
+            if (result.info.coordinates?.custom) {
+              finalUrl = finalUrl.replace('/upload/', '/upload/c_crop,g_custom/');
+            }
+
+            setProfilePicture(finalUrl);
             setCloudinaryPublicId(result.info.public_id);
             toast.success("Profile picture uploaded!");
           } else if (error && Object.keys(error).length > 0) {
@@ -156,8 +167,8 @@ export default function TalentOnboarding() {
                   </div>
                 ) : (
                   <>
-                    <Camera className="w-10 h-10 text-gray-400 mx-auto mb-3 group-hover:text-[#00A8E1]" />
-                    <h4 className="text-white font-bold mb-1">Upload Profile Picture</h4>
+                    {isWidgetLoading ? <Loader2 className="w-10 h-10 text-[#00A8E1] mx-auto mb-3 animate-spin" /> : <Camera className="w-10 h-10 text-gray-400 mx-auto mb-3 group-hover:text-[#00A8E1]" />}
+                    <h4 className="text-white font-bold mb-1">{isWidgetLoading ? "Opening..." : "Upload Profile Picture"}</h4>
                     <p className="text-xs text-gray-500">JPG, PNG up to 10MB</p>
                   </>
                 )}
@@ -232,15 +243,24 @@ export default function TalentOnboarding() {
                   <Calendar className="w-4 h-4 text-[#00A8E1]" /> Availability
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {['Full-time', 'Part-time', 'Project-based', 'Weekends Only'].map(a => (
-                    <button
-                      key={a}
-                      onClick={() => setAvailability(a)}
-                      className={`p-3 rounded-lg border text-sm font-medium transition-all ${availability === a ? 'border-[#00A8E1] bg-[#00A8E1]/10 text-white' : 'border-white/10 bg-[#141414] text-gray-400 hover:text-white'}`}
-                    >
-                      {a}
-                    </button>
-                  ))}
+                  {['Full-time', 'Part-time', 'Project-based', 'Weekends Only'].map(a => {
+                    const isSelected = availability.includes(a);
+                    return (
+                      <button
+                        key={a}
+                        onClick={() => {
+                          if (isSelected) {
+                            setAvailability(prev => prev.filter(item => item !== a));
+                          } else {
+                            setAvailability(prev => [...prev, a]);
+                          }
+                        }}
+                        className={`p-3 rounded-lg border text-sm font-medium transition-all ${isSelected ? 'border-[#00A8E1] bg-[#00A8E1]/10 text-white shadow-[0_0_10px_rgba(0,168,225,0.2)]' : 'border-white/10 bg-[#141414] text-gray-400 hover:text-white hover:border-white/20'}`}
+                      >
+                        {a}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 

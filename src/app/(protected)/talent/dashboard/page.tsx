@@ -180,22 +180,7 @@ export default function ArtistDashboard() {
         </div>
       </motion.div>
 
-      {/* ─── Verification Warning ─── */}
-      {!user?.isVerified && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-8 p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 flex items-center gap-4 text-amber-200"
-        >
-          <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-            <ShieldCheck className="h-5 w-5 text-amber-500" />
-          </div>
-          <div>
-            <h4 className="font-bold text-sm">Account Pending Verification</h4>
-            <p className="text-xs text-amber-200/70">Your profile is currently under review by our team. You will still be visible in the talent bank.</p>
-          </div>
-        </motion.div>
-      )}
+
 
       {/* ─── Stat Cards ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">

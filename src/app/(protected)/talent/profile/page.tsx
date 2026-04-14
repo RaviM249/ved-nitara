@@ -35,6 +35,7 @@ export default function ArtistProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isWidgetLoading, setIsWidgetLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -47,7 +48,7 @@ export default function ArtistProfilePage() {
     youtubeUrl: "",
     vimeoUrl: "",
     imageUrl: "",
-    availability: ""
+    availability: [] as string[]
   });
 
 
@@ -75,7 +76,7 @@ export default function ArtistProfilePage() {
             youtubeUrl: res.profile.youtubeUrl || "",
             vimeoUrl: res.profile.vimeoUrl || "",
             imageUrl: res.profile.imageUrl || "",
-            availability: res.profile.availability || ""
+            availability: res.profile.availability || []
           });
 
           setSkills(res.profile.skills || []);
@@ -141,6 +142,10 @@ export default function ArtistProfilePage() {
       uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
     });
     if (window.cloudinary) {
+      if (isWidgetLoading) return;
+      setIsWidgetLoading(true);
+      setTimeout(() => setIsWidgetLoading(false), 2000);
+
       const widget = window.cloudinary.createUploadWidget(
         {
           cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -163,7 +168,13 @@ export default function ArtistProfilePage() {
                 api.deleteImage(oldPublicId).catch(console.error);
               }
             }
-            setFormData(prev => ({ ...prev, imageUrl: result.info.secure_url }));
+            
+            let finalUrl = result.info.secure_url;
+            if (result.info.coordinates?.custom) {
+              finalUrl = finalUrl.replace('/upload/', '/upload/c_crop,g_custom/');
+            }
+            
+            setFormData(prev => ({ ...prev, imageUrl: finalUrl }));
             toast.success("Profile picture uploaded!");
           } else if (error && Object.keys(error).length > 0) {
             // Only log if it's a real technical error, not a manual abort
@@ -246,8 +257,9 @@ export default function ArtistProfilePage() {
                 <img src={activeProfile.profilePhoto} alt={activeProfile.name} className="w-full h-full object-cover" />
                 {isEditing && (
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                    <Button onClick={handleUploadClick} variant="outline" className="bg-black/50 border-white/20 text-white backdrop-blur-sm">
-                      <Camera className="h-4 w-4 mr-2" /> Change Photo
+                    <Button onClick={handleUploadClick} disabled={isWidgetLoading} variant="outline" className="bg-black/50 border-white/20 text-white backdrop-blur-sm">
+                      {isWidgetLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Camera className="h-4 w-4 mr-2" />} 
+                      {isWidgetLoading ? "Opening..." : "Change Photo"}
                     </Button>
                   </div>
                 )}
@@ -366,17 +378,25 @@ export default function ArtistProfilePage() {
 
                     <div className="space-y-2">
                       <Label className="text-gray-400">Availability</Label>
-                      <select
-                        value={formData.availability}
-                        onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
-                        className="w-full h-10 px-3 bg-[#141414] border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#00A8E1]"
-                      >
-                        <option value="">Select Availability</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Project-based">Project-based</option>
-                        <option value="Weekends Only">Weekends Only</option>
-                      </select>
+                      <div className="grid grid-cols-2 gap-3 mt-1">
+                        {['Full-time', 'Part-time', 'Project-based', 'Weekends Only'].map(a => {
+                          const isSelected = formData.availability.includes(a);
+                          return (
+                            <button
+                              key={a}
+                              onClick={() => {
+                                const newAvb = isSelected 
+                                  ? formData.availability.filter((item: string) => item !== a)
+                                  : [...formData.availability, a];
+                                setFormData(prev => ({ ...prev, availability: newAvb }));
+                              }}
+                              className={`p-2 rounded-lg border text-sm font-medium transition-all text-left ${isSelected ? 'border-[#00A8E1] bg-[#00A8E1]/10 text-white shadow-[0_0_10px_rgba(0,168,225,0.2)]' : 'border-white/10 bg-white/5 text-gray-400 hover:text-white hover:border-white/20'}`}
+                            >
+                              {a}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
                   </div>
 
@@ -397,7 +417,7 @@ export default function ArtistProfilePage() {
                       </div>
                       <div>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Availability</p>
-                        <p className="text-white font-medium">{formData.availability || "—"}</p>
+                        <p className="text-white font-medium">{formData.availability.length > 0 ? formData.availability.join(', ') : "—"}</p>
                       </div>
                     </div>
 

@@ -6,6 +6,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
     const city = searchParams.get("city");
+    const availabilityParam = searchParams.get("availability");
+    const availabilityArray = availabilityParam ? availabilityParam.split(',').map(s => s.trim()) : [];
 
     const talents = await prisma.user.findMany({
       where: {
@@ -22,6 +24,9 @@ export async function GET(req: NextRequest) {
               { location: { contains: city, mode: 'insensitive' } }
             ]
           } as any : {}),
+          ...(availabilityArray.length > 0 ? {
+            availability: { hasSome: availabilityArray }
+          } : {}),
         },
       } as any,
       include: {

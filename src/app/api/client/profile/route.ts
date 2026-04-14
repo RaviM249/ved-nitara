@@ -39,7 +39,8 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { companyName, contactPerson, location, website, bio, imageUrl, city, state } = body;
+    const { companyName, contactPerson, location, website, bio, imageUrl, city, state, gstNumber, panNumber } = body;
+    console.log("[DEBUG] Received Client Profile Update Payload:", { body });
 
     const capitalize = (s: string) => s ? s.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') : "";
     
@@ -70,14 +71,14 @@ export async function PUT(req: NextRequest) {
         location: finalLocation, 
         city: finalCity,
         state: finalState,
-        website, bio, imageUrl,
+        website, bio, imageUrl, gstNumber, panNumber
       },
       update: {
         companyName, contactPerson: capitalize(contactPerson), 
         location: finalLocation, 
         city: finalCity,
         state: finalState,
-        website, bio, imageUrl,
+        website, bio, imageUrl, gstNumber, panNumber
       },
     });
 
